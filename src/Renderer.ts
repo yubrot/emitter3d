@@ -47,9 +47,9 @@ export default class Renderer {
     });
 
     config.toggle('bloom', true, enabled => this.passes.bloom.enabled = enabled);
-    config.range('strength', 0.7, [0, 5], v => this.passes.bloom.strength = v);
-    config.range('radius', 0.2, [0, 1], v => this.passes.bloom.radius = v);
-    config.range('threshold', 0.5, [0, 1], v => this.passes.bloom.threshold = v);
+    config.range('bloom strength', 0.7, [0, 5], v => this.passes.bloom.strength = v);
+    config.range('bloom radius', 0.2, [0, 1], v => this.passes.bloom.radius = v);
+    config.range('bloom threshold', 0.5, [0, 1], v => this.passes.bloom.threshold = v);
   }
 
   setSize(width: number, height: number) {

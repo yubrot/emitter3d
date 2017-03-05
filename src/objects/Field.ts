@@ -1,21 +1,33 @@
-import BulletPool from './BulletPool.ts';
+import config from '../config.ts';
+import BulletPool, { BulletUnit } from './BulletPool.ts';
+import BulletShadows from './BulletShadows.ts';
 import * as shape from './resources/shape.ts';
 import * as painter from './resources/painter.ts';
-import Bullet from '../simulator/Bullet.ts';
+import Bullet, { CommonBullet } from '../simulator/Bullet.ts';
 import MotherBullet from '../simulator/MotherBullet.ts';
+
+const capacity = 10000;
 
 export default class Field extends THREE.Group {
   private bulletPools: any;
+  private bulletShadows: any;
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
+
+  renderShadow = config.toggle('render shadow', true);
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
     super();
     this.emitted(new MotherBullet());
     this.bulletPools = {
-      missile: new BulletPool(20000, painter.rainbow(boundary), shape.missile(4, 10, 1.8)),
-      arrow: new BulletPool(20000, painter.rainbow(boundary), shape.arrow(18, 2.7)),
-      claw: new BulletPool(20000, painter.rainbow(boundary), shape.claw(7, 13)),
+      missile: new BulletPool(capacity, painter.rainbow(boundary), shape.missile(4, 10, 1.8)),
+      arrow: new BulletPool(capacity, painter.rainbow(boundary), shape.arrow(18, 2.7)),
+      claw: new BulletPool(capacity, painter.rainbow(boundary), shape.claw(7, 13)),
+    };
+    this.bulletShadows = {
+      missile: new BulletShadows(45, 3, capacity),
+      arrow: new BulletShadows(45, 3, capacity),
+      claw: new BulletShadows(45, 3, capacity),
     };
     this.add(this.bulletPools.missile);
     this.add(this.bulletPools.arrow);
@@ -54,15 +66,23 @@ export default class Field extends THREE.Group {
     }
   }
 
-  static readonly tmpArray = new Array<any>(20000);
+  static readonly tmpArray = new Array<BulletUnit>(capacity);
 
   setPoolInstances() {
-    for (let shapeType in this.bulletPools) {
+    for (const shapeType in this.bulletPools) {
+      const shadows: BulletShadows = this.bulletShadows[shapeType];
+      shadows.next();
+
       let i = 0;
-      for (const bullet of this.bullets) {
-        if (bullet.type == 'common' && (<any> bullet).shapeType == shapeType)
-          Field.tmpArray[i++] = <any> bullet;
+      for (const bullet_ of this.bullets) {
+        if (bullet_.type != 'common') continue;
+        const bullet = <CommonBullet> bullet_;
+        if (bullet.shapeType == shapeType) {
+          Field.tmpArray[i++] = bullet;
+          shadows.put(bullet);
+        }
       }
+      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i);
       this.bulletPools[shapeType].setInstances(Field.tmpArray.slice(0, i));
     }
   }

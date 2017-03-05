@@ -77,7 +77,7 @@ function patternChoices(num: number, depth: number): PatternChoice[] {
     { name: 'xy', subs: xy_xz },
     { name: 'xz', subs: xy_xz },
     { name: 'yz', rate: (num % 2 == 0 ? 2 : 0), subs: yz },
-    { name: 'rapid', rate: (depth % 2 == 1 ? 1 : 0), subs: rapid },
+    { name: 'rapid', rate: (depth == 1 ? 1 : 0), subs: rapid },
   ];
 }
 

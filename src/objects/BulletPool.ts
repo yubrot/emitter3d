@@ -1,7 +1,14 @@
 import { Painter, Paint } from './resources/painter.ts';
 import { Shape, Rotator } from './resources/shape.ts';
 import { vertexShader, fragmentShader } from './resources/shader.ts';
-import { CommonBullet } from '../simulator/Bullet.ts';
+
+export interface BulletUnit {
+  frame: number;
+  generation: number;
+  direction: THREE.Quaternion;
+  position: THREE.Vector3;
+  alpha?: number;
+}
 
 export default class BulletPool extends THREE.Mesh {
   face: THREE.InstancedBufferGeometry;
@@ -22,7 +29,7 @@ export default class BulletPool extends THREE.Mesh {
     this.painter = painter;
   }
 
-  setInstances(bullets: CommonBullet[]) {
+  setInstances(bullets: BulletUnit[]) {
     BulletPool.setInstances(this.face, this.rotator, this.painter.face, bullets);
     BulletPool.setInstances(this.line, this.rotator, this.painter.line, bullets);
   }
@@ -57,7 +64,7 @@ export default class BulletPool extends THREE.Mesh {
   static readonly tmpQuaternion = new THREE.Quaternion();
   static readonly tmpColor = new THREE.Color();
 
-  static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: CommonBullet[]) {
+  static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: BulletUnit[]) {
     const offsets = <THREE.InstancedBufferAttribute> geometry.getAttribute('offset');
     const orientations = <THREE.InstancedBufferAttribute> geometry.getAttribute('orientation');
     const color2s = <THREE.InstancedBufferAttribute> geometry.getAttribute('color2');
@@ -66,10 +73,11 @@ export default class BulletPool extends THREE.Mesh {
       const bullet = bullets[i];
       const orientation = rotator(bullet.frame, bullet.direction, BulletPool.tmpQuaternion);
       const color = paint(bullet.generation, bullet.position, BulletPool.tmpColor);
+      const a = bullet.alpha === undefined ? 1 : bullet.alpha;
 
       offsets.setXYZ(i, bullet.position.x, bullet.position.y, bullet.position.z);
       orientations.setXYZW(i, orientation.x, orientation.y, orientation.z, orientation.w);
-      color2s.setXYZ(i, color.r, color.g, color.b);
+      color2s.setXYZ(i, color.r * a, color.g * a, color.b * a);
     }
 
     offsets.needsUpdate = true;

@@ -9,19 +9,19 @@ export default class MotherBullet extends Bullet {
   generation = 0;
   trigger: Behavior;
 
-  aim = config.toggle('aim', false);
-  power = config.range('power', 800, [100, 3000]);
-  interval = config.range('interval', 300, [60, 600]);
-  refresh = config.toggle('refresh', true);
+  // aim = config.toggle('aim', false);
+  power = config.range('pattern power', 800, [100, 3000]);
+  interval = config.range('pattern interval', 300, [60, 600]);
+  refresh = config.toggle('pattern update', true);
 
   update() {
-    if (this.aim.value) {
-      if (this.nearestTarget)
-        this.turnTo(this.position.quaternionTo(this.nearestTarget, this.up), 0.03);
-    } else {
+    // if (this.aim.value) {
+    //   if (this.nearestTarget)
+    //     this.turnTo(this.position.quaternionTo(this.nearestTarget, this.up), 0.03);
+    // } else {
       this.rotation.y += Math.PI * 0.003;
       this.direction.setFromEuler(this.rotation);
-    }
+    // }
 
     if (this.frame % Math.floor(this.interval.value) == 0) {
       this.frame = 0;
