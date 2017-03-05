@@ -14,6 +14,7 @@ export default class Field extends THREE.Group {
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
 
+  pause = config.toggle('pause', false);
   renderShadow = config.toggle('render shadow', true);
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
@@ -44,6 +45,7 @@ export default class Field extends THREE.Group {
   }
 
   update() {
+    if (this.pause.value) return;
     for (const bullet of this.bullets) {
       bullet.update();
       ++bullet.frame;
