@@ -1,0 +1,24 @@
+{
+  "name": "emitter3d",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --optimize-minimize",
+    "watch": "webpack --watch --debug --devtool inline-source-map & browser-sync start --config bs-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yubrot/emitter3d.git"
+  },
+  "author": "yubrot",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@types/dat-gui": "^0.5.29",
+    "@types/stats": "^0.16.30",
+    "@types/three": "^0.83.4",
+    "browser-sync": "^2.18.8",
+    "ts-loader": "^2.0.1",
+    "typescript": "^2.2.1",
+    "webpack": "^2.2.1"
+  }
+}
