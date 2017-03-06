@@ -19,20 +19,20 @@ export default class Field extends THREE.Group {
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
     super();
-    this.emitted(new MotherBullet());
     this.bulletPools = {
       missile: new BulletPool(capacity, painter.rainbow(boundary), shape.missile(4, 10, 1.8)),
       arrow: new BulletPool(capacity, painter.rainbow(boundary), shape.arrow(18, 2.7)),
       claw: new BulletPool(capacity, painter.rainbow(boundary), shape.claw(7, 13)),
     };
     this.bulletShadows = {
-      missile: new BulletShadows(21, capacity),
-      arrow: new BulletShadows(21, capacity),
-      claw: new BulletShadows(21, capacity),
+      missile: new BulletShadows(30, capacity),
+      arrow: new BulletShadows(30, capacity),
+      claw: new BulletShadows(30, capacity),
     };
     this.add(this.bulletPools.missile);
     this.add(this.bulletPools.arrow);
     this.add(this.bulletPools.claw);
+    this.emitted(new MotherBullet());
   }
 
   emitted(bullet: Bullet) {
@@ -96,9 +96,9 @@ export default class Field extends THREE.Group {
 
       let i = 0;
       this.forEachBullets(shapeType, bullet => Field.tmpArray[i++] = bullet);
-      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i, 3);
+      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i, 3, 3, 0.4);
 
-      pool.setInstances(Field.tmpArray.slice(0, i));
+      pool.setInstances(Field.tmpArray, i);
     }
   }
 }

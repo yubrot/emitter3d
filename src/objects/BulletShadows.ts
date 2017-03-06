@@ -18,6 +18,7 @@ export default class BulletShadows {
   }
 
   put(bullet: BulletUnit) {
+    // To reduce allocations, shadows cache all BulletUnit objects.
     const current = this.shadows[this.last];
     const shadow = current.array[current.length] || <any> {
       direction: new THREE.Quaternion(),
@@ -31,16 +32,14 @@ export default class BulletShadows {
     current.array[current.length++] = shadow;
   }
 
-  cast(dest: BulletUnit[], i: number, interval: number, r = 2, c1 = 0.5, c2 = 0.02): number {
-    if (i == this.capacity) return i;
-
+  cast(dest: BulletUnit[], i: number, interval: number, r1: number, r2: number): number {
     for (let j=this.shadows.length-interval; interval<=j; j -= interval) {
       const current = this.shadows[(j + this.last) % this.shadows.length];
-      const alpha = Math.pow(j / this.shadows.length, r) * c1 + c2;
+      const alpha = Math.pow(j / this.shadows.length, r1) * r2;
+      if (dest.length <= i + current.length) return i;
       for (let k=0; k<current.length; ++k) {
         current.array[k].alpha = alpha;
         dest[i++] = current.array[k];
-        if (i == this.capacity) return i;
       }
     }
     return i;

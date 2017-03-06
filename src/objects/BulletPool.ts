@@ -15,6 +15,7 @@ export default class BulletPool extends THREE.Mesh {
   line: THREE.InstancedBufferGeometry;
   rotator: Rotator;
   painter: Painter;
+  capacity: number;
 
   constructor(capacity: number, painter: Painter, shape: Shape) {
     const material = BulletPool.material();
@@ -27,11 +28,13 @@ export default class BulletPool extends THREE.Mesh {
     this.line = line;
     this.rotator = shape.rotator;
     this.painter = painter;
+    this.capacity = capacity;
   }
 
-  setInstances(bullets: BulletUnit[]) {
-    BulletPool.setInstances(this.face, this.rotator, this.painter.face, bullets);
-    BulletPool.setInstances(this.line, this.rotator, this.painter.line, bullets);
+  setInstances(bullets: BulletUnit[], length: number) {
+    length = Math.min(length, this.capacity);
+    BulletPool.setInstances(this.face, this.rotator, this.painter.face, bullets, length);
+    BulletPool.setInstances(this.line, this.rotator, this.painter.line, bullets, length);
   }
 
   static geometry(capacity: number, base: THREE.BufferGeometry): THREE.InstancedBufferGeometry {
@@ -64,12 +67,12 @@ export default class BulletPool extends THREE.Mesh {
   private static readonly tmpQuaternion = new THREE.Quaternion();
   private static readonly tmpColor = new THREE.Color();
 
-  private static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: BulletUnit[]) {
+  private static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: BulletUnit[], length: number) {
     const offsets = <THREE.InstancedBufferAttribute> geometry.getAttribute('offset');
     const orientations = <THREE.InstancedBufferAttribute> geometry.getAttribute('orientation');
     const color2s = <THREE.InstancedBufferAttribute> geometry.getAttribute('color2');
 
-    for (let i=0; i<bullets.length; ++i) {
+    for (let i=0; i<length; ++i) {
       const bullet = bullets[i];
       const orientation = rotator(bullet.frame, bullet.direction, BulletPool.tmpQuaternion);
       const color = paint(bullet.generation, bullet.position, BulletPool.tmpColor);
@@ -83,6 +86,6 @@ export default class BulletPool extends THREE.Mesh {
     offsets.needsUpdate = true;
     orientations.needsUpdate = true;
     color2s.needsUpdate = true;
-    geometry.maxInstancedCount = bullets.length;
+    geometry.maxInstancedCount = length;
   }
 }
