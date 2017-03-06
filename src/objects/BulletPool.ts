@@ -61,10 +61,10 @@ export default class BulletPool extends THREE.Mesh {
     });
   }
 
-  static readonly tmpQuaternion = new THREE.Quaternion();
-  static readonly tmpColor = new THREE.Color();
+  private static readonly tmpQuaternion = new THREE.Quaternion();
+  private static readonly tmpColor = new THREE.Color();
 
-  static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: BulletUnit[]) {
+  private static setInstances(geometry: THREE.InstancedBufferGeometry, rotator: Rotator, paint: Paint, bullets: BulletUnit[]) {
     const offsets = <THREE.InstancedBufferAttribute> geometry.getAttribute('offset');
     const orientations = <THREE.InstancedBufferAttribute> geometry.getAttribute('orientation');
     const color2s = <THREE.InstancedBufferAttribute> geometry.getAttribute('color2');

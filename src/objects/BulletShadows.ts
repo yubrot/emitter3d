@@ -4,7 +4,7 @@ export default class BulletShadows {
   private last = 0;
   private shadows: { array: BulletUnit[], length: number }[];
 
-  constructor(totalFrame: number, private interval: number, private capacity: number) {
+  constructor(totalFrame: number, private capacity: number) {
     this.shadows = new Array<any>(totalFrame);
     for (let i=0; i<this.shadows.length; ++i) {
       const array = new Array<BulletUnit>(this.capacity);
@@ -12,7 +12,7 @@ export default class BulletShadows {
     }
   }
 
-  next() {
+  beginUpdate() {
     this.last = (this.last + 1) % this.shadows.length;
     this.shadows[this.last].length = 0;
   }
@@ -31,11 +31,12 @@ export default class BulletShadows {
     current.array[current.length++] = shadow;
   }
 
-  cast(dest: BulletUnit[], i: number): number {
+  cast(dest: BulletUnit[], i: number, interval: number, r = 2, c1 = 0.5, c2 = 0.02): number {
     if (i == this.capacity) return i;
-    for (let j=this.shadows.length-this.interval; this.interval<=j; j -= this.interval) {
+
+    for (let j=this.shadows.length-interval; interval<=j; j -= interval) {
       const current = this.shadows[(j + this.last) % this.shadows.length];
-      const alpha = Math.pow(j / this.shadows.length, 4) * 0.5;
+      const alpha = Math.pow(j / this.shadows.length, r) * c1 + c2;
       for (let k=0; k<current.length; ++k) {
         current.array[k].alpha = alpha;
         dest[i++] = current.array[k];

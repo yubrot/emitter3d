@@ -26,9 +26,9 @@ export default class Field extends THREE.Group {
       claw: new BulletPool(capacity, painter.rainbow(boundary), shape.claw(7, 13)),
     };
     this.bulletShadows = {
-      missile: new BulletShadows(45, 3, capacity),
-      arrow: new BulletShadows(45, 3, capacity),
-      claw: new BulletShadows(45, 3, capacity),
+      missile: new BulletShadows(21, capacity),
+      arrow: new BulletShadows(21, capacity),
+      claw: new BulletShadows(21, capacity),
     };
     this.add(this.bulletPools.missile);
     this.add(this.bulletPools.arrow);
@@ -45,17 +45,28 @@ export default class Field extends THREE.Group {
   }
 
   update() {
-    if (this.pause.value) return;
-    for (const bullet of this.bullets) {
-      bullet.update();
-      ++bullet.frame;
+    if (!this.pause.value) {
+      for (const bullet of this.bullets) {
+        bullet.update();
+        ++bullet.frame;
+      }
+
+      this.collectDiedBullets();
+      this.shadowsUpdate();
     }
 
-    this.collectDiedBullets();
-    this.setPoolInstances();
+    this.prepareForRendering();
   }
 
-  collectDiedBullets() {
+  private forEachBullets(shapeType: string, handler: (bullet: CommonBullet) => void) {
+    for (const bullet_ of this.bullets) {
+      if (bullet_.type != 'common') continue;
+      const bullet = <CommonBullet> bullet_;
+      if (bullet.shapeType == shapeType) handler(bullet);
+    }
+  }
+
+  private collectDiedBullets() {
     for (let i=0; i<this.bullets.length; ) {
       const id = this.bullets[i].id;
       if (this.diedBullets[id]) {
@@ -68,24 +79,26 @@ export default class Field extends THREE.Group {
     }
   }
 
+  private shadowsUpdate() {
+    for (const shapeType in this.bulletShadows) {
+      const shadows: BulletShadows = this.bulletShadows[shapeType];
+      shadows.beginUpdate();
+      this.forEachBullets(shapeType, bullet => shadows.put(bullet));
+    }
+  }
+
   static readonly tmpArray = new Array<BulletUnit>(capacity);
 
-  setPoolInstances() {
+  private prepareForRendering() {
     for (const shapeType in this.bulletPools) {
+      const pool: BulletPool = this.bulletPools[shapeType];
       const shadows: BulletShadows = this.bulletShadows[shapeType];
-      shadows.next();
 
       let i = 0;
-      for (const bullet_ of this.bullets) {
-        if (bullet_.type != 'common') continue;
-        const bullet = <CommonBullet> bullet_;
-        if (bullet.shapeType == shapeType) {
-          Field.tmpArray[i++] = bullet;
-          shadows.put(bullet);
-        }
-      }
-      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i);
-      this.bulletPools[shapeType].setInstances(Field.tmpArray.slice(0, i));
+      this.forEachBullets(shapeType, bullet => Field.tmpArray[i++] = bullet);
+      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i, 3);
+
+      pool.setInstances(Field.tmpArray.slice(0, i));
     }
   }
 }
