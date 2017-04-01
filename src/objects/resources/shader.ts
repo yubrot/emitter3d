@@ -13,9 +13,7 @@ export const vertexShader = `
   varying vec4 vColor;
 
   void main() {
-    vec3 vPosition = position;
-    vec3 vcV = cross(orientation.xyz, vPosition);
-    vPosition = vcV * (2.0 * orientation.w) + (cross(orientation.xyz, vcV) * 2.0 + vPosition);
+    vec3 vPosition = position + cross(orientation.xyz, cross(orientation.xyz, position) + orientation.w * position) * 2.0;
 
     vColor = vec4(color * color2, 1.0);
 
