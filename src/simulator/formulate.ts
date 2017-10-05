@@ -1,4 +1,4 @@
-import { CommonBullet, CommonBulletShapeType, Behavior } from './Bullet.ts';
+import { CommonBullet, CommonBulletModelType, Behavior } from './Bullet.ts';
 import { selectPattern, range, select } from './pattern.ts';
 import * as rudder from './behavior/rudder.ts';
 import * as engine from './behavior/engine.ts';
@@ -52,8 +52,8 @@ function formulateTrigger(state: State): { trigger: Behavior, kind: Kind } {
     return select<Behavior>([
       { weight: 1.5, value: engine.uniform(THREE.Math.randFloat(1.5, 2.2) * factor) },
       { weight: (kind == 'final' ? 1 : 0), value: engine.accel(0.5, 3.3) },
-      { weight: 0.5, value: engine.decel(THREE.Math.randFloat(2.5, 3.5) * factor, 0.8) },
-      { weight: (kind == 'normal' ? 0.5 : 0), value: engine.quick(THREE.Math.randFloat(3.5, 5.0), 1.7) },
+      { weight: 0.5, value: engine.decel(THREE.Math.randFloat(2.5, 3.2) * factor, 0.8) },
+      { weight: (kind == 'normal' ? 0.5 : 0), value: engine.quick(THREE.Math.randFloat(3.2, 4.4), 1.7) },
     ]);
   }
 
@@ -89,6 +89,21 @@ function formulateTrigger(state: State): { trigger: Behavior, kind: Kind } {
         kind: gens.length == 3 ? 'slow' : 'normal'
       };
     }
+    case 'yzs': {
+      const num1 = Number(pattern[1]);
+      const direction = pattern[2] == 'l' ? 1 : -1;
+      const gens = range(pattern[3] || '1').map(i => gen + i + 1);
+      const ps = gens.map(i => formulateChild(i, 0, 0));
+      const ts = ps.map(p => p.trigger);
+      const es = ps.map(p => engineFor(p.kind));
+      const bullets = [selectBullet(0.7, 0, 0.4)];
+      const creator = trigger.creator(bullets, gens, es, [rudder.none], ts);
+      const startFrame = THREE.Math.randInt(2, 5) * 10 + wait;
+      return {
+        trigger: trigger.yzs(creator, startFrame, num, 5 + depth*5, num1, direction),
+        kind: gens.length == 3 ? 'slow' : 'normal'
+      };
+    }
     case 'rapid': {
       if (pattern[1] == 'straight' && num >= 3) num = 2 + (num % 2);
       const gens = range(pattern[3] || '1').map(i => gen + i + 1);
@@ -111,7 +126,7 @@ function formulateTrigger(state: State): { trigger: Behavior, kind: Kind } {
 }
 
 function selectBullet(missile: number, arrow: number, claw: number): () => CommonBullet {
-  const type = select<CommonBulletShapeType>([
+  const type = select<CommonBulletModelType>([
     { weight: missile, value: 'missile' },
     { weight: arrow, value: 'arrow' },
     { weight: claw, value: 'claw' },

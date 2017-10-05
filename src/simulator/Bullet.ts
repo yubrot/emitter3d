@@ -66,7 +66,7 @@ export abstract class Bullet {
 
 export default Bullet;
 
-export type CommonBulletShapeType = 'missile' | 'arrow' | 'claw';
+export type CommonBulletModelType = 'missile' | 'arrow' | 'claw';
 
 export class CommonBullet extends Bullet {
   type = 'common';
@@ -76,7 +76,7 @@ export class CommonBullet extends Bullet {
   rudder?: Behavior;
   trigger?: Behavior;
 
-  constructor(public shapeType: CommonBulletShapeType) {
+  constructor(public modelType: CommonBulletModelType) {
     super();
   }
 

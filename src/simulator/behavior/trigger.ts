@@ -63,6 +63,25 @@ export function yz<E extends Bullet>(creator: (idx: number) => E, frame: number,
   };
 }
 
+export function yzs<E extends Bullet>(creator: (idx: number) => E, startFrame: number, n: number, interval: number, n1: number, direction: number): Behavior {
+  const rad = range(n, Math.PI*2);
+  return function() {
+    if (this.frame < startFrame) return;
+    if ((this.frame - startFrame) % interval != 0) return;
+    const i = (this.frame - startFrame) / interval;
+    if (i * n1 < n) {
+      for (let j=0; j<n1; ++j) {
+        const i1 = i + j*n/n1;
+        const child = this.emit(creator(i1));
+        child.roll(rad(i1) * direction);
+        child.pitch(Math.PI/2);
+      }
+      if (i * n1 < n - 1) return;
+    }
+    this.die();
+  };
+}
+
 function adjust(bullet: Bullet, base: string) {
   switch (base) {
     case 'forward':

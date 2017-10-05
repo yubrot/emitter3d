@@ -1,5 +1,5 @@
 import { Painter, Paint } from './resources/painter.ts';
-import { Shape, Rotator } from './resources/shape.ts';
+import { Model, Rotator } from './resources/model.ts';
 import { vertexShader, fragmentShader } from './resources/shader.ts';
 
 export interface BulletUnit {
@@ -17,16 +17,16 @@ export default class BulletPool extends THREE.Mesh {
   painter: Painter;
   capacity: number;
 
-  constructor(capacity: number, painter: Painter, shape: Shape) {
+  constructor(capacity: number, painter: Painter, model: Model) {
     const material = BulletPool.material();
-    const face = BulletPool.geometry(capacity, shape.faces);
-    const line = BulletPool.geometry(capacity, shape.lines);
+    const face = BulletPool.geometry(capacity, model.faces);
+    const line = BulletPool.geometry(capacity, model.lines);
     super(face, material);
     this.add(new THREE.LineSegments(line, material));
 
     this.face = face;
     this.line = line;
-    this.rotator = shape.rotator;
+    this.rotator = model.rotator;
     this.painter = painter;
     this.capacity = capacity;
   }
@@ -75,7 +75,7 @@ export default class BulletPool extends THREE.Mesh {
     for (let i=0; i<length; ++i) {
       const bullet = bullets[i];
       const orientation = rotator(bullet.frame, bullet.direction, BulletPool.tmpQuaternion);
-      const color = paint(bullet.generation, bullet.position, BulletPool.tmpColor);
+      const color = paint(bullet.frame, bullet.generation, bullet.position, BulletPool.tmpColor);
       const a = bullet.alpha === undefined ? 1 : bullet.alpha;
 
       offsets.setXYZ(i, bullet.position.x, bullet.position.y, bullet.position.z);

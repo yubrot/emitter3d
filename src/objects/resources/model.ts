@@ -1,6 +1,6 @@
 export type Rotator = (frame: number, direction: THREE.Quaternion, dest: THREE.Quaternion) => THREE.Quaternion;
 
-export interface Shape {
+export interface Model {
   rotator: Rotator;
   faces: THREE.BufferGeometry;
   lines: THREE.BufferGeometry;
@@ -8,7 +8,7 @@ export interface Shape {
 
 type Point = { face: number, line: number };
 
-class ShapeBuilder {
+class ModelBuilder {
   faceVertices: number[] = [];
   faceVertexColors: number[] = [];
   faceIndices: number[] = [];
@@ -70,7 +70,7 @@ class ShapeBuilder {
     }
   }
 
-  complete(rotator: Rotator): Shape {
+  complete(rotator: Rotator): Model {
     const faces = new THREE.BufferGeometry();
     faces.addAttribute('position', new THREE.BufferAttribute(new Float32Array(this.faceVertices), 3));
     faces.addAttribute('color', new THREE.BufferAttribute(new Float32Array(this.faceVertexColors), 3));
@@ -96,8 +96,8 @@ function rotation<A>(seg: number, handler: (index: number, rad: number, nextRad:
   return ret;
 }
 
-export function missile(num: number, h: number, r: number): Shape {
-  const b = new ShapeBuilder();
+export function missile(num: number, h: number, r: number): Model {
+  const b = new ModelBuilder();
 
   rotation(num * 2, (i, rad, nextRad) => {
     const [c, d, [e1, e2]] = i%2 == 0 ? [0.2, 0.5, [black, white]] : [-0.2, -0.5, [white, black]];
@@ -120,8 +120,8 @@ export function missile(num: number, h: number, r: number): Shape {
     dest.copy(direction).rotateZ(frame * Math.PI * 0.02));
 }
 
-export function arrow(h: number, r: number): Shape {
-  const b = new ShapeBuilder();
+export function arrow(h: number, r: number): Model {
+  const b = new ModelBuilder();
 
   const top = b.point(0, 0, h * 0.3, white, white);
   const segs = rotation(3, (i, rad, nextRad) => b.point(Math.cos(rad) * r, Math.sin(rad) * r, h * -0.2, white, white));
@@ -136,8 +136,8 @@ export function arrow(h: number, r: number): Shape {
     dest.copy(direction).rotateZ(frame * Math.PI * 0.01));
 }
 
-export function claw(w: number, h: number): Shape {
-  const b = new ShapeBuilder();
+export function claw(w: number, h: number): Model {
+  const b = new ModelBuilder();
 
   for (let d of [-1, 1]) {
     const points = [

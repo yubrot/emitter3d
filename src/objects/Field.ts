@@ -1,7 +1,7 @@
 import config from '../config.ts';
 import BulletPool, { BulletUnit } from './BulletPool.ts';
-import BulletShadows from './BulletShadows.ts';
-import * as shape from './resources/shape.ts';
+import BulletTails from './BulletTails.ts';
+import * as model from './resources/model.ts';
 import * as painter from './resources/painter.ts';
 import Bullet, { CommonBullet } from '../simulator/Bullet.ts';
 import MotherBullet from '../simulator/MotherBullet.ts';
@@ -10,29 +10,35 @@ const capacity = 10000;
 
 export default class Field extends THREE.Group {
   private bulletPools: any;
-  private bulletShadows: any;
+  private bulletTails: any;
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
 
   pause = config.toggle('pause', false);
-  renderShadow = config.toggle('render shadow', true);
+  renderTail = config.toggle('render tail', true);
+  tailSize = config.range('tail size', 40, [10, 120], v => this.setBulletTails(v));
+  tailInterval = config.range('tail interval', 2, [1, 5]);
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
     super();
     this.bulletPools = {
-      missile: new BulletPool(capacity, painter.rainbow(boundary), shape.missile(4, 10, 1.8)),
-      arrow: new BulletPool(capacity, painter.rainbow(boundary), shape.arrow(18, 2.7)),
-      claw: new BulletPool(capacity, painter.rainbow(boundary), shape.claw(7, 13)),
-    };
-    this.bulletShadows = {
-      missile: new BulletShadows(30, capacity),
-      arrow: new BulletShadows(30, capacity),
-      claw: new BulletShadows(30, capacity),
+      missile: new BulletPool(capacity, painter.rainbow(boundary), model.missile(4, 10, 1.8)),
+      arrow: new BulletPool(capacity, painter.rainbow(boundary), model.arrow(18, 2.7)),
+      claw: new BulletPool(capacity, painter.rainbow(boundary), model.claw(7, 13)),
     };
     this.add(this.bulletPools.missile);
     this.add(this.bulletPools.arrow);
     this.add(this.bulletPools.claw);
     this.emitted(new MotherBullet());
+  }
+
+  setBulletTails(v: number) {
+    v = Math.floor(v);
+    this.bulletTails = {
+      missile: new BulletTails(v, capacity),
+      arrow: new BulletTails(v, capacity),
+      claw: new BulletTails(v, capacity),
+    };
   }
 
   emitted(bullet: Bullet) {
@@ -52,17 +58,17 @@ export default class Field extends THREE.Group {
       }
 
       this.collectDiedBullets();
-      this.shadowsUpdate();
+      this.tailsUpdate();
     }
 
     this.prepareForRendering();
   }
 
-  private forEachBullets(shapeType: string, handler: (bullet: CommonBullet) => void) {
+  private forEachBullets(modelType: string, handler: (bullet: CommonBullet) => void) {
     for (const bullet_ of this.bullets) {
       if (bullet_.type != 'common') continue;
       const bullet = <CommonBullet> bullet_;
-      if (bullet.shapeType == shapeType) handler(bullet);
+      if (bullet.modelType == modelType) handler(bullet);
     }
   }
 
@@ -79,24 +85,24 @@ export default class Field extends THREE.Group {
     }
   }
 
-  private shadowsUpdate() {
-    for (const shapeType in this.bulletShadows) {
-      const shadows: BulletShadows = this.bulletShadows[shapeType];
-      shadows.beginUpdate();
-      this.forEachBullets(shapeType, bullet => shadows.put(bullet));
+  private tailsUpdate() {
+    for (const modelType in this.bulletTails) {
+      const tails: BulletTails = this.bulletTails[modelType];
+      tails.beginUpdate();
+      this.forEachBullets(modelType, bullet => tails.put(bullet));
     }
   }
 
   static readonly tmpArray = new Array<BulletUnit>(capacity);
 
   private prepareForRendering() {
-    for (const shapeType in this.bulletPools) {
-      const pool: BulletPool = this.bulletPools[shapeType];
-      const shadows: BulletShadows = this.bulletShadows[shapeType];
+    for (const modelType in this.bulletPools) {
+      const pool: BulletPool = this.bulletPools[modelType];
+      const tails: BulletTails = this.bulletTails[modelType];
 
       let i = 0;
-      this.forEachBullets(shapeType, bullet => Field.tmpArray[i++] = bullet);
-      if (this.renderShadow.value) i = shadows.cast(Field.tmpArray, i, 3, 3, 0.4);
+      this.forEachBullets(modelType, bullet => Field.tmpArray[i++] = bullet);
+      if (this.renderTail.value) i = tails.cast(Field.tmpArray, i, Math.floor(this.tailInterval.value), 4);
 
       pool.setInstances(Field.tmpArray, i);
     }

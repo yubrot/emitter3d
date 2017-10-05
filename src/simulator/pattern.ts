@@ -68,6 +68,11 @@ function patternChoices(num: number, depth: number): PatternChoice[] {
     ] }
   ];
 
+  const yzs: PatternChoice[] = [
+    { name: '1', rate: 1, subs: [{ name: 'l' }, { name: 'r' }] },
+    { name: '2', rate: (num % 2 == 0 ? 2 : 0), subs: [{ name: 'l' }, { name: 'r' }] },
+  ];
+
   const rapid: PatternChoice[] = [
     { name: 'straight', subs: [
         { name: 'forward', rate: 3, subs: c123 },
@@ -82,7 +87,8 @@ function patternChoices(num: number, depth: number): PatternChoice[] {
   return [
     { name: 'xy', subs: xy_xz },
     { name: 'xz', subs: xy_xz },
-    { name: 'yz', rate: (num % 2 == 0 ? 2 : 0), subs: yz },
+    { name: 'yz', rate: (num % 2 == 0 ? 1.5 : 0), subs: yz },
+    { name: 'yzs', rate: ((num % 2 == 0 && 4 <= num) ? 2 : 0), subs: yzs },
     { name: 'rapid', rate: (depth == 1 ? 1 : 0), subs: rapid },
   ];
 }
