@@ -20,7 +20,7 @@ export default class MotherBullet extends Bullet {
     super();
 
     const c = config.folder('Pattern');
-    c.toggle('aim', true, v => this.aim = v);
+    config.toggle('aim', true, v => this.aim = v);
     c.range('pattern strength', 500, [10, 2000], v => this.strength = v);
     c.range('pattern interval', 240, [60, 600], v => this.interval = v);
     c.toggle('pattern update', true, v => this.refresh = v);

@@ -29,12 +29,13 @@ export default class Field extends THREE.Group {
     this.add(this.bulletPools.missile);
     this.add(this.bulletPools.arrow);
     this.add(this.bulletPools.claw);
-    this.emitted(new MotherBullet());
 
     const c = config.folder('Bullet');
     c.toggle('render tail', true, v => this.renderTail = v);
     c.range('tail size', 40, [10, 120], v => this.setBulletTails(v));
     c.range('tail interval', 2, [1, 5], v => this.tailInterval = v);
+
+    this.emitted(new MotherBullet());
   }
 
   setBulletTails(v: number) {

@@ -62,7 +62,7 @@ export default class BulletPool extends THREE.Mesh {
       side: THREE.DoubleSide,
       transparent: true,
       blending: THREE.AdditiveBlending,
-      depthWrite: false,
+      depthTest: false,
     });
   }
 
