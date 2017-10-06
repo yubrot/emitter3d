@@ -1,3 +1,4 @@
+import config from './config.ts';
 import Renderer from './Renderer.ts';
 import CameraController from './CameraController.ts';
 
@@ -12,6 +13,8 @@ export default class App {
 
   private outerSpace: OuterSpace;
   private field: Field;
+
+  pause = config.toggle('pause', false);
 
   get width(): number { return this.container.clientWidth; }
   get height(): number { return this.container.clientHeight; }
@@ -40,7 +43,8 @@ export default class App {
 
   update() {
     this.cameraController.update(this.camera);
-    this.field.update();
+    if (!this.pause.value && this.cameraController.isStable) this.field.update();
+    this.field.prepareForRendering();
   }
 
   render() {

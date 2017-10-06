@@ -15,6 +15,10 @@ export default class CameraController {
   private isDragging = false;
   private cameraScroll = config.toggle('camera scroll', true);
 
+  get isStable(): boolean {
+    return !this.isDragging;
+  }
+
   constructor(private container: HTMLElement, distance: number) {
     this.target = { py: new THREE.Vector2(0, 0), distance };
     this.current = { py: new THREE.Vector2(0, 0), distance };

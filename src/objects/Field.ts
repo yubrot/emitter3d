@@ -14,7 +14,6 @@ export default class Field extends THREE.Group {
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
 
-  pause = config.toggle('pause', false);
   renderTail = config.toggle('render tail', true);
   tailSize = config.range('tail size', 40, [10, 120], v => this.setBulletTails(v));
   tailInterval = config.range('tail interval', 2, [1, 5]);
@@ -51,17 +50,13 @@ export default class Field extends THREE.Group {
   }
 
   update() {
-    if (!this.pause.value) {
-      for (const bullet of this.bullets) {
-        bullet.update();
-        ++bullet.frame;
-      }
-
-      this.collectDiedBullets();
-      this.tailsUpdate();
+    for (const bullet of this.bullets) {
+      bullet.update();
+      ++bullet.frame;
     }
 
-    this.prepareForRendering();
+    this.collectDiedBullets();
+    this.tailsUpdate();
   }
 
   private forEachBullets(modelType: string, handler: (bullet: CommonBullet) => void) {
@@ -95,7 +90,7 @@ export default class Field extends THREE.Group {
 
   static readonly tmpArray = new Array<BulletUnit>(capacity);
 
-  private prepareForRendering() {
+  prepareForRendering() {
     for (const modelType in this.bulletPools) {
       const pool: BulletPool = this.bulletPools[modelType];
       const tails: BulletTails = this.bulletTails[modelType];
