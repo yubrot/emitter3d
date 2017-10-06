@@ -15,8 +15,7 @@ export default class App {
 
   private outerSpace: OuterSpace;
   private field: Field;
-
-  pause = config.toggle('pause', false);
+  private pause: boolean;
 
   get width(): number { return this.container.clientWidth; }
   get height(): number { return this.container.clientHeight; }
@@ -35,6 +34,10 @@ export default class App {
 
     this.field = new Field(this.camera.position, this.outerSpace.boundary);
     this.scene.add(this.field);
+
+    config.toggle('pause', false, v => this.pause = v);
+    config.toggle('camera scroll', false, v => this.cameraController.cameraScroll = v);
+    config.toggle('background', true, v => this.outerSpace.visible = v);
   }
 
   updateSize() {
@@ -45,7 +48,7 @@ export default class App {
 
   update() {
     this.cameraController.update(this.camera);
-    if (!this.pause.value && this.cameraController.isStable) this.field.update();
+    if (!this.pause && this.cameraController.isStable) this.field.update();
     this.field.prepareForRendering();
   }
 

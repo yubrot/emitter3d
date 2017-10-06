@@ -39,7 +39,9 @@ export default class Renderer {
     this.composer.addPass(this.passes.copy);
     this.composer.addPass(this.passes.SMAA);
 
-    config.options('antialias', 'SMAA', ['OFF', 'SMAA', 'MSAA x2', 'MSAA x4'], type => {
+    const c = config.folder('Renderer');
+
+    c.options('antialias', 'SMAA', ['OFF', 'SMAA', 'MSAA x2', 'MSAA x4'], type => {
       this.passes.renderMSAA.enabled = type.slice(0, 4) == 'MSAA';
       this.passes.renderMSAA.sampleLevel = (type == 'MSAA x2') ? 1 : (type == 'MSAA x4') ? 2 : 0;
       this.passes.SMAA.enabled = type == 'SMAA';
@@ -48,10 +50,10 @@ export default class Renderer {
       this.passes.copy.enabled = !this.passes.SMAA.enabled;
     });
 
-    config.toggle('bloom', true, enabled => this.passes.bloom.enabled = enabled);
-    config.range('bloom strength', 0.7, [0, 5], v => this.passes.bloom.strength = v);
-    config.range('bloom radius', 0.2, [0, 1], v => this.passes.bloom.radius = v);
-    config.range('bloom threshold', 0.5, [0, 1], v => this.passes.bloom.threshold = v);
+    c.toggle('bloom', true, enabled => this.passes.bloom.enabled = enabled);
+    c.range('bloom strength', 0.7, [0, 5], v => this.passes.bloom.strength = v);
+    c.range('bloom radius', 0.2, [0, 1], v => this.passes.bloom.radius = v);
+    c.range('bloom threshold', 0.5, [0, 1], v => this.passes.bloom.threshold = v);
   }
 
   setSize(width: number, height: number) {

@@ -16,9 +16,8 @@ export default class Field extends THREE.Group {
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
 
-  renderTail = config.toggle('render tail', true);
-  tailSize = config.range('tail size', 40, [10, 120], v => this.setBulletTails(v));
-  tailInterval = config.range('tail interval', 2, [1, 5]);
+  private renderTail: boolean;
+  private tailInterval: number;
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
     super();
@@ -31,6 +30,11 @@ export default class Field extends THREE.Group {
     this.add(this.bulletPools.arrow);
     this.add(this.bulletPools.claw);
     this.emitted(new MotherBullet());
+
+    const c = config.folder('Bullet');
+    c.toggle('render tail', true, v => this.renderTail = v);
+    c.range('tail size', 40, [10, 120], v => this.setBulletTails(v));
+    c.range('tail interval', 2, [1, 5], v => this.tailInterval = v);
   }
 
   setBulletTails(v: number) {
@@ -99,7 +103,7 @@ export default class Field extends THREE.Group {
 
       let i = 0;
       this.forEachBullets(modelType, bullet => Field.tmpArray[i++] = bullet);
-      if (this.renderTail.value) i = tails.cast(Field.tmpArray, i, Math.floor(this.tailInterval.value), 4);
+      if (this.renderTail) i = tails.cast(Field.tmpArray, i, Math.floor(this.tailInterval), 4);
 
       pool.setInstances(Field.tmpArray, i);
     }

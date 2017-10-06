@@ -1,7 +1,7 @@
 export type Pattern = string[];
 
-export function selectPattern(num: number, depth: number): Pattern {
-  return select(flattenPatternChoices(1, [], patternChoices(num, depth)));
+export function selectPattern(yz: boolean, num: number, depth: number): Pattern {
+  return select(flattenPatternChoices(1, [], patternChoices(yz, num, depth)));
 }
 
 type PatternChoice = {
@@ -10,7 +10,7 @@ type PatternChoice = {
   subs?: PatternChoice[];
 };
 
-function patternChoices(num: number, depth: number): PatternChoice[] {
+function patternChoices(yzOnly: boolean, num: number, depth: number): PatternChoice[] {
   const c12: PatternChoice[] = [{ name: '1' }, { name: '2' }];
 
   const c123: PatternChoice[] = [{ name: '1' }, { name: '2' }, { name: '3' }];
@@ -85,9 +85,9 @@ function patternChoices(num: number, depth: number): PatternChoice[] {
   ];
 
   return [
-    { name: 'xy', subs: xy_xz },
-    { name: 'xz', subs: xy_xz },
-    { name: 'yz', rate: (num % 2 == 0 ? 1.5 : 0), subs: yz },
+    { name: 'xy', subs: xy_xz, rate: yzOnly ? 0 : 1 },
+    { name: 'xz', subs: xy_xz, rate: yzOnly ? 0 : 1 },
+    { name: 'yz', rate: (num % 2 == 0 || yzOnly ? 1.5 : 0), subs: yz },
     { name: 'yzs', rate: ((num % 2 == 0 && 4 <= num) ? 2 : 0), subs: yzs },
     { name: 'rapid', rate: (depth == 1 ? 1 : 0), subs: rapid },
   ];

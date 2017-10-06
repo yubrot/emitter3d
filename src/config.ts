@@ -29,6 +29,10 @@ export class ConfigUI {
   range(name: string, init: number, [min, max]: [number, number], handler?: (val: number) => void): Input<number> {
     return this.add<number>(name, init, [min, max], handler);
   }
+
+  folder(name: string): ConfigUI {
+    return new ConfigUI(this.gui.addFolder(name));
+  }
 }
 
 export class Input<T> {

@@ -15,7 +15,8 @@ export default class CameraController {
   private readonly current: { py: THREE.Vector2, distance: number };
   private readonly dragStartPos = new THREE.Vector2(0, 0);
   private isDragging = false;
-  private cameraScroll = config.toggle('camera scroll', true);
+
+  cameraScroll = false;
 
   get isStable(): boolean {
     return !this.isDragging;
@@ -119,7 +120,7 @@ export default class CameraController {
   }
 
   update(camera: THREE.Camera) {
-    if (!this.isDragging && this.cameraScroll.value) this.target.py.y += 0.1;
+    if (!this.isDragging && this.cameraScroll) this.target.py.y += 0.1;
 
     this.target.py.x = THREE.Math.clamp(this.target.py.x, -90, 90);
     this.current.py.multiplyScalar(0.75);

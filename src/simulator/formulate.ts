@@ -6,8 +6,8 @@ import * as rudder from './behavior/rudder.ts';
 import * as engine from './behavior/engine.ts';
 import * as trigger from './behavior/trigger.ts';
 
-export default function formulate(gen: number, power: number): Behavior {
-  return formulateTrigger({ gen, power, wait: 0, depth: 0 }).trigger;
+export default function formulate(yz: boolean, gen: number, power: number): Behavior {
+  return formulateTrigger({ gen, power, wait: 0, depth: 0, yz }).trigger;
 }
 
 interface State {
@@ -15,6 +15,7 @@ interface State {
   power: number;
   wait: number;
   depth: number;
+  yz?: boolean;
 }
 
 type Kind = 'normal' | 'slow' | 'final';
@@ -22,13 +23,13 @@ type Kind = 'normal' | 'slow' | 'final';
 function formulateTrigger(state: State): { trigger: Behavior, kind: Kind } {
   if (state.power < 2) return { trigger: trigger.none, kind: 'final' };
 
-  const { gen, power, wait, depth } = state;
+  const { gen, power, wait, depth, yz } = state;
 
   let num = Math.min(
     THREE.Math.randInt(2, 16) * Math.max(1, 3 - depth),
     Math.floor(power));
 
-  const pattern = selectPattern(num, depth);
+  const pattern = selectPattern(yz || false, num, depth);
 
   function formulateChild(gen: number, wait: number, d = 0): { trigger: Behavior, kind: Kind } {
     return formulateTrigger({ gen, power: power / num, wait, depth: depth + d });

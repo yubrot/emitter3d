@@ -11,24 +11,34 @@ export default class MotherBullet extends Bullet {
   generation = 0;
   trigger: Behavior;
 
-  // aim = config.toggle('aim', false);
-  strength = config.range('pattern strength', 500, [10, 2000]);
-  interval = config.range('pattern interval', 240, [60, 600]);
-  refresh = config.toggle('pattern update', true);
+  aim: boolean;
+  strength: number;
+  interval: number;
+  refresh: boolean;
+
+  constructor() {
+    super();
+
+    const c = config.folder('Pattern');
+    c.toggle('aim', true, v => this.aim = v);
+    c.range('pattern strength', 500, [10, 2000], v => this.strength = v);
+    c.range('pattern interval', 240, [60, 600], v => this.interval = v);
+    c.toggle('pattern update', true, v => this.refresh = v);
+  }
 
   update() {
-    // if (this.aim.value) {
-    //   if (this.nearestTarget)
-    //     this.turnTo(this.position.quaternionTo(this.nearestTarget, this.up), 0.03);
-    // } else {
+    if (this.aim) {
+      if (this.nearestTarget)
+        this.turnTo(this.position.quaternionTo(this.nearestTarget, this.up), 0.03);
+    } else {
       this.rotation.y += Math.PI * 0.003;
       this.direction.setFromEuler(this.rotation);
-    // }
+    }
 
-    if (this.frame % Math.floor(this.interval.value) == 0) {
+    if (this.frame % Math.floor(this.interval) == 0) {
       this.frame = 0;
       this.generation += 3;
-      if (this.refresh.value) this.trigger = formulate(this.generation, this.strength.value);
+      if (this.refresh) this.trigger = formulate(this.aim, this.generation, this.strength);
     }
     this.trigger();
   }
