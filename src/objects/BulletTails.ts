@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { BulletUnit } from './BulletPool.ts';
 
 export default class BulletTails {

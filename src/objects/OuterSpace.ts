@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export default class OuterSpace extends THREE.Points {
   constructor(readonly boundary: number, num: number) {
     super(OuterSpace.randomPointsGeometry(boundary, boundary * 2, num), OuterSpace.material);

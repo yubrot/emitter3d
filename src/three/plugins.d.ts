@@ -1,4 +1,6 @@
-declare namespace THREE {
+import * as THREE from 'three';
+
+declare module 'three' {
   class ManualMSAARenderPass {
     constructor(scene: THREE.Scene, camera: THREE.Camera);
     sampleLevel: number;

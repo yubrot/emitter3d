@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { CommonBullet, CommonBulletModelType, Behavior } from './Bullet.ts';
 import { selectPattern, range, select } from './pattern.ts';
 import * as rudder from './behavior/rudder.ts';

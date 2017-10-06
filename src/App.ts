@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import config from './config.ts';
 import Renderer from './Renderer.ts';
 import CameraController from './CameraController.ts';

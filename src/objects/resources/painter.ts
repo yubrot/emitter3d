@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export type Paint = (frame: number, generation: number, position: THREE.Vector3, dest: THREE.Color) => THREE.Color;
 
 export interface Painter {

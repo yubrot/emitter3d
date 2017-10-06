@@ -1,7 +1,4 @@
-///<reference path="../node_modules/@types/three/index.d.ts" />
-///<reference path="../node_modules/@types/stats/index.d.ts" />
-///<reference path="../node_modules/@types/dat-gui/index.d.ts" />
-
+import Stats = require('stats.js');
 import './three/extensions.ts';
 
 import App from './App.ts';

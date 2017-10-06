@@ -1,4 +1,6 @@
-declare module THREE {
+import * as THREE from 'three';
+
+declare module 'three/three-core' {
   interface Object3D {
     matrixTo(position: Vector3, dest?: Matrix4): Matrix4;
     quaternionTo(position: Vector3, dest?: Quaternion): Quaternion;

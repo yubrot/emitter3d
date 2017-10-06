@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import config from '../config.ts';
 import BulletPool, { BulletUnit } from './BulletPool.ts';
 import BulletTails from './BulletTails.ts';

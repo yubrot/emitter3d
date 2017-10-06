@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import config from '../config.ts';
 import { Bullet, Behavior } from './Bullet.ts';
 import formulate from './formulate.ts';

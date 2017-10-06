@@ -13,12 +13,12 @@
   "author": "yubrot",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@types/dat-gui": "^0.5.29",
+    "@types/dat-gui": "^0.6.3",
     "@types/stats": "^0.16.30",
-    "@types/three": "^0.83.4",
-    "browser-sync": "^2.18.8",
-    "ts-loader": "^2.0.1",
-    "typescript": "^2.2.1",
-    "webpack": "^2.2.1"
+    "@types/three": "^0.84.26",
+    "browser-sync": "^2.18.13",
+    "ts-loader": "^2.3.7",
+    "typescript": "^2.5.3",
+    "webpack": "^3.6.0"
   }
 }

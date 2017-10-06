@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { Painter, Paint } from './resources/painter.ts';
 import { Model, Rotator } from './resources/model.ts';
 import { vertexShader, fragmentShader } from './resources/shader.ts';

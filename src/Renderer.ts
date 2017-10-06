@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import config from './config.ts';
 
 export default class Renderer {

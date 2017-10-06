@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import config from './config.ts';
 
 function touchesArray(t: TouchList): Touch[] {

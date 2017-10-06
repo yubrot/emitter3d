@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { Behavior, Bullet, CommonBullet } from '../Bullet.ts';
 import * as rudder from './rudder.ts';
 

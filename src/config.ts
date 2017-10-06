@@ -1,3 +1,5 @@
+import * as dat from 'dat-gui';
+
 export class ConfigUI {
   constructor(
     private gui: dat.GUI = new dat.GUI(),

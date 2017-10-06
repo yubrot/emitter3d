@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export type Behavior = (this: Bullet) => void;
 
 export interface Field {

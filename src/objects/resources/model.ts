@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export type Rotator = (frame: number, direction: THREE.Quaternion, dest: THREE.Quaternion) => THREE.Quaternion;
 
 export interface Model {
