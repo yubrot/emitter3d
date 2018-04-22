@@ -20,7 +20,7 @@ export abstract class Bullet {
   direction = new THREE.Quaternion();
   up = new THREE.Vector3(0, 1, 0);
 
-  field: Field;
+  field!: Field;
 
   static nextId = 0;
 
@@ -73,7 +73,7 @@ export type CommonBulletModelType = 'missile' | 'arrow' | 'claw';
 export class CommonBullet extends Bullet {
   type = 'common';
 
-  generation: number;
+  generation!: number;
   engine?: Behavior;
   rudder?: Behavior;
   trigger?: Behavior;

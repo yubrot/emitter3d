@@ -30,9 +30,9 @@ export default class CameraController {
     this.container.addEventListener('mouseup', e => this.onMouseUp(e), false);
     this.container.addEventListener('mouseout', e => this.onMouseOut(e), false);
     this.container.addEventListener('wheel', e => this.onWheel(e), false);
-    this.container.addEventListener('touchstart', e => this.onTouchStart(e), false);
-    this.container.addEventListener('touchmove', e => this.onTouchMove(e), false);
-    document.addEventListener('touchend', e => this.onTouchEnd(e), false);
+    this.container.addEventListener('touchstart', e => this.onTouchStart(e as TouchEvent), false);
+    this.container.addEventListener('touchmove', e => this.onTouchMove(e as TouchEvent), false);
+    document.addEventListener('touchend', e => this.onTouchEnd(e as TouchEvent), false);
   }
 
   private handleDragStart(x: number, y: number) {

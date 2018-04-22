@@ -9,12 +9,12 @@ export default class MotherBullet extends Bullet {
 
   rotation = new THREE.Euler(0, 0, -Math.PI * 0.2, 'ZXY');
   generation = 0;
-  trigger: Behavior;
+  trigger!: Behavior;
 
-  aim: boolean;
-  strength: number;
-  interval: number;
-  refresh: boolean;
+  aim!: boolean;
+  strength!: number;
+  interval!: number;
+  refresh!: boolean;
 
   constructor() {
     super();

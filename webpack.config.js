@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'production',
   entry: __dirname + '/src/index.ts',
   output: {
     path: __dirname + '/gh-pages/js',
@@ -13,7 +14,7 @@ module.exports = {
   },
   externals: {
     'three': 'THREE',
-    'dat-gui': 'dat',
+    'dat.gui': 'dat',
     'stats.js': 'Stats',
   },
 };

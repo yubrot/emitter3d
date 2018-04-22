@@ -15,7 +15,7 @@ export default class App {
 
   private outerSpace: OuterSpace;
   private field: Field;
-  private pause: boolean;
+  private pause!: boolean;
 
   get width(): number { return this.container.clientWidth; }
   get height(): number { return this.container.clientHeight; }

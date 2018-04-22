@@ -1,10 +1,10 @@
 {
   "name": "emitter3d",
   "version": "1.0.0",
-  "description": "",
+  "description": "generative fireworks 3D",
   "scripts": {
-    "build": "webpack --optimize-minimize",
-    "watch": "webpack --watch --debug --devtool inline-source-map & browser-sync start --config bs-config.js"
+    "build": "webpack -p",
+    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./gh-pages"
   },
   "repository": {
     "type": "git",
@@ -13,12 +13,13 @@
   "author": "yubrot",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@types/dat-gui": "^0.6.3",
+    "@types/dat.gui": "^0.6.0",
     "@types/stats": "^0.16.30",
-    "@types/three": "^0.84.26",
-    "browser-sync": "^2.18.13",
-    "ts-loader": "^2.3.7",
-    "typescript": "^2.5.3",
-    "webpack": "^3.6.0"
+    "@types/three": "^0.91.8",
+    "ts-loader": "^4.2.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.14",
+    "webpack-dev-server": "^3.1.3"
   }
 }

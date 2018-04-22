@@ -16,8 +16,8 @@ export default class Field extends THREE.Group {
   private bullets: Bullet[] = [];
   private diedBullets: any = {};
 
-  private renderTail: boolean;
-  private tailInterval: number;
+  private renderTail!: boolean;
+  private tailInterval!: number;
 
   constructor(readonly target: THREE.Vector3, readonly boundary: number) {
     super();
