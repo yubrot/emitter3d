@@ -26,10 +26,14 @@ export default class MotherBullet extends Bullet {
     c.toggle('pattern update', true, v => this.refresh = v);
   }
 
+  private static rotationToTarget = new THREE.Quaternion();
+
   update() {
     if (this.aim) {
-      if (this.nearestTarget)
-        this.turnTo(this.position.quaternionTo(this.nearestTarget, this.up), 0.03);
+      if (this.nearestTarget) {
+        MotherBullet.rotationToTarget.setToLookAt(this.position, this.nearestTarget, this.up);
+        this.rotateTowards(MotherBullet.rotationToTarget, 0.03);
+      }
     } else {
       this.rotation.y += Math.PI * 0.003;
       this.direction.setFromEuler(this.rotation);

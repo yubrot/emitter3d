@@ -93,7 +93,7 @@ function adjust(bullet: Bullet, base: string) {
       break;
     case 'target':
       if (bullet.nearestTarget)
-        bullet.direction.copy(bullet.position.quaternionTo(bullet.nearestTarget, bullet.up));
+        bullet.direction.setToLookAt(bullet.position, bullet.nearestTarget, bullet.up);
       break;
   }
 }

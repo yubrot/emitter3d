@@ -24,14 +24,12 @@ export abstract class Bullet {
 
   static nextId = 0;
 
-  constructor() {
-    // this.direction.onChange(() => this.up.copy(this.direction.vectorY()));
-  }
-
   abstract update(): void;
 
+  private static vectorZ = new THREE.Vector3();
+
   forward(v = this.speed) {
-    this.position.addScaledVector(this.direction.vectorZ(), v);
+    this.position.add(Bullet.vectorZ.set(0, 0, v).applyQuaternion(this.direction));
   }
 
   pitch(angle: number) {
@@ -46,8 +44,8 @@ export abstract class Bullet {
     this.direction.rotateZ(angle);
   }
 
-  turnTo(b: THREE.Quaternion, angle: number) {
-    this.direction.rotateTo(b, angle);
+  rotateTowards(b: THREE.Quaternion, angle: number) {
+    this.direction.rotateTowards(b, angle);
   }
 
   emit<T extends Bullet>(e: T): T {

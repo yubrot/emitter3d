@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { Behavior } from '../Bullet.ts';
 
 export const none: Behavior = () => {};
@@ -19,10 +21,11 @@ export function pitch(strength: number, start: number = 0, dampFactor: number = 
 }
 
 export function home(strength: number, start: number = 0, dampFactor: number = 0.97): Behavior {
+  const rotationToTarget = new THREE.Quaternion();
   return function() {
-    if (start <= this.frame && this.nearestTarget)
-      this.turnTo(
-        this.position.quaternionTo(this.nearestTarget, this.up),
-        strength * (dampFactor ** (this.frame - start)));
+    if (start <= this.frame && this.nearestTarget) {
+      rotationToTarget.setToLookAt(this.position, this.nearestTarget, this.up);
+      this.rotateTowards(rotationToTarget, strength * (dampFactor ** (this.frame - start)));
+    }
   };
 }
