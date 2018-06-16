@@ -1,0 +1,25 @@
+{
+  "name": "emitter3d",
+  "version": "1.0.0",
+  "description": "generative fireworks 3D",
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./gh-pages"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yubrot/emitter3d.git"
+  },
+  "author": "yubrot",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.0",
+    "@types/stats": "^0.16.30",
+    "@types/three": "^0.92.5",
+    "ts-loader": "^4.4.1",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.7",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
