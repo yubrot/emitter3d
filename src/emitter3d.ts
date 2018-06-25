@@ -53,11 +53,11 @@ type PresetType = 'wisp' | 'crystal';
 const presetTypes: PresetType[] = ['wisp', 'crystal'];
 
 type Preset = {
-  focus: boolean;
   bloomRadius: number;
   particleType: viewer.ParticleType;
   showSurface: boolean;
   showSpace: boolean;
+  trailLength: number;
   trailStep: number;
   trailAttenuation: number;
   trailFluctuation: number;
@@ -65,21 +65,21 @@ type Preset = {
 
 const presets: { [P in PresetType]: Preset } = {
   wisp: {
-    focus: true,
     bloomRadius: 1,
     particleType: 'points',
     showSurface: true,
     showSpace: false,
+    trailLength: 32,
     trailStep: 1,
     trailAttenuation: 0.88,
     trailFluctuation: 0.96,
   },
   crystal: {
-    focus: false,
     bloomRadius: 0.2,
     particleType: 'objects',
     showSurface: false,
     showSpace: true,
+    trailLength: 40,
     trailStep: 2,
     trailAttenuation: 0.75,
     trailFluctuation: 1,
@@ -125,7 +125,7 @@ class Emitter3d {
     const core = this.config.folder('Core').open();
 
     const antialiasMode = r.options('antialias', 'OFF', viewer.antialiasModes).bind(this.view.renderer, 'antialiasMode');
-    const focus = r.toggle('focus', initialPreset.focus).bind(this.view.renderer, 'focus');
+    const focus = r.toggle('focus', true).bind(this.view.renderer, 'focus');
     const bloom = r.toggle('bloom', true).bind(this.view.renderer, 'bloom');
     const bloomStrength = r.range('bloom strength', 0.7, [0, 3]).step(0.1).bind(this.view.renderer, 'bloomStrength');
     const bloomThreshold = r.range('bloom threshold', 0.5, [0, 1]).step(0.1).bind(this.view.renderer, 'bloomThreshold');
@@ -134,7 +134,7 @@ class Emitter3d {
     const particleType = v.options('particle type', initialPreset.particleType, viewer.particleTypes).bind(this.view, 'particleType');
     const particleHue = v.range('particle hue', 0.9, [0, 1]).step(0.01).bind(this.view, 'hue');
     const particleLightness = v.range('particle lightness', 0.7, [0, 1]).step(0.01).bind(this.view, 'lightness');
-    const trailLength = v.range('trail length', 32, [1, 60]).step(1).bind(this.view, 'trailLength');
+    const trailLength = v.range('trail length', initialPreset.trailLength, [1, 60]).step(1).bind(this.view, 'trailLength');
     const trailStep = v.range('trail step', initialPreset.trailStep, [1, 4]).step(1).bind(this.view, 'trailStep');
     const trailOpacity = v.range('trail opacity', 1, [0, 1]).step(0.01).bind(this.view, 'trailOpacity');
     const trailAttenuation = v.range('trail attenuation', initialPreset.trailAttenuation, [0, 1]).step(0.01).bind(this.view, 'trailAttenuation');
@@ -162,14 +162,14 @@ class Emitter3d {
 
     core.options<PresetType>('preset', initialPresetType, presetTypes).handle(name => {
       const preset = presets[name];
-      focus.value = preset.focus;
       bloomRadius.value = preset.bloomRadius;
       particleType.value = preset.particleType;
-      showSurface.value = preset.showSurface;
-      showSpace.value = preset.showSpace;
+      trailLength.value = preset.trailLength;
       trailStep.value = preset.trailStep;
       trailAttenuation.value = preset.trailAttenuation;
       trailFluctuation.value = preset.trailFluctuation;
+      showSurface.value = preset.showSurface;
+      showSpace.value = preset.showSpace;
     });
   }
 
