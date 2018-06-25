@@ -4,7 +4,7 @@
     "module": "commonjs",
     "skipLibCheck": true,
     "strict": true,
-    "target": "es6"
+    "target": "es2015"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

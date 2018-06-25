@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { circleTexture } from './circle-texture';
+import { circleTexture } from '../aux/circle-texture';
 
 export class Surface extends THREE.Points {
   constructor(size: number, x: number, y: number) {

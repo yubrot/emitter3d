@@ -2,15 +2,25 @@ import * as THREE from 'three';
 import './three/extensions';
 import Stats = require('stats.js');
 
-import { Config } from './control/config';
+import { Config, Input } from './control/config';
 import { Satellite } from './control/satellite';
 import * as viewer from './viewer';
 import * as simulator from './simulator';
 
 type Metadata = {
-  model: viewer.Model;
+  objectModel: 'meta' | 'missile' | 'arrow' | 'claw';
   colorIndex: number;
 };
+
+function copyParticle(source: simulator.Particle<Metadata>, dest: viewer.Particle): void {
+  dest.frame = source.frame;
+  dest.objectModel = source.metadata.objectModel;
+  dest.position.copy(source.position);
+  dest.rotation.copy(source.rotation);
+  dest.fluctuation.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(5);
+  dest.colorIndex = source.metadata.colorIndex;
+  dest.opacity = source.opacity;
+}
 
 class Composer extends simulator.Composer<Metadata> {
   patternFeatures(p: simulator.Pattern<Metadata>): simulator.Feature<Metadata>[] {
@@ -26,7 +36,7 @@ class Generator extends simulator.Generator<Metadata> {
   }
 
   metadata(pattern: simulator.Pattern, spec: simulator.Spec): Metadata {
-    const model: viewer.Model =
+    const objectModel: Metadata['objectModel'] =
       (spec.generation.length == 0) ? 'meta' :
       (pattern.acceleration && pattern.rotation) ? 'missile' :
       (pattern.acceleration) ? Math.random() < 0.7 ? 'arrow' : 'missile' :
@@ -34,18 +44,47 @@ class Generator extends simulator.Generator<Metadata> {
       (Math.random() < 0.7) ? 'arrow' : 'missile';
 
     const colorIndex = this.baseIndex + spec.generation.reduce((a, b) => a + 2 + b, 0);
-    return { model, colorIndex };
+    return { objectModel, colorIndex };
   }
 }
 
-function mapParticle(source: simulator.Particle<Metadata>, dest: viewer.Particle): void {
-  dest.frame = source.frame;
-  dest.model = source.metadata.model;
-  dest.position.copy(source.position);
-  dest.fluctuation = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(5);
-  dest.colorIndex = source.metadata.colorIndex;
-  dest.opacity = source.opacity;
-}
+type PresetType = 'wisp' | 'crystal';
+
+const presetTypes: PresetType[] = ['wisp', 'crystal'];
+
+type Preset = {
+  focus: boolean;
+  bloomRadius: number;
+  particleType: viewer.ParticleType;
+  showSurface: boolean;
+  showSpace: boolean;
+  trailStep: number;
+  trailAttenuation: number;
+  trailFluctuation: number;
+};
+
+const presets: { [P in PresetType]: Preset } = {
+  wisp: {
+    focus: true,
+    bloomRadius: 1,
+    particleType: 'points',
+    showSurface: true,
+    showSpace: false,
+    trailStep: 1,
+    trailAttenuation: 0.88,
+    trailFluctuation: 0.96,
+  },
+  crystal: {
+    focus: false,
+    bloomRadius: 0.2,
+    particleType: 'objects',
+    showSurface: false,
+    showSpace: true,
+    trailStep: 2,
+    trailAttenuation: 0.75,
+    trailFluctuation: 1,
+  },
+};
 
 class Emitter3d {
   readonly stats: Stats;
@@ -55,11 +94,11 @@ class Emitter3d {
   readonly field: simulator.Field<Metadata>;
   readonly root: simulator.Particle<Metadata>;
 
-  private emissionRefresh!: boolean;
-  private emissionStrength!: number;
-  private emissionInterval!: number;
-  private isPaused!: boolean;
-  private currentPattern?: simulator.Pattern<Metadata>;
+  emissionRefresh!: boolean;
+  emissionStrength!: number;
+  emissionInterval!: number;
+  isPaused!: boolean;
+  currentPattern?: simulator.Pattern<Metadata>;
 
   constructor(container: HTMLElement) {
     this.stats = new Stats();
@@ -70,38 +109,67 @@ class Emitter3d {
     this.satellite = new Satellite(container, 200);
     this.view = new viewer.View(container);
     this.field = new simulator.Field();
-    this.root = new simulator.Particle<Metadata>(this.field, simulator.feature.none, { model: 'meta', colorIndex: 0 });
+    this.root = new simulator.Particle<Metadata>(this.field, simulator.feature.none, { objectModel: 'meta', colorIndex: 0 });
     this.root.rotation.setToLookAt(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 1, 0));
 
     this.initializeConfig();
   }
 
   initializeConfig(): void {
+    const initialPresetType = presetTypes[Math.floor(Math.random() * presetTypes.length)];
+    const initialPreset = presets[initialPresetType];
+
+    const r = this.config.folder('Renderer');
     const v = this.config.folder('Viewer');
-    v.options<viewer.Antialias>('antialias', 'OFF', ['OFF', 'SMAA', 'MSAA x2', 'MSAA x4'], antialias => this.view.renderer.antialias = antialias);
-    v.toggle('focus', true, enabled => this.view.renderer.focus = enabled);
-    v.toggle('bloom', true, enabled => this.view.renderer.bloom = enabled);
-    v.range('bloom strength', 0.7, [0, 5], v => this.view.renderer.bloomStrength = v);
-    v.range('bloom radius', 1, [0, 1], v => this.view.renderer.bloomRadius = v);
-    v.range('bloom threshold', 0.5, [0, 1], v => this.view.renderer.bloomThreshold = v);
-    v.range('trail length', 32, [1, 60], v => { this.view.trailLength = v; this.view.needsUpdate = true; });
-    v.range('trail step', 1, [1, 4], v => { this.view.trailStep = v; this.view.needsUpdate = true; });
-    v.range('trail attenuation', 0.88, [0, 1], v => { this.view.trailAttenuation = v; this.view.needsUpdate = true; });
-    v.range('trail fluctuation', 0.96, [0.8, 1], v => { this.view.trailFluctuation = v; this.view.needsUpdate = true; });
+    const sim = this.config.folder('Simulator');
+    const core = this.config.folder('Core').open();
 
-    const s = this.config.folder('Simulator');
-    s.toggle('emission refresh', true, v => this.emissionRefresh = v);
-    s.range('emission strength', 400, [10, 1000], v => this.emissionStrength = v);
-    s.range('emission interval', 240, [60, 600], v => this.emissionInterval = v);
+    const antialiasMode = r.options('antialias', 'OFF', viewer.antialiasModes).bind(this.view.renderer, 'antialiasMode');
+    const focus = r.toggle('focus', initialPreset.focus).bind(this.view.renderer, 'focus');
+    const bloom = r.toggle('bloom', true).bind(this.view.renderer, 'bloom');
+    const bloomStrength = r.range('bloom strength', 0.7, [0, 3]).step(0.1).bind(this.view.renderer, 'bloomStrength');
+    const bloomThreshold = r.range('bloom threshold', 0.5, [0, 1]).step(0.1).bind(this.view.renderer, 'bloomThreshold');
+    const bloomRadius = r.range('bloom radius', initialPreset.bloomRadius, [0, 1]).step(0.1).bind(this.view.renderer, 'bloomRadius');
 
-    const core = this.config;
-    const pause = core.toggle('pause', false, paused => this.isPaused = paused);
-    core.toggle('show stats', true, show => this.stats.dom.style.visibility = show ? 'visible' : 'hidden');
-    core.toggle('camera revolve', true, revolve => this.satellite.autoRevolve = revolve);
+    const particleType = v.options('particle type', initialPreset.particleType, viewer.particleTypes).bind(this.view, 'particleType');
+    const particleHue = v.range('particle hue', 0.9, [0, 1]).step(0.01).bind(this.view, 'hue');
+    const particleLightness = v.range('particle lightness', 0.7, [0, 1]).step(0.01).bind(this.view, 'lightness');
+    const trailLength = v.range('trail length', 32, [1, 60]).step(1).bind(this.view, 'trailLength');
+    const trailStep = v.range('trail step', initialPreset.trailStep, [1, 4]).step(1).bind(this.view, 'trailStep');
+    const trailOpacity = v.range('trail opacity', 1, [0, 1]).step(0.01).bind(this.view, 'trailOpacity');
+    const trailAttenuation = v.range('trail attenuation', initialPreset.trailAttenuation, [0, 1]).step(0.01).bind(this.view, 'trailAttenuation');
+    const trailFluctuation = v.range('trail fluctuation', initialPreset.trailFluctuation, [0.8, 1]).step(0.01).bind(this.view, 'trailFluctuation');
+    const showSurface = v.toggle('show surface', initialPreset.showSurface).bind(this.view.surface, 'visible');
+    const showSpace = v.toggle('show space', initialPreset.showSpace).bind(this.view.space, 'visible');
+
+    for (const controller of [particleType, particleHue, particleLightness, trailLength, trailStep, trailOpacity, trailAttenuation, trailFluctuation] as Input<any>[]) {
+      controller.handle(() => this.view.needsUpdate = true);
+    }
+
+    const pause = core.toggle('pause', false).bind(this, 'isPaused');
+    const showStats = core.toggle('show stats', true).handle(show => this.stats.dom.style.visibility = show ? 'visible' : 'hidden');
+    const cameraRevolve = core.toggle('camera revolve', true).bind(this.satellite, 'autoRevolve');
 
     window.addEventListener('contextmenu', ev => {
       pause.value = !pause.value;
+      cameraRevolve.value = !cameraRevolve.value;
       ev.preventDefault();
+    });
+
+    const emissionRefresh = sim.toggle('emission refresh', true).bind(this, 'emissionRefresh');
+    const emissionStrength = sim.range('emission strength', 400, [10, 1000]).step(1).bind(this, 'emissionStrength');
+    const emissionInterval = sim.range('emission interval', 240, [60, 600]).step(1).bind(this, 'emissionInterval');
+
+    core.options<PresetType>('preset', initialPresetType, presetTypes).handle(name => {
+      const preset = presets[name];
+      focus.value = preset.focus;
+      bloomRadius.value = preset.bloomRadius;
+      particleType.value = preset.particleType;
+      showSurface.value = preset.showSurface;
+      showSpace.value = preset.showSpace;
+      trailStep.value = preset.trailStep;
+      trailAttenuation.value = preset.trailAttenuation;
+      trailFluctuation.value = preset.trailFluctuation;
     });
   }
 
@@ -112,7 +180,7 @@ class Emitter3d {
     if (!this.satellite.isDragging && !this.isPaused) {
       if (this.root.frame % this.emissionInterval == 10) this.emit();
       this.field.update();
-      this.view.history.putSnapshot(this.field, (src, dest) => mapParticle(src, dest, ));
+      this.view.history.putSnapshot(this.field, copyParticle);
       this.view.needsUpdate = true;
     }
 

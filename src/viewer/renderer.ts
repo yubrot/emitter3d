@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 
-export type Antialias = 'OFF' | 'SMAA' | 'MSAA x2' | 'MSAA x4';
+export type AntialiasMode = 'OFF' | 'SMAA' | 'MSAA x2' | 'MSAA x4';
+
+export const antialiasModes: AntialiasMode[] = ['OFF', 'SMAA', 'MSAA x2', 'MSAA x4'];
 
 export class Renderer {
   private webGL: THREE.WebGLRenderer;
@@ -36,7 +38,7 @@ export class Renderer {
     this.composer.addPass(this.passes.copy);
     this.composer.addPass(this.passes.SMAA);
 
-    this.antialias = 'OFF';
+    this.antialiasMode = 'OFF';
     this.bloom = false;
   }
 
@@ -44,10 +46,10 @@ export class Renderer {
     return this.webGL.domElement;
   }
 
-  set antialias(type: Antialias) {
-    this.passes.renderMSAA.enabled = type.slice(0, 4) == 'MSAA';
-    this.passes.renderMSAA.sampleLevel = (type == 'MSAA x2') ? 1 : (type == 'MSAA x4') ? 2 : 0;
-    this.passes.SMAA.enabled = type == 'SMAA';
+  set antialiasMode(mode: AntialiasMode) {
+    this.passes.renderMSAA.enabled = mode.slice(0, 4) == 'MSAA';
+    this.passes.renderMSAA.sampleLevel = (mode == 'MSAA x2') ? 1 : (mode == 'MSAA x4') ? 2 : 0;
+    this.passes.SMAA.enabled = mode == 'SMAA';
     this.passes.render.enabled = !this.passes.renderMSAA.enabled;
     this.passes.copy.enabled = !this.passes.SMAA.enabled;
   }

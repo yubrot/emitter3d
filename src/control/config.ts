@@ -1,48 +1,75 @@
 import * as dat from 'dat.gui';
 
 export class Config {
-  constructor(
-    private gui: dat.GUI = new dat.GUI(),
-    private params: any = {},
-  ) {
+  constructor(private gui: dat.GUI = new dat.GUI(), private params: any = {}) {
     this.gui.close();
   }
 
-  private add<T>(name: string, init: any, args: any[], handler?: (val: any) => void): Input<T> {
-    this.params[name] = init;
-    const controller = (<any> this.gui.add)(this.params, name, ...args);
-    if (handler) {
-      controller.onChange(handler);
-      handler(init);
-    }
-    return new Input<T>(controller);
+  open(): this {
+    this.gui.open();
+    return this;
   }
 
-  toggle(name: string, init: boolean, handler?: (val: boolean) => void): Input<boolean> {
-    return this.add<boolean>(name, init, [], handler);
-  }
-
-  options<T>(name: string, init: T, items: T[], handler?: (val: T) => void): Input<T> {
-    return this.add<T>(name, init, [items], handler);
-  }
-
-  range(name: string, init: number, [min, max]: [number, number], handler?: (val: number) => void): Input<number> {
-    return this.add<number>(name, init, [min, max], handler);
+  close(): this {
+    this.gui.close();
+    return this;
   }
 
   folder(name: string): Config {
     return new Config(this.gui.addFolder(name));
   }
+
+  toggle(name: string, init: boolean): Input<boolean> {
+    return this.add<boolean>(name, init, []);
+  }
+
+  options<A>(name: string, init: A, items: A[]): Input<A> {
+    return this.add<A>(name, init, [items]);
+  }
+
+  range(name: string, init: number, [min, max]: [number, number]): Input<number> {
+    return this.add<number>(name, init, [min, max]);
+  }
+
+  private add<A>(name: string, init: any, args: any[]): Input<A> {
+    this.params[name] = init;
+    const controller = (this.gui.add as any)(this.params, name, ...args);
+    return new Input<A>(controller);
+  }
 }
 
-export class Input<T> {
-  constructor(private controller: dat.GUIController) {}
+export class Input<A> {
+  private handlers = new Set<(value: A) => void>();
 
-  get value(): T {
+  constructor(private controller: dat.GUIController) {
+    this.controller.onChange(this.onChange.bind(this));
+  }
+
+  private onChange(value: A): void {
+    for (const handler of this.handlers) handler(value);
+  }
+
+  get value(): A {
     return this.controller.getValue();
   }
 
-  set value(v: T) {
-    this.controller.setValue(v);
+  set value(value: A) {
+    this.controller.setValue(value);
+  }
+
+  handle(f: (value: A) => void): this {
+    this.handlers.add(f);
+    f(this.value);
+    return this;
+  }
+
+  bind<K extends string>(target: { [P in K]: A }, key: K): this {
+    this.handle(value => target[key] = value);
+    return this;
+  }
+
+  step(value: number): this {
+    this.controller.step(value);
+    return this;
   }
 }

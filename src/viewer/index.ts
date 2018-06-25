@@ -1,3 +1,2 @@
-export { View, Particle } from './view';
-export { Antialias } from './renderer';
-export { Model } from './objects/model';
+export { Renderer, AntialiasMode, antialiasModes } from './renderer';
+export { Particle, ParticleType, particleTypes, View } from './view';
