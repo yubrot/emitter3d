@@ -2,11 +2,18 @@
   "name": "emitter3d",
   "version": "1.0.0",
   "description": "generative fireworks 3D",
-  "dependencies": {},
+  "dependencies": {
+    "gl-matrix": "^2.8.1",
+    "preact": "^8.3.1"
+  },
   "devDependencies": {
     "@types/dat.gui": "^0.7.1",
+    "@types/gl-matrix": "^2.4.4",
+    "@types/jest": "^23.3.9",
     "@types/stats": "^0.16.30",
     "@types/three": "^0.92.18",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
     "ts-loader": "^5.3.0",
     "typescript": "^3.1.6",
     "webpack": "^4.17.1",
@@ -15,7 +22,12 @@
   },
   "scripts": {
     "build": "webpack -p",
+    "test": "jest --watch",
     "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./gh-pages"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom"
   },
   "repository": {
     "type": "git",
