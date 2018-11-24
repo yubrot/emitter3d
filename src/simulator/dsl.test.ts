@@ -1,6 +1,7 @@
 import * as p from './aux/parser-combinator';
 import * as dsl from './dsl';
 import * as dslParser from './dsl-parser';
+import * as dslPrinter from './dsl-printer';
 
 const success = 'success';
 const failure = 'failure';
@@ -12,6 +13,19 @@ function parse<T>(rule: dslParser.Parser<T>, text: string): any {
   } catch (e) {
     if (!(e instanceof dslParser.ParseError)) throw e;
     return [failure, `${e.input.line}:${e.input.col}`];
+  }
+}
+
+function testPrintAndParse(text: string): void {
+  const e = dslParser.parseExact(dslParser.expr, text);
+  for (const allowIndention of [true, false]) {
+    for (const useSyntaxSugar of [true, false]) {
+      const printer = new dslPrinter.Printer();
+      printer.allowIndention = allowIndention;
+      printer.useSyntaxSugar = useSyntaxSugar;
+      const text = printer.print(e);
+      expect(parse(dslParser.expr, text)).toEqual([success, e]);
+    }
   }
 }
 
@@ -81,5 +95,100 @@ describe('parser', () => {
     expect(parse(dslParser.block, '{ foo bar }')).toEqual([success, ast([dsl.Symbol.block, [['foo', 'bar']]])]);
     expect(parse(dslParser.block, '{ (foo) }')).toEqual([success, ast([dsl.Symbol.block, [['foo']]])]);
     expect(parse(dslParser.block, '{ (foo bar) }')).toEqual([success, ast([dsl.Symbol.block, [['foo', 'bar']]])]);
+  });
+});
+
+describe('printer', () => {
+  test('num', () => {
+    testPrintAndParse('123');
+    testPrintAndParse('123.4e+3');
+  });
+
+  test('sym', () => {
+    testPrintAndParse('foo');
+    testPrintAndParse('roll+');
+    testPrintAndParse('f0');
+  });
+
+  test('list', () => {
+    testPrintAndParse('()');
+    testPrintAndParse('(123)');
+    testPrintAndParse('(foo)');
+    testPrintAndParse('(foo 123)');
+    testPrintAndParse('(())');
+    testPrintAndParse('((123 foo))');
+    testPrintAndParse('((123 bar) 7 (8 9))');
+  });
+
+  test('each', () => {
+    testPrintAndParse('[]');
+    testPrintAndParse('[123]');
+    testPrintAndParse('[1 2]');
+    testPrintAndParse('[foo bar baz]');
+    testPrintAndParse('[[foo bar] baz [hoge fuga]]');
+    testPrintAndParse('[12..34]');
+    testPrintAndParse('[12.3..45.6]');
+    testPrintAndParse('[[1 2]..[3 4]]');
+  });
+
+  test('random', () => {
+    testPrintAndParse('<>');
+    testPrintAndParse('<123>');
+    testPrintAndParse('<1 2>');
+    testPrintAndParse('<foo bar baz>');
+    testPrintAndParse('<<foo bar> baz <hoge fuga>>');
+    testPrintAndParse('<12..34>');
+    testPrintAndParse('<12.3..45.6>');
+    testPrintAndParse('<<1 2>..<3 4>>');
+  });
+
+  test('block', () => {
+    testPrintAndParse('{}');
+    testPrintAndParse('{|}');
+    testPrintAndParse('{ foo }');
+    testPrintAndParse('{ foo bar }');
+    testPrintAndParse('{ foo bar; baz }');
+    testPrintAndParse('{ foo | }');
+    testPrintAndParse('{ | foo }');
+    testPrintAndParse('{ foo | bar }');
+    testPrintAndParse('{ foo; bar | hoge; fuga }');
+    testPrintAndParse('{ (foo) }');
+    testPrintAndParse('{ (foo bar) }');
+    testPrintAndParse('{ ((foo bar) baz) qux }');
+  });
+
+  test('mixed', () => {
+    testPrintAndParse(`
+      (a
+        (b (c d))
+        (e
+          (f g)
+          (h i)
+        )
+        (
+          (j k l)
+          (m (n o
+          p) q r)
+        )
+        s
+      )
+    `);
+    testPrintAndParse(`
+      // comment
+      {
+        speed 5.5; model missile
+        hue 100
+        {
+          /* comment */
+          10 [ease-in ease-out] pitch+ 10
+        |
+          [3..10] ease-in rotate <> 10 []
+        }
+        repeat <3..5> {
+          10 hue+ <5 30>
+          10 hue+ -30
+        }
+      }
+    `);
   });
 });
