@@ -132,7 +132,7 @@ class Emitter3d {
     const bloomRadius = r.range('bloom radius', initialPreset.bloomRadius, [0, 1]).step(0.1).bind(this.view.renderer, 'bloomRadius');
 
     const particleType = v.options('particle type', initialPreset.particleType, viewer.particleTypes).bind(this.view, 'particleType');
-    const particleHue = v.range('particle hue', 0.9, [0, 1]).step(0.01).bind(this.view, 'hue');
+    const particleSaturation = v.range('particle saturation', 0.9, [0, 1]).step(0.01).bind(this.view, 'saturation');
     const particleLightness = v.range('particle lightness', 0.7, [0, 1]).step(0.01).bind(this.view, 'lightness');
     const trailLength = v.range('trail length', initialPreset.trailLength, [1, 60]).step(1).bind(this.view, 'trailLength');
     const trailStep = v.range('trail step', initialPreset.trailStep, [1, 4]).step(1).bind(this.view, 'trailStep');
@@ -142,7 +142,7 @@ class Emitter3d {
     const showSurface = v.toggle('show surface', initialPreset.showSurface).bind(this.view.surface, 'visible');
     const showSpace = v.toggle('show space', initialPreset.showSpace).bind(this.view.space, 'visible');
 
-    for (const controller of [particleType, particleHue, particleLightness, trailLength, trailStep, trailOpacity, trailAttenuation, trailFluctuation] as Input<any>[]) {
+    for (const controller of [particleType, particleSaturation, particleLightness, trailLength, trailStep, trailOpacity, trailAttenuation, trailFluctuation] as Input<any>[]) {
       controller.handle(() => this.view.needsUpdate = true);
     }
 

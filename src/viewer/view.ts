@@ -50,7 +50,7 @@ export class View {
   trailOpacity = 1;
   trailAttenuation = 1;
   trailFluctuation = 1;
-  hue = 0.9;
+  saturation = 0.9;
   lightness = 0.7;
 
   get width(): number {
@@ -135,7 +135,7 @@ export class View {
         position.copy(particle.position).addScaledVector(particle.fluctuation, 1 - fluctuation);
         color.setHSL(
           (1 + h/360 + position.y * 0.001) % 1,
-          this.hue,
+          this.saturation,
           this.lightness * l * Math.min(1, 0.1 + particle.frame*0.03) * particle.opacity * opacity);
         handler(particle, position, color);
       }
