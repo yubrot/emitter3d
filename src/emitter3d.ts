@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-import './three/extensions';
 import Stats = require('stats.js');
 
 import { Config, Input } from './control/config';
@@ -7,98 +5,32 @@ import { Satellite } from './control/satellite';
 import * as viewer from './viewer';
 import * as simulator from './simulator';
 
-type Metadata = {
-  objectModel: 'meta' | 'missile' | 'arrow' | 'claw';
-  colorIndex: number;
-};
-
-function copyParticle(source: simulator.Particle<Metadata>, dest: viewer.Particle): void {
-  dest.frame = source.frame;
-  dest.objectModel = source.metadata.objectModel;
-  dest.position.copy(source.position);
-  dest.rotation.copy(source.rotation);
+function copyParticle(source: simulator.Particle, dest: viewer.Particle): void {
+  dest.lifeTime = source.lifeTime;
+  dest.position.set(source.position[0], source.position[1], source.position[2]);
+  dest.rotation.set(source.rotation[0], source.rotation[1], source.rotation[2], source.rotation[3]);
   dest.fluctuation.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(5);
-  dest.colorIndex = source.metadata.colorIndex;
   dest.opacity = source.opacity;
+  dest.hue = source.hue;
+  dest.objectModel = source.model || 'meta';
 }
 
-class Composer extends simulator.Composer<Metadata> {
-  patternFeatures(p: simulator.Pattern<Metadata>): simulator.Feature<Metadata>[] {
-    const features = super.patternFeatures(p);
-    if (!p.emission) features.push(simulator.feature.vanisher(180, 60));
-    return features;
-  }
-}
+type PresetName = 'wisp' | 'crystal';
 
-class Generator extends simulator.Generator<Metadata> {
-  constructor(private baseIndex: number) {
-    super();
-  }
-
-  metadata(pattern: simulator.Pattern, spec: simulator.Spec): Metadata {
-    const objectModel: Metadata['objectModel'] =
-      (spec.generation.length == 0) ? 'meta' :
-      (pattern.acceleration && pattern.rotation) ? 'missile' :
-      (pattern.acceleration) ? Math.random() < 0.7 ? 'arrow' : 'missile' :
-      (pattern.rotation) ? Math.random() < 0.7 ? 'claw' : 'missile' :
-      (Math.random() < 0.7) ? 'arrow' : 'missile';
-
-    const colorIndex = this.baseIndex + spec.generation.reduce((a, b) => a + 2 + b, 0);
-    return { objectModel, colorIndex };
-  }
-}
-
-type PresetType = 'wisp' | 'crystal';
-
-const presetTypes: PresetType[] = ['wisp', 'crystal'];
-
-type Preset = {
-  bloomRadius: number;
-  particleType: viewer.ParticleType;
-  showSurface: boolean;
-  showSpace: boolean;
-  trailLength: number;
-  trailStep: number;
-  trailAttenuation: number;
-  trailFluctuation: number;
-};
-
-const presets: { [P in PresetType]: Preset } = {
-  wisp: {
-    bloomRadius: 1,
-    particleType: 'points',
-    showSurface: true,
-    showSpace: false,
-    trailLength: 32,
-    trailStep: 1,
-    trailAttenuation: 0.88,
-    trailFluctuation: 0.96,
-  },
-  crystal: {
-    bloomRadius: 0.2,
-    particleType: 'objects',
-    showSurface: false,
-    showSpace: true,
-    trailLength: 40,
-    trailStep: 2,
-    trailAttenuation: 0.75,
-    trailFluctuation: 1,
-  },
-};
+const presetNames: PresetName[] = ['wisp', 'crystal'];
 
 class Emitter3d {
   readonly stats: Stats;
   readonly config: Config;
   readonly satellite: Satellite;
   readonly view: viewer.View;
-  readonly field: simulator.Field<Metadata>;
-  readonly root: simulator.Particle<Metadata>;
+  readonly field: simulator.Field;
 
   emissionRefresh!: boolean;
   emissionStrength!: number;
   emissionInterval!: number;
   isPaused!: boolean;
-  currentPattern?: simulator.Pattern<Metadata>;
+  stepPerSecond!: number;
 
   constructor(container: HTMLElement) {
     this.stats = new Stats();
@@ -109,15 +41,13 @@ class Emitter3d {
     this.satellite = new Satellite(container, 200);
     this.view = new viewer.View(container);
     this.field = new simulator.Field();
-    this.root = new simulator.Particle<Metadata>(this.field, simulator.feature.none, { objectModel: 'meta', colorIndex: 0 });
-    this.root.rotation.setToLookAt(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 1, 0));
 
     this.initializeConfig();
   }
 
   initializeConfig(): void {
-    const initialPresetType = presetTypes[Math.floor(Math.random() * presetTypes.length)];
-    const initialPreset = presets[initialPresetType];
+    const initialPresetName = presetNames[Math.floor(Math.random() * presetNames.length)];
+    const initialPreset = this.getPreset(initialPresetName);
 
     const r = this.config.folder('Renderer');
     const v = this.config.folder('Viewer');
@@ -142,26 +72,17 @@ class Emitter3d {
     const showSurface = v.toggle('show surface', initialPreset.showSurface).bind(this.view.surface, 'visible');
     const showSpace = v.toggle('show space', initialPreset.showSpace).bind(this.view.space, 'visible');
 
-    for (const controller of [particleType, particleSaturation, particleLightness, trailLength, trailStep, trailOpacity, trailAttenuation, trailFluctuation] as Input<any>[]) {
-      controller.handle(() => this.view.needsUpdate = true);
-    }
-
     const pause = core.toggle('pause', false).bind(this, 'isPaused');
     const showStats = core.toggle('show stats', true).handle(show => this.stats.dom.style.visibility = show ? 'visible' : 'hidden');
     const cameraRevolve = core.toggle('camera revolve', true).bind(this.satellite, 'autoRevolve');
-
-    window.addEventListener('contextmenu', ev => {
-      pause.value = !pause.value;
-      cameraRevolve.value = !cameraRevolve.value;
-      ev.preventDefault();
-    });
+    const stepPerSecond = core.range('step per second', 60, [20, 180]).handle(sps => this.stepPerSecond = sps);
 
     const emissionRefresh = sim.toggle('emission refresh', true).bind(this, 'emissionRefresh');
     const emissionStrength = sim.range('emission strength', 400, [10, 1000]).step(1).bind(this, 'emissionStrength');
     const emissionInterval = sim.range('emission interval', 240, [60, 600]).step(1).bind(this, 'emissionInterval');
 
-    core.options<PresetType>('preset', initialPresetType, presetTypes).handle(name => {
-      const preset = presets[name];
+    core.options<PresetName>('preset', initialPresetName, presetNames).handle(name => {
+      const preset = this.getPreset(name);
       bloomRadius.value = preset.bloomRadius;
       particleType.value = preset.particleType;
       trailLength.value = preset.trailLength;
@@ -171,15 +92,71 @@ class Emitter3d {
       showSurface.value = preset.showSurface;
       showSpace.value = preset.showSpace;
     });
+
+    for (const controller of [particleType, particleSaturation, particleLightness, trailLength, trailStep, trailOpacity, trailAttenuation, trailFluctuation] as Input<any>[]) {
+      controller.handle(() => this.view.needsUpdate = true);
+    }
+
+    window.addEventListener('contextmenu', ev => {
+      pause.value = !pause.value;
+      cameraRevolve.value = !cameraRevolve.value;
+      ev.preventDefault();
+    });
   }
 
-  update(): void {
+  getPreset(name: PresetName): {
+    bloomRadius: number;
+    particleType: viewer.ParticleType;
+    showSurface: boolean;
+    showSpace: boolean;
+    trailLength: number;
+    trailStep: number;
+    trailAttenuation: number;
+    trailFluctuation: number;
+  } {
+    switch (name) {
+      case 'wisp':
+        return {
+          bloomRadius: 1,
+          particleType: 'points',
+          showSurface: true,
+          showSpace: false,
+          trailLength: 32,
+          trailStep: 1,
+          trailAttenuation: 0.88,
+          trailFluctuation: 0.96,
+        };
+      case 'crystal':
+        return {
+          bloomRadius: 0.2,
+          particleType: 'objects',
+          showSurface: false,
+          showSpace: true,
+          trailLength: 40,
+          trailStep: 2,
+          trailAttenuation: 0.75,
+          trailFluctuation: 1,
+        };
+      default:
+        throw new TypeError();
+    }
+  }
+
+  private cooldown = 0;
+  private currentPattern?: (index: [number, number]) => simulator.Behavior;
+
+  update(deltaTime: number): void {
+    deltaTime *= this.stepPerSecond;
+
     this.stats.begin();
     this.satellite.update(this.view.camera);
 
     if (!this.satellite.isDragging && !this.isPaused) {
-      if (this.root.frame % this.emissionInterval == 10) this.emit();
-      this.field.update();
+      if ((this.cooldown -= deltaTime) < 0) {
+        this.cooldown = this.emissionInterval;
+        this.emit();
+      }
+      this.field.update(deltaTime);
       this.view.history.putSnapshot(this.field, copyParticle);
       this.view.needsUpdate = true;
     }
@@ -190,12 +167,24 @@ class Emitter3d {
 
   emit(): void {
     if (!this.currentPattern || this.emissionRefresh) {
-      const generator = new Generator(Math.floor(Math.random() * 32));
-      this.currentPattern = generator.pattern(this.emissionStrength);
+      const program = simulator.parse(`
+        32 emit 1 4 16 {
+          speed 2.5
+          model missile
+          rotate 0 [] 0
+          hue []
+          10 nop
+          30 speed* 0.3
+          80 nop
+          40 nop
+          30 ease-out opacity 0
+        }
+      `);
+      this.currentPattern = simulator.compile(program);
     }
 
-    const composer = new Composer();
-    composer.pattern(this.currentPattern)(this.root);
+    const particle = new simulator.Particle(this.currentPattern([0, 1]));
+    this.field.add(particle);
   }
 }
 
@@ -203,8 +192,13 @@ function main(): void {
   const container = document.getElementById('emitter3d')!;
   const emitter3d = new Emitter3d(container);
 
+  let lastTime = performance.now();
+
   function animate(): void {
-    emitter3d.update();
+    const currentTime = performance.now();
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+    emitter3d.update(deltaTime / 1000);
     requestAnimationFrame(animate);
   }
 

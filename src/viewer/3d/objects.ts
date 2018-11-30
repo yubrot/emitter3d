@@ -19,25 +19,26 @@ export class Objects extends THREE.Group {
     this.add(this.claws);
   }
 
-  beginUpdate(): { put(model: Model, frame: number, position: THREE.Vector3, rotation: THREE.Quaternion, color: THREE.Color): void; complete(): void; } {
+  beginUpdate(): { put(model: Model, lifeTime: number, position: THREE.Vector3, rotation: THREE.Quaternion, color: THREE.Color): void; complete(): void; } {
     const missiles = this.missiles.beginUpdate();
     const arrows = this.arrows.beginUpdate();
     const claws = this.claws.beginUpdate();
     const p = new THREE.Quaternion();
     const q = new THREE.Quaternion();
+    const e = new THREE.Euler();
     return {
-      put(model, frame, position, rotation, color) {
+      put(model, lifeTime, position, rotation, color) {
         switch (model) {
           case 'missile':
-            p.copy(rotation).multiply(q.setFromEulerAngles(0, 0, Math.PI * 0.02 * frame));
+            p.copy(rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * lifeTime)));
             missiles.put(position, p, color);
             break;
           case 'arrow':
-            p.copy(rotation).multiply(q.setFromEulerAngles(0, 0, Math.PI * 0.01 * frame));
+            p.copy(rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.01 * lifeTime)));
             arrows.put(position, p, color);
             break;
           case 'claw':
-            p.copy(rotation).multiply(q.setFromEulerAngles(0, 0, Math.PI * -0.01 * frame));
+            p.copy(rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * -0.01 * lifeTime)));
             claws.put(position, p, color);
             break;
         }
@@ -199,7 +200,7 @@ function missileGeometry(): GeometryBuilder {
 function arrowGeometry(): GeometryBuilder {
   const g = new GeometryBuilder();
 
-  const fin = 0.2;
+  const fin = 0.12;
 
   const face = {
     head: g.putPoint(at(0, 0, 1), color(0.4, 0.4, 0.4)),
