@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'production',
-  entry: __dirname + '/src/emitter3d.ts',
+  entry: __dirname + '/src/main.tsx',
   output: {
     path: __dirname + '/gh-pages/js',
     publicPath: '/js/',
@@ -9,15 +9,14 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.ts$/, loader: 'ts-loader' }
+      { test: /\.tsx?$/, loader: 'ts-loader' }
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.ts']
+    extensions: ['*', '.js', '.ts', '.tsx']
   },
   externals: {
     'three': 'THREE',
-    'dat.gui': 'dat',
     'stats.js': 'Stats',
   },
 };

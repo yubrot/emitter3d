@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import { History } from './aux/history';
-import { Renderer } from './renderer';
 import { Surface } from './3d/surface';
 import { Space } from './3d/space';
 import { Points } from './3d/points';
@@ -33,13 +32,10 @@ function allocateParticle(): Particle {
   };
 }
 
-export class View {
+export class Scene extends THREE.Scene {
   readonly history: History<Particle>;
-  readonly scene: THREE.Scene;
-  readonly camera: THREE.PerspectiveCamera;
   readonly surface: Surface;
   readonly space: Space;
-  readonly renderer: Renderer;
   readonly points: Points;
   readonly objects: Objects;
 
@@ -53,60 +49,38 @@ export class View {
   saturation = 0.9;
   lightness = 0.7;
 
-  get width(): number {
-    return this.container.clientWidth;
-  }
-
-  get height(): number {
-    return this.container.clientHeight;
-  }
-
   set particleType(type: ParticleType) {
     this.points.visible = type == 'points';
     this.objects.visible = type == 'objects';
   }
 
-  constructor(private container: HTMLElement) {
+  constructor() {
+    super();
+    this.fog = new THREE.FogExp2(0x000000, 0.001);
     this.history = new History(allocateParticle, 60);
-    this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x000000, 0.001);
-    this.camera = new THREE.PerspectiveCamera(70, 1, 1, 2000);
-    this.renderer = new Renderer(this.scene, this.camera);
-    this.container.appendChild(this.renderer.domElement);
-
-    window.addEventListener('resize', this.updateSize.bind(this));
-    this.updateSize();
 
     this.surface = new Surface(20, 40, 40);
     this.surface.rotation.set(Math.PI/2, 0, 0);
-    this.scene.add(this.surface);
+    this.add(this.surface);
 
     this.space = new Space(400, 5000);
-    this.scene.add(this.space);
+    this.add(this.space);
 
     this.points = new Points(40000);
     this.points.visible = false;
-    this.scene.add(this.points);
+    this.add(this.points);
 
     this.objects = new Objects(10000);
     this.objects.visible = false;
-    this.scene.add(this.objects);
+    this.add(this.objects);
   }
 
-  updateSize(): void {
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height);
-  }
-
-  render(): void {
+  update(deltaTime: number): void {
     if (this.needsUpdate) {
       this.needsUpdate = false;
       if (this.points.visible) this.updatePoints();
       if (this.objects.visible) this.updateObjects();
     }
-
-    this.renderer.render();
   }
 
   private updatePoints(): void {
