@@ -1,11 +1,12 @@
 import { AntialiasMode, antialiasModes, ParticleType, particleTypes } from '../viewer';
 export { AntialiasMode, antialiasModes, ParticleType, particleTypes };
 
-export type ApplicationState = CoreState & RendererState & SceneState;
+export type ApplicationState = CoreState & EditorState & RendererState & SceneState;
 
 export function initialApplicationState(): ApplicationState {
   return {
     ...initialCoreState,
+    ...initialEditorState,
     ...initialRendererState,
     ...initialSceneState,
     ...presetStates[presetNames[Math.floor(Math.random() * presetNames.length)]],
@@ -15,7 +16,7 @@ export function initialApplicationState(): ApplicationState {
 export type CoreState = {
   isPaused: boolean;
   showStats: boolean;
-  showOptions: boolean;
+  showEditor: boolean;
   stepsPerSecond: number;
   cameraRevolve: boolean;
 };
@@ -23,9 +24,33 @@ export type CoreState = {
 export const initialCoreState: CoreState = {
   isPaused: false,
   showStats: false,
-  showOptions: false,
+  showEditor: true,
   stepsPerSecond: 60,
   cameraRevolve: true,
+};
+
+export type EditorState = {
+  editingItem: string;
+  editingCode: string;
+  editorNotification: string;
+  generatorStrength: number;
+  generateAutomatically: boolean;
+  explorer: ExplorerState;
+};
+
+export type ExplorerState = {
+  name: string;
+  items: string[];
+  writable: boolean;
+}[];
+
+export const initialEditorState: EditorState = {
+  editingItem: '',
+  editingCode: '',
+  editorNotification: '',
+  generatorStrength: 100,
+  generateAutomatically: true,
+  explorer: [],
 };
 
 export type RendererState = {

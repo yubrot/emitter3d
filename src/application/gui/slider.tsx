@@ -7,13 +7,8 @@ export type Props = {
   onChange(value: number): void;
 };
 
-export class Slider extends Component<Props, { isActive: boolean }> {
+export class Slider extends Component<Props, {}> {
   private container!: HTMLElement;
-
-  constructor(props: Props) {
-    super(props);
-    this.state = { isActive: false };
-  }
 
   componentDidMount() {
     this.container.addEventListener('mousedown', this.handleSliderMoveStart);
@@ -29,7 +24,6 @@ export class Slider extends Component<Props, { isActive: boolean }> {
     document.addEventListener('mousemove', this.handleSliderMove);
     document.addEventListener('mouseup', this.handleSliderMoveEnd);
 
-    this.setState({ isActive: true });
     this.handleSliderMove(ev);
   };
 
@@ -45,8 +39,6 @@ export class Slider extends Component<Props, { isActive: boolean }> {
   private handleSliderMoveEnd = (ev: MouseEvent) => {
     document.removeEventListener('mousemove', this.handleSliderMove);
     document.removeEventListener('mouseup', this.handleSliderMoveEnd);
-
-    this.setState({ isActive: false });
   };
 
   render() {

@@ -6,11 +6,11 @@ export type Props = {
   header: any;
 };
 
-type State = {
+type InternalState = {
   isOpened: boolean;
 };
 
-export class Accordion extends Component<Props, State> {
+export class Accordion extends Component<Props, InternalState> {
   constructor(props: Props) {
     super(props);
     this.state = { isOpened: props.initiallyOpened || false };
