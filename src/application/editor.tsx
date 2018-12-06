@@ -70,8 +70,8 @@ export class Editor extends Component<Props, InternalState> {
             value={props.editingItem}
             onChange={this.handleItemNameChange}
           />
-          <Button text="Save" onClick={this.handleSave} />
-          <Button text={showExplorer ? "Open -" : "Open +"} onClick={this.toggleShowExplorer} />
+          <Button onClick={this.handleSave}>Save</Button>
+          <Button onClick={this.toggleShowExplorer}>{showExplorer ? "Open -" : "Open +"}</Button>
         </div>
         <div className={`explorer ${showExplorer ? 'opened' : ''}`}>
           {props.explorer.map(({ name: store, items, writable }) => (
@@ -116,8 +116,8 @@ export class Editor extends Component<Props, InternalState> {
           >
             automatically
           </Toggle>
-          <Button text="Generate!" onClick={props.onGenerate} />
-          <Button text="Reset" onClick={props.onReset} />
+          <Button onClick={props.onGenerate}>Generate!</Button>
+          <Button onClick={props.onReset}>Reset</Button>
         </div>
       </div>
     );
