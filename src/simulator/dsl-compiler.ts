@@ -443,7 +443,7 @@ class EachRangeUnit extends RangeUnit {
 
 class EachAngleUnit extends Unit {
   number(env: Compiler): Gen<number> {
-    return ([a, b]) => 360 * a / b;
+    return ([a, b]) => 360 * a / b + (b == 2 ? 90 : 0);
   }
 }
 
