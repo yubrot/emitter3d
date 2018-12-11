@@ -9,7 +9,7 @@ export function initialApplicationState(): ApplicationState {
     ...initialEditorState,
     ...initialRendererState,
     ...initialSceneState,
-    ...presetStates[presetNames[Math.floor(Math.random() * presetNames.length)]],
+    ...presetStates['crystal'],
   };
 }
 
@@ -23,8 +23,8 @@ export type CoreState = {
 
 export const initialCoreState: CoreState = {
   isPaused: false,
-  showStats: false,
-  showEditor: true,
+  showStats: true,
+  showEditor: false,
   stepsPerSecond: 60,
   cameraRevolve: true,
 };
@@ -48,7 +48,7 @@ export const initialEditorState: EditorState = {
   editingItem: '',
   editingCode: '',
   editorNotification: '',
-  generatorStrength: 100,
+  generatorStrength: 400,
   generateAutomatically: true,
   explorer: [],
 };

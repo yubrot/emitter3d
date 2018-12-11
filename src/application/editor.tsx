@@ -104,7 +104,7 @@ export class Editor extends Component<Props, InternalState> {
         />
         <div className="control">
           <Slider
-            range={[10, 500, 1]}
+            range={[10, 1000, 1]}
             value={props.generatorStrength}
             onChange={generatorStrength => props.onChange({ generatorStrength })}
           >

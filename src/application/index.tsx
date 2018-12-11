@@ -26,7 +26,7 @@ export class Application extends Component<{}, ApplicationState> {
   private stats!: Stats;
   private screen!: Screen;
   private field!: simulator.Field;
-  private pattern?: (index: [number, number]) => simulator.Behavior;
+  private pattern = simulator.compile(simulator.parse(''));
 
   componentDidMount() {
     this.field = new simulator.Field();
@@ -43,7 +43,8 @@ export class Application extends Component<{}, ApplicationState> {
         this.screen.scene.history.putSnapshot(this.field, bridge.copyParticle);
         this.screen.scene.needsUpdate = true;
 
-        if (this.field.isEmpty && this.pattern) {
+        if (this.field.isEmpty) {
+          if (this.state.generateAutomatically) this.generatePattern();
           const behavior = this.pattern([0, 1]);
           this.field.add(new simulator.Particle(behavior));
         }
@@ -61,6 +62,16 @@ export class Application extends Component<{}, ApplicationState> {
       isPaused: !this.state.isPaused,
       cameraRevolve: !this.state.cameraRevolve,
     });
+  };
+
+  private generationCount = 0;
+
+  private generatePattern = () => {
+    ++this.generationCount;
+    const program = simulator.generate(this.state.generatorStrength);
+    const code = simulator.print(program);
+    this.setState({ editingItem: `Generation ${this.generationCount}`, editingCode: code });
+    this.updatePattern(code);
   };
 
   private updatePattern = (code: string) => {
@@ -86,7 +97,7 @@ export class Application extends Component<{}, ApplicationState> {
 
   private handleLoad = (store: string, item: string) => {
     const code = this.explorer.load(store, item);
-    this.setState({ editingItem: item, editingCode: code });
+    this.setState({ editingItem: item, editingCode: code, generateAutomatically: false });
     this.updatePattern(code);
   };
 
@@ -120,7 +131,7 @@ export class Application extends Component<{}, ApplicationState> {
             onLoad={this.handleLoad}
             onDelete={this.handleDelete}
             onCommitCodeChange={this.updatePattern}
-            onGenerate={() => { /* TODO */ }}
+            onGenerate={this.generatePattern}
             onReset={this.handleReset}
             {...this.state}
           />

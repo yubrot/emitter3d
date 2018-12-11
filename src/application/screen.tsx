@@ -59,7 +59,7 @@ export class Screen extends Component<Props, {}> {
 
   componentDidMount() {
     this._scene = new viewer.Scene();
-    this._camera = new viewer.Camera(70, 1, 1, 2000, { x: 0, y: 30, d: 200 });
+    this._camera = new viewer.Camera(70, 1, 1, 2000, { x: 0, y: 40, d: 200 });
     this.renderer = new viewer.Renderer(this.scene, this.camera);
     this.cameraController = new viewer.CameraController(this.camera);
 

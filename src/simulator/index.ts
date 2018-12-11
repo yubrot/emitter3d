@@ -5,6 +5,7 @@ import * as dslCompiler from './dsl-compiler';
 
 import { Model, Particle, Behavior, Field } from './particle';
 export { Model, Particle, Behavior, Field };
+import * as patternGenerator from './pattern-generator';
 
 const printer = new dslPrinter.Printer();
 const compiler = new dslCompiler.Compiler();
@@ -17,6 +18,10 @@ export function parse(text: string): Program {
 
 export function print(program: Program): string {
   return printer.printProgram(program);
+}
+
+export function generate(strength: number): Program {
+  return patternGenerator.generate(strength);
 }
 
 export function dump(program: Program): any[] {
