@@ -1,2 +1,3 @@
+export { Particle, ParticleType, particleTypes, Scene } from './scene';
 export { Renderer, AntialiasMode, antialiasModes } from './renderer';
-export { Particle, ParticleType, particleTypes, View } from './view';
+export { CameraPosition, Camera, CameraController } from './camera';
