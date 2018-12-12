@@ -55,6 +55,15 @@ test('core', () => {
     .update(5)
     .tap(s => expect(Array.from(s.particle.position)).toEqual([0, 0, 7]));
 
+  {
+    const field = new Field();
+    expect(field.isEmpty).toEqual(true);
+    const particle = new Particle(new behavior.NopBehavior());
+    field.add(particle);
+    expect(field.isEmpty).toEqual(false);
+    field.update(1);
+    expect(field.isEmpty).toEqual(true);
+  }
 });
 
 test('set', () => {
@@ -82,6 +91,20 @@ test('set', () => {
     .tap(s => expect(s.particle.speed).toBeCloseTo(4.75))
     .update(1)
     .tap(s => expect(s.particle.speed).toEqual(5));
+
+  new Simulator(new behavior.SetModelBehavior('missile'))
+    .update(1)
+    .tap(s => expect(s.particle.model).toEqual('missile'));
+
+  new Simulator(new behavior.SetModelBehavior('missile'))
+    .lifespan(4)
+    .update(1)
+    .tap(s => {
+      expect(s.particle.model).toEqual(undefined);
+      s.field.clear();
+    })
+    .update(5)
+    .tap(s => expect(s.particle.model).toEqual(undefined));
 });
 
 test('add', () => {

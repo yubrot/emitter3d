@@ -34,6 +34,15 @@ function ast(v: any): dsl.AST {
   return dsl.AST.fromPlain(v);
 }
 
+describe('core', () => {
+  expect(dsl.AST.fromPlain('foo')).toEqual(new dsl.Symbol('foo'));
+  expect(dsl.AST.fromPlain(123)).toEqual(new dsl.Number(123));
+  expect(dsl.AST.fromPlain(['foo', [new dsl.Number(12), 34]])).toEqual(new dsl.List([new dsl.Symbol('foo'), new dsl.List([new dsl.Number(12), new dsl.Number(34)])]));
+  expect(ast('foo').toPlain()).toEqual('foo');
+  expect(ast(123).toPlain()).toEqual(123);
+  expect(ast([12, ['bar', 'baz']]).toPlain()).toEqual([12, ['bar', 'baz']]);
+});
+
 describe('parser', () => {
   test('parseExact', () => {
     expect(parse(p.pure({}), '')).toEqual([success, {}]);
@@ -227,6 +236,8 @@ describe('builder', () => {
     expect(new Code().put('a').put('b').join().begin().put('c').join().put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], [[dsl.Symbol.block, ['c'], ['d']]]]));
     expect(new Code().put('a').put('b').join().put('c').begin().put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd']]));
     expect(new Code().put('a').put('b').join().put('c').begin().put('d').join().put('e').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', [dsl.Symbol.block, ['d'], ['e']]]]));
+    expect(() => new Code().put('a').begin().put('b').begin().put('c').join().put('d').end().toAST()).toThrow(Error);
+    expect(new Code().put('a').begin().put('b').begin().put('c').join().putCode(new Code().put('d').put('e')).end().end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b', [dsl.Symbol.block, ['c'], ['d', 'e']]]]));
   });
 
   test('util', () => {
