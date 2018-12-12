@@ -37,7 +37,7 @@ export class Options extends Component<Props, {}> {
           <Select options={state.particleTypes} value={props.particleType} onChange={change.particleType}>particle type</Select>
           <Slider range={[0, 1, 0.01]} value={props.particleSaturation} onChange={change.particleSaturation}>particle saturation</Slider>
           <Slider range={[0, 1, 0.01]} value={props.particleLightness} onChange={change.particleLightness}>particle lightness</Slider>
-          <Slider range={[0, 60, 1]} value={props.trailLength} onChange={change.trailLength}>trail length</Slider>
+          <Slider range={[1, 60, 1]} value={props.trailLength} onChange={change.trailLength}>trail length</Slider>
           <Slider range={[1, 4, 1]} value={props.trailStep} onChange={change.trailStep}>trail step</Slider>
           <Slider range={[0, 1, 0.01]} value={props.trailOpacity} onChange={change.trailOpacity}>trail opacity</Slider>
           <Slider range={[0, 1, 0.01]} value={props.trailAttenuation} onChange={change.trailAttenuation}>trail attenuation</Slider>
