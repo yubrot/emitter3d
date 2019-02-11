@@ -75,7 +75,7 @@ export class Editor extends Component<Props, InternalState> {
         </div>
         <div className={`explorer ${showExplorer ? 'opened' : ''}`}>
           {props.explorer.map(({ name: store, items, writable }) => (
-            <Accordion header={store} initiallyOpened={true}>
+            <Accordion header={store} initiallyOpened={false}>
               <ul>
                 {items.map(item => (
                   <li>

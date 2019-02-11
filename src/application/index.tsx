@@ -69,8 +69,10 @@ export class Application extends Component<{}, ApplicationState> {
   private generatePattern = (clear = true) => {
     ++this.generationCount;
     const program = simulator.generate(this.state.generatorStrength);
+    const item =  `Generation ${this.generationCount}`;
     const code = simulator.print(program);
-    this.setState({ editingItem: `Generation ${this.generationCount}`, editingCode: code });
+    this.explorer.save('history', item, code);
+    this.setState({ explorer: this.explorer.state, editingItem: item, editingCode: code });
     this.updatePattern(code, clear);
   };
 
@@ -157,6 +159,11 @@ export class Explorer {
       name: 'reference',
       store: builtin.install(new InMemoryStore, builtin.reference),
       writable: false,
+    },
+    {
+      name: 'history',
+      store: new InMemoryStore,
+      writable: true,
     },
   ];
 
