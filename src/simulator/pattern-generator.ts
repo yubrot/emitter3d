@@ -103,7 +103,7 @@ function pattern(spec: Spec): Code {
 function move1(spec: Spec, flag: Flag): Code {
   const code = new Code();
   const p = randf();
-  let live = 180;
+  let live = 120;
 
   if (p < 0.3) {
     flag.accelerate = true;
@@ -160,7 +160,10 @@ function move1(spec: Spec, flag: Flag): Code {
     }
   }
 
-  return code.put(live, 'nop').put(30, 'opacity', 0);
+  return code
+    .put(live, 'close')
+    .put(120, 'nop')
+    .put(30, 'opacity', 0);
 }
 
 function move2(forceStop: boolean, flag: Flag): Code {

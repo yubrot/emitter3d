@@ -1,4 +1,4 @@
-import { Model, Particle, Behavior, Field } from './particle';
+import { Particle, Behavior, Field } from './particle';
 
 export class NopBehavior extends Behavior {}
 
@@ -51,14 +51,14 @@ export class MultiplyBehavior extends Behavior {
   }
 }
 
-export class SetModelBehavior extends Behavior {
-  constructor(readonly model: Model) {
+export class SwitchBehavior extends Behavior {
+  constructor(readonly on: (p: Particle) => void) {
     super();
   }
 
   update(field: Field, particle: Particle, start: number, end: number): number {
     const r = this.easing.at(end, this.lifespan);
-    if (r == 1) particle.model = this.model;
+    if (r == 1) this.on(particle);
     return super.update(field, particle, start, end);
   }
 }

@@ -10,6 +10,7 @@ export class Particle {
   speed = 0;
   opacity = 1;
   hue = 0;
+  closed = false;
   model?: Model;
 
   constructor(readonly behavior: Behavior) {}
@@ -60,8 +61,11 @@ export class Field implements Iterable<Particle> {
   private readonly payload: Particle[] = [];
   private count = 0;
 
-  get isEmpty(): boolean {
-    return this.count == 0;
+  get closed(): boolean {
+    for (let i = 0; i < this.count; ++i) {
+      if (!this.payload[i].closed) return false;
+    }
+    return true;
   }
 
   [Symbol.iterator](): IterableIterator<Particle> {

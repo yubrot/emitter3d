@@ -6,6 +6,14 @@ model missile
 
 60 nop
 
+--- close
+speed 1
+model missile
+
+60 nop
+close
+60 nop
+
 --- speed + *
 speed 1
 model missile

@@ -55,6 +55,7 @@ export class Compiler {
     this.units.set('ease-in-out', new EasingUnit(Easing.easeInOut));
 
     this.units.set('nop', new NopUnit());
+    this.units.set('close', new CloseUnit());
     this.units.set('speed', new UnitConstructor(SetSpeedUnit));
     this.units.set('speed+', new UnitConstructor(AddSpeedUnit));
     this.units.set('speed*', new UnitConstructor(MultiplySpeedUnit));
@@ -223,6 +224,12 @@ class NopUnit extends Unit {
   }
 }
 
+class CloseUnit extends Unit {
+  behavior(env: Compiler): Gen<Behavior> {
+    return _ => new behavior.SwitchBehavior(p => p.closed = true);
+  }
+}
+
 class SetSpeedUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const speedGen = this.takeArgs(env, 1).number();
@@ -282,7 +289,10 @@ class AddHueUnit extends ConstructedUnit {
 class SetModelUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const modelGen = this.takeArgs(env, 1).model();
-    return index => new behavior.SetModelBehavior(modelGen(index));
+    return index => {
+      const model = modelGen(index);
+      return new behavior.SwitchBehavior(p => p.model = model);
+    };
   }
 }
 

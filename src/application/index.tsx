@@ -43,8 +43,8 @@ export class Application extends Component<{}, ApplicationState> {
         this.screen.scene.history.putSnapshot(this.field, bridge.copyParticle);
         this.screen.scene.needsUpdate = true;
 
-        if (this.field.isEmpty) {
-          if (this.state.generateAutomatically) this.generatePattern();
+        if (this.field.closed) {
+          if (this.state.generateAutomatically) this.generatePattern(false);
           const behavior = this.pattern([0, 1]);
           this.field.add(new simulator.Particle(behavior));
         }
@@ -66,19 +66,19 @@ export class Application extends Component<{}, ApplicationState> {
 
   private generationCount = 0;
 
-  private generatePattern = () => {
+  private generatePattern = (clear = true) => {
     ++this.generationCount;
     const program = simulator.generate(this.state.generatorStrength);
     const code = simulator.print(program);
     this.setState({ editingItem: `Generation ${this.generationCount}`, editingCode: code });
-    this.updatePattern(code);
+    this.updatePattern(code, clear);
   };
 
-  private updatePattern = (code: string) => {
+  private updatePattern = (code: string, clear = true) => {
     try {
       const program = simulator.parse(code);
       this.pattern = simulator.compile(program);
-      this.field.clear();
+      if (clear) this.field.clear();
       this.setState({ editorNotification: 'Successfully compiled.' });
 
     } catch (e) {
