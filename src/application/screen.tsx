@@ -53,13 +53,12 @@ export class Screen extends Component<Props, {}> {
     this.scene.trailOpacity = this.props.trailOpacity;
     this.scene.trailAttenuation = this.props.trailAttenuation;
     this.scene.trailFluctuation = this.props.trailFluctuation;
-    this.scene.surface.visible = this.props.showSurface;
     this.scene.space.visible = this.props.showSpace;
   }
 
   componentDidMount() {
     this._scene = new viewer.Scene();
-    this._camera = new viewer.Camera(70, 1, 1, 2000, { x: 0, y: 40, d: 200 });
+    this._camera = new viewer.Camera(70, 1, 1, 5000, { x: 0, y: 40, d: 200 });
     this.renderer = new viewer.Renderer(this.scene, this.camera);
     this.cameraController = new viewer.CameraController(this.camera);
 
@@ -84,7 +83,7 @@ export class Screen extends Component<Props, {}> {
       this.scene.needsUpdate ||
       this.props.particleType != prevProps.particleType ||
       this.props.particleSaturation != prevProps.particleSaturation ||
-      this.props.particleType != prevProps.particleType ||
+      this.props.particleLightness != prevProps.particleLightness ||
       this.props.trailLength != prevProps.trailLength ||
       this.props.trailStep != prevProps.trailStep ||
       this.props.trailOpacity != prevProps.trailOpacity ||

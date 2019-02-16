@@ -9,7 +9,7 @@ export function initialApplicationState(): ApplicationState {
     ...initialEditorState,
     ...initialRendererState,
     ...initialSceneState,
-    ...presetStates['crystal'],
+    ...presetStates['wisp'],
   };
 }
 
@@ -64,7 +64,7 @@ export type RendererState = {
 
 export const initialRendererState: RendererState = {
   antialiasMode: antialiasModes[0],
-  focusEffect: true,
+  focusEffect: false,
   bloomEffect: true,
   bloomStrength: 0.7,
   bloomThreshold: 0.5,
@@ -80,7 +80,6 @@ export type SceneState = {
   trailOpacity: number;
   trailAttenuation: number;
   trailFluctuation: number;
-  showSurface: boolean;
   showSpace: boolean;
 };
 
@@ -93,7 +92,6 @@ export const initialSceneState: SceneState = {
   trailOpacity: 1,
   trailAttenuation: 0,
   trailFluctuation: 0,
-  showSurface: false,
   showSpace: false,
 };
 
@@ -105,8 +103,7 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   wisp: {
     bloomRadius: 1,
     particleType: 'points',
-    showSurface: true,
-    showSpace: false,
+    showSpace: true,
     trailLength: 32,
     trailStep: 1,
     trailAttenuation: 0.88,
@@ -115,7 +112,6 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   crystal: {
     bloomRadius: 0.2,
     particleType: 'objects',
-    showSurface: false,
     showSpace: true,
     trailLength: 40,
     trailStep: 2,

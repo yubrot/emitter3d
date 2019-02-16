@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import { History } from './aux/history';
-import { Surface } from './3d/surface';
 import { Space } from './3d/space';
 import { Points } from './3d/points';
 import { Objects, Model as ObjectModel } from './3d/objects';
@@ -34,7 +33,6 @@ function allocateParticle(): Particle {
 
 export class Scene extends THREE.Scene {
   readonly history: History<Particle>;
-  readonly surface: Surface;
   readonly space: Space;
   readonly points: Points;
   readonly objects: Objects;
@@ -56,14 +54,10 @@ export class Scene extends THREE.Scene {
 
   constructor() {
     super();
-    this.fog = new THREE.FogExp2(0x000000, 0.001);
+    this.fog = new THREE.FogExp2(0x000000, 0.0003);
     this.history = new History(allocateParticle, 60);
 
-    this.surface = new Surface(20, 40, 40);
-    this.surface.rotation.set(Math.PI/2, 0, 0);
-    this.add(this.surface);
-
-    this.space = new Space(400, 5000);
+    this.space = new Space(600, 4000, 10000, 100, 2);
     this.add(this.space);
 
     this.points = new Points(40000);

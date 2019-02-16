@@ -42,7 +42,6 @@ export class Options extends Component<Props, {}> {
           <Slider range={[0, 1, 0.01]} value={props.trailOpacity} onChange={change.trailOpacity}>trail opacity</Slider>
           <Slider range={[0, 1, 0.01]} value={props.trailAttenuation} onChange={change.trailAttenuation}>trail attenuation</Slider>
           <Slider range={[0.8, 1, 0.01]} value={props.trailFluctuation} onChange={change.trailFluctuation}>trail fluctuation</Slider>
-          <Toggle value={props.showSurface} onChange={change.showSurface}>show surface</Toggle>
           <Toggle value={props.showSpace} onChange={change.showSpace}>show space</Toggle>
         </Accordion>
         <Accordion header="Core" initiallyOpened={true}>
