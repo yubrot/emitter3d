@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { circleTexture } from '../aux/circle-texture';
+import { RadialTexture } from '../aux/radial-texture';
 
 export class Points extends THREE.Points {
   private buffer: THREE.BufferGeometry;
@@ -42,7 +42,7 @@ export class Points extends THREE.Points {
   static material(): THREE.PointsMaterial {
     return new THREE.PointsMaterial({
       color: 0xffffff,
-      map: circleTexture(),
+      map: new RadialTexture().easeInTo(0.3, 0.8).easeOutTo(1, 1).render(),
       vertexColors: THREE.VertexColors,
       size: 5,
       transparent: true,

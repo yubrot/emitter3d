@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { circleTexture } from '../aux/circle-texture';
+import { RadialTexture } from '../aux/radial-texture';
 
 export class Surface extends THREE.Points {
   constructor(size: number, x: number, y: number) {
@@ -10,7 +10,7 @@ export class Surface extends THREE.Points {
 
   static readonly material = new THREE.PointsMaterial({
     color: 0x111111,
-    map: circleTexture(),
+    map: new RadialTexture().easeInTo(0.5, 0.5).easeOutTo(0.5, 0.5).render(),
     size: 2,
     transparent: true,
     blending: THREE.AdditiveBlending,
