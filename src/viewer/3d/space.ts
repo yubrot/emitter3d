@@ -41,12 +41,12 @@ export class Space extends THREE.Group {
       }
 
       for (let j = 0; j < gnum; ++j) {
-        const l = 0.2 + Math.random();
+        const l = 0.5 + 0.5 * Math.random() ** 0.5;
         pos.set(near + l * (far - near), 0, 0);
         pos.applyEuler(euler.set(0, rand(Math.PI), rand(0.05)));
         pos.applyQuaternion(rotation);
         pos.add(center);
-        color.setHSL(((pos.x + pos.y + pos.z) / (far * 3)) % 1, 0.4, 0.05 + rand(0.02));
+        color.setHSL(((pos.x + pos.y + pos.z) / (far * 3)) % 1, 0.4, 0.04 + rand(0.03));
 
         const idx = i * gnum + j;
         gasPositions.setXYZ(idx, pos.x, pos.y, pos.z);

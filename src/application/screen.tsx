@@ -45,14 +45,17 @@ export class Screen extends Component<Props, {}> {
     this.renderer.bloomThreshold = this.props.bloomThreshold;
     this.renderer.bloomRadius = this.props.bloomRadius;
 
-    this.scene.particleType = this.props.particleType;
-    this.scene.saturation = this.props.particleSaturation;
-    this.scene.lightness = this.props.particleLightness;
+    this.scene.particleMode = this.props.particleMode;
+    this.scene.particleSaturation = this.props.particleSaturation;
+    this.scene.particleLightness = this.props.particleLightness;
+    this.scene.points.mat.size = this.props.particlePointSize;
+    this.scene.points.mat.shellWidth = this.props.particlePointShellWidth;
+    this.scene.points.mat.shellLightness = this.props.particlePointShellLightness;
     this.scene.trailLength = this.props.trailLength;
     this.scene.trailStep = this.props.trailStep;
-    this.scene.trailOpacity = this.props.trailOpacity;
-    this.scene.trailAttenuation = this.props.trailAttenuation;
-    this.scene.trailFluctuation = this.props.trailFluctuation;
+    this.scene.trailFluctuationScale = this.props.trailFluctuationScale;
+    this.scene.trailFluctuationBias = this.props.trailFluctuationBias;
+    this.scene.trailAttenuationBias = this.props.trailAttenuationBias;
     this.scene.space.visible = this.props.showSpace;
   }
 
@@ -81,14 +84,17 @@ export class Screen extends Component<Props, {}> {
 
     this.scene.needsUpdate =
       this.scene.needsUpdate ||
-      this.props.particleType != prevProps.particleType ||
+      this.props.particleMode != prevProps.particleMode ||
       this.props.particleSaturation != prevProps.particleSaturation ||
       this.props.particleLightness != prevProps.particleLightness ||
+      this.props.particlePointSize != prevProps.particlePointSize ||
+      this.props.particlePointShellWidth != prevProps.particlePointShellWidth ||
+      this.props.particlePointShellLightness != prevProps.particlePointShellLightness ||
       this.props.trailLength != prevProps.trailLength ||
       this.props.trailStep != prevProps.trailStep ||
-      this.props.trailOpacity != prevProps.trailOpacity ||
-      this.props.trailAttenuation != prevProps.trailAttenuation ||
-      this.props.trailFluctuation != prevProps.trailFluctuation;
+      this.props.trailFluctuationScale != prevProps.trailFluctuationScale ||
+      this.props.trailFluctuationBias != prevProps.trailFluctuationBias ||
+      this.props.trailAttenuationBias != prevProps.trailAttenuationBias;
   }
 
   render() {

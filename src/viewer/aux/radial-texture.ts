@@ -39,7 +39,7 @@ export class RadialTexture {
   }
 
   easeOutTo(x: number, y: number, p = 2): this {
-    return this.moveTo(x, y, t => 1 - Math.abs((t - 1) ** p));
+    return this.moveTo(x, y, t => 1 - Math.abs(t - 1) ** p);
   }
 
   render(): THREE.Texture {

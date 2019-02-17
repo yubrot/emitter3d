@@ -36,7 +36,7 @@ export class Application extends Component<{}, ApplicationState> {
     this.stats.internal.begin();
 
     if (!this.screen.control.isDragging) {
-      if (this.state.cameraRevolve) this.screen.camera.targetPosition.x += 0.1;
+      if (this.state.cameraRevolve) this.screen.camera.targetPosition.x += 0.05;
 
       if (!this.state.isPaused) {
         this.field.update(deltaStep);

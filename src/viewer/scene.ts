@@ -3,11 +3,14 @@ import * as THREE from 'three';
 import { History } from './aux/history';
 import { Space } from './3d/space';
 import { Points } from './3d/points';
-import { Objects, Model as ObjectModel } from './3d/objects';
+import { Instances } from './3d/instances';
+import * as models from './3d/models';
 
-export type ParticleType = 'points' | 'objects';
+export type ParticleMode = 'points' | 'crystal' | 'prism';
 
-export const particleTypes: ParticleType[] = ['points', 'objects'];
+export const particleModes: ParticleMode[] = ['points', 'crystal', 'prism'];
+
+export type ObjectModel = 'missile' | 'claw' | 'arrow' | 'meta';
 
 export type Particle = {
   lifeTime: number;
@@ -16,7 +19,7 @@ export type Particle = {
   fluctuation: THREE.Vector3;
   opacity: number;
   hue: number;
-  objectModel: ObjectModel | 'meta';
+  objectModel: ObjectModel;
 };
 
 function allocateParticle(): Particle {
@@ -35,22 +38,21 @@ export class Scene extends THREE.Scene {
   readonly history: History<Particle>;
   readonly space: Space;
   readonly points: Points;
-  readonly objects: Objects;
+  readonly missiles: Instances;
+  readonly claws: Instances;
+  readonly arrows: Instances;
+  readonly prisms: Instances;
 
   needsUpdate = false;
 
+  particleMode: ParticleMode = 'points';
+  particleSaturation = 0.9;
+  particleLightness = 0.7;
   trailLength = 1;
   trailStep = 1;
-  trailOpacity = 1;
-  trailAttenuation = 1;
-  trailFluctuation = 1;
-  saturation = 0.9;
-  lightness = 0.7;
-
-  set particleType(type: ParticleType) {
-    this.points.visible = type == 'points';
-    this.objects.visible = type == 'objects';
-  }
+  trailFluctuationScale = 0;
+  trailFluctuationBias = 0;
+  trailAttenuationBias = 0;
 
   constructor() {
     super();
@@ -61,53 +63,105 @@ export class Scene extends THREE.Scene {
     this.add(this.space);
 
     this.points = new Points(40000);
-    this.points.visible = false;
     this.add(this.points);
 
-    this.objects = new Objects(10000);
-    this.objects.visible = false;
-    this.add(this.objects);
+    this.missiles = new Instances(10000, models.missile());
+    this.add(this.missiles);
+
+    this.claws = new Instances(10000, models.claw());
+    this.add(this.claws);
+
+    this.arrows = new Instances(10000, models.arrow());
+    this.add(this.arrows);
+
+    this.prisms = new Instances(40000, models.prism());
+    this.add(this.prisms);
   }
 
   update(deltaTime: number): void {
     if (this.needsUpdate) {
       this.needsUpdate = false;
-      if (this.points.visible) this.updatePoints();
-      if (this.objects.visible) this.updateObjects();
+      this.updateParticles();
     }
   }
 
-  private updatePoints(): void {
-    const updater = this.points.beginUpdate();
-    this.iterateParticles((particle, position, color) => updater.put(position, color));
-    updater.complete();
-  }
-
-  private updateObjects(): void {
-    const updater = this.objects.beginUpdate();
-    this.iterateParticles((particle, position, color) => updater.put(particle.objectModel as ObjectModel, particle.lifeTime, position, particle.rotation, color));
-    updater.complete();
+  private updateParticles(): void {
+    switch (this.particleMode) {
+      case 'points': {
+        this.points.visible = true;
+        this.arrows.visible = this.missiles.visible = this.claws.visible = this.prisms.visible = false;
+        const points = this.points.beginUpdate();
+        this.iterateParticles((particle, position, color) => {
+          if (particle.objectModel == 'meta') return;
+          points.put(position, color);
+        });
+        points.complete();
+        break;
+      }
+      case 'crystal': {
+        this.arrows.visible = this.missiles.visible = this.claws.visible = true;
+        this.points.visible = this.prisms.visible = false;
+        const missiles = this.missiles.beginUpdate();
+        const claws = this.claws.beginUpdate();
+        const arrows = this.arrows.beginUpdate();
+        const p = new THREE.Quaternion();
+        const q = new THREE.Quaternion();
+        const e = new THREE.Euler();
+        this.iterateParticles((particle, position, color) => {
+          switch (particle.objectModel) {
+            case 'missile':
+              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * particle.lifeTime)));
+              missiles.put(position, p, color);
+              break;
+            case 'arrow':
+              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.01 * particle.lifeTime)));
+              arrows.put(position, p, color);
+              break;
+            case 'claw':
+              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.01 * particle.lifeTime)));
+              claws.put(position, p, color);
+              break;
+          }
+        });
+        missiles.complete();
+        arrows.complete();
+        claws.complete();
+        break;
+      }
+      case 'prism': {
+        this.prisms.visible = true;
+        this.points.visible = this.arrows.visible = this.missiles.visible = this.claws.visible = false;
+        const prisms = this.prisms.beginUpdate();
+        const p = new THREE.Quaternion();
+        const q = new THREE.Quaternion();
+        const e = new THREE.Euler();
+        this.iterateParticles((particle, position, color) => {
+          if (particle.objectModel == 'meta') return;
+          p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * particle.lifeTime)));
+          prisms.put(position, p, color);
+        });
+        prisms.complete();
+        break;
+      }
+    }
   }
 
   private iterateParticles(handler: (particle: Particle, position: THREE.Vector3, color: THREE.Color) => void): void {
     const position = new THREE.Vector3();
     const color = new THREE.Color();
-    let opacity = 1;
-    let fluctuation = 1;
-    for (const snapshot of this.history.snapshots(0, this.trailLength, Math.floor(this.trailStep))) {
-      for (const particle of snapshot) {
-        if (particle.objectModel == 'meta') continue;
 
-        position.copy(particle.position).addScaledVector(particle.fluctuation, 1 - fluctuation);
+    for (let i = 0; i < this.trailLength; i += Math.floor(this.trailStep)) {
+      const t = i / (this.trailLength - 0.9);
+      for (const particle of this.history.snapshot(i)) {
+        const fluctuation = this.trailFluctuationScale * t ** Math.exp(this.trailFluctuationBias);
+        const opacity = 1 - t ** Math.exp(this.trailAttenuationBias);
+        position.copy(particle.position).addScaledVector(particle.fluctuation, fluctuation);
         color.setHSL(
           (1 + particle.hue/360 + position.y * 0.001) % 1,
-          this.saturation,
-          this.lightness * Math.min(1, 0.1 + particle.lifeTime*0.03) * particle.opacity * opacity);
+          this.particleSaturation,
+          this.particleLightness * particle.opacity * opacity * Math.min(1, particle.lifeTime*0.03));
         handler(particle, position, color);
       }
-      if (opacity == 1) opacity *= this.trailOpacity;
-      opacity *= this.trailAttenuation;
-      fluctuation *= this.trailFluctuation;
     }
   }
 }

@@ -29,19 +29,22 @@ export class Options extends Component<Props, {}> {
           <Select options={state.antialiasModes} value={props.antialiasMode} onChange={change.antialiasMode}>antialias</Select>
           <Toggle value={props.focusEffect} onChange={change.focusEffect}>focus effect</Toggle>
           <Toggle value={props.bloomEffect} onChange={change.bloomEffect}>bloom effect</Toggle>
-          <Slider range={[0, 3, 0.1]} value={props.bloomStrength} onChange={change.bloomStrength}>bloom strength</Slider>
-          <Slider range={[0, 1, 0.1]} value={props.bloomThreshold} onChange={change.bloomThreshold}>bloom threshold</Slider>
-          <Slider range={[0, 1, 0.1]} value={props.bloomRadius} onChange={change.bloomRadius}>bloom radius</Slider>
+          <Slider disabled={!props.bloomEffect} range={[0, 3, 0.1]} value={props.bloomStrength} onChange={change.bloomStrength}>bloom strength</Slider>
+          <Slider disabled={!props.bloomEffect} range={[0, 1, 0.1]} value={props.bloomThreshold} onChange={change.bloomThreshold}>bloom threshold</Slider>
+          <Slider disabled={!props.bloomEffect} range={[0, 1, 0.1]} value={props.bloomRadius} onChange={change.bloomRadius}>bloom radius</Slider>
         </Accordion>
         <Accordion header="Scene">
-          <Select options={state.particleTypes} value={props.particleType} onChange={change.particleType}>particle type</Select>
           <Slider range={[0, 1, 0.01]} value={props.particleSaturation} onChange={change.particleSaturation}>particle saturation</Slider>
           <Slider range={[0, 1, 0.01]} value={props.particleLightness} onChange={change.particleLightness}>particle lightness</Slider>
+          <Select options={state.particleModes} value={props.particleMode} onChange={change.particleMode}>particle mode</Select>
+          <Slider disabled={props.particleMode != 'points'} range={[0.1, 16, 0.1]} value={props.particlePointSize} onChange={change.particlePointSize}>particle point size</Slider>
+          <Slider disabled={props.particleMode != 'points'} range={[0.05, 0.95, 0.01]} value={props.particlePointShellWidth} onChange={change.particlePointShellWidth}>particle point shell width</Slider>
+          <Slider disabled={props.particleMode != 'points'} range={[0.05, 0.95, 0.01]} value={props.particlePointShellLightness} onChange={change.particlePointShellLightness}>particle point shell lightness</Slider>
           <Slider range={[1, 60, 1]} value={props.trailLength} onChange={change.trailLength}>trail length</Slider>
-          <Slider range={[1, 4, 1]} value={props.trailStep} onChange={change.trailStep}>trail step</Slider>
-          <Slider range={[0, 1, 0.01]} value={props.trailOpacity} onChange={change.trailOpacity}>trail opacity</Slider>
-          <Slider range={[0, 1, 0.01]} value={props.trailAttenuation} onChange={change.trailAttenuation}>trail attenuation</Slider>
-          <Slider range={[0.8, 1, 0.01]} value={props.trailFluctuation} onChange={change.trailFluctuation}>trail fluctuation</Slider>
+          <Slider disabled={props.trailLength == 1} range={[1, 4, 1]} value={props.trailStep} onChange={change.trailStep}>trail step</Slider>
+          <Slider disabled={props.trailLength == 1} range={[0, 100, 1]} value={props.trailFluctuationScale} onChange={change.trailFluctuationScale}>trail fluctuation scale</Slider>
+          <Slider disabled={props.trailLength == 1 || props.trailFluctuationScale == 0} range={[-3, 3, 0.01]} value={props.trailFluctuationBias} onChange={change.trailFluctuationBias}>trail fluctuation bias</Slider>
+          <Slider disabled={props.trailLength == 1} range={[-3, 3, 0.01]} value={props.trailAttenuationBias} onChange={change.trailAttenuationBias}>trail attenuation bias</Slider>
           <Toggle value={props.showSpace} onChange={change.showSpace}>show space</Toggle>
         </Accordion>
         <Accordion header="Core" initiallyOpened={true}>

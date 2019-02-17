@@ -1,5 +1,5 @@
-import { AntialiasMode, antialiasModes, ParticleType, particleTypes } from '../viewer';
-export { AntialiasMode, antialiasModes, ParticleType, particleTypes };
+import { AntialiasMode, antialiasModes, ParticleMode, particleModes } from '../viewer';
+export { AntialiasMode, antialiasModes, ParticleMode, particleModes };
 
 export type ApplicationState = CoreState & EditorState & RendererState & SceneState;
 
@@ -9,7 +9,7 @@ export function initialApplicationState(): ApplicationState {
     ...initialEditorState,
     ...initialRendererState,
     ...initialSceneState,
-    ...presetStates['wisp'],
+    ...presetStates[presetNames[Math.floor(Math.random() * presetNames.length)]],
   };
 }
 
@@ -65,57 +65,102 @@ export type RendererState = {
 export const initialRendererState: RendererState = {
   antialiasMode: antialiasModes[0],
   focusEffect: false,
-  bloomEffect: true,
-  bloomStrength: 0.7,
+  bloomEffect: false,
+  bloomStrength: 0.5,
   bloomThreshold: 0.5,
-  bloomRadius: 0,
+  bloomRadius: 0.5,
 };
 
 export type SceneState = {
-  particleType: ParticleType;
   particleSaturation: number;
   particleLightness: number;
+  particleMode: ParticleMode;
+  particlePointSize: number;
+  particlePointShellWidth: number;
+  particlePointShellLightness: number;
   trailLength: number;
   trailStep: number;
-  trailOpacity: number;
-  trailAttenuation: number;
-  trailFluctuation: number;
+  trailFluctuationScale: number;
+  trailFluctuationBias: number;
+  trailAttenuationBias: number;
   showSpace: boolean;
 };
 
 export const initialSceneState: SceneState = {
-  particleType: particleTypes[0],
-  particleSaturation: 0.9,
-  particleLightness: 0.7,
+  particleSaturation: 0.5,
+  particleLightness: 0.5,
+  particleMode: particleModes[0],
+  particlePointSize: 3,
+  particlePointShellWidth: 0.5,
+  particlePointShellLightness: 0.5,
   trailLength: 1,
   trailStep: 1,
-  trailOpacity: 1,
-  trailAttenuation: 0,
-  trailFluctuation: 0,
-  showSpace: false,
+  trailFluctuationScale: 0,
+  trailFluctuationBias: 0,
+  trailAttenuationBias: 0,
+  showSpace: true,
 };
 
-export type PresetName = 'wisp' | 'crystal';
+export type PresetName = 'crystal' | 'stardust' | 'wisp' | 'prism';
 
-export const presetNames: PresetName[] = ['wisp', 'crystal'];
+export const presetNames: PresetName[] = ['crystal', 'stardust', 'wisp', 'prism'];
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
-  wisp: {
-    bloomRadius: 1,
-    particleType: 'points',
-    showSpace: true,
-    trailLength: 32,
-    trailStep: 1,
-    trailAttenuation: 0.88,
-    trailFluctuation: 0.96,
-  },
   crystal: {
+    bloomEffect: true,
+    bloomStrength: 0.7,
+    bloomThreshold: 0.5,
     bloomRadius: 0.2,
-    particleType: 'objects',
-    showSpace: true,
+    particleSaturation: 0.9,
+    particleLightness: 0.7,
+    particleMode: 'crystal',
     trailLength: 40,
     trailStep: 2,
-    trailAttenuation: 0.75,
-    trailFluctuation: 1,
+    trailFluctuationScale: 0,
+    trailAttenuationBias: -2,
+  },
+  stardust: {
+    bloomEffect: false,
+    particleSaturation: 0.9,
+    particleLightness: 0.9,
+    particleMode: 'points',
+    particlePointSize: 14,
+    particlePointShellWidth: 0.92,
+    particlePointShellLightness: 0.15,
+    trailLength: 45,
+    trailStep: 1,
+    trailFluctuationScale: 15,
+    trailFluctuationBias: 0,
+    trailAttenuationBias: 0,
+  },
+  wisp: {
+    bloomEffect: true,
+    bloomStrength: 0.7,
+    bloomThreshold: 0.5,
+    bloomRadius: 1,
+    particleSaturation: 0.9,
+    particleLightness: 1.0,
+    particleMode: 'points',
+    particlePointSize: 5,
+    particlePointShellWidth: 0.25,
+    particlePointShellLightness: 0.85,
+    trailLength: 32,
+    trailStep: 1,
+    trailFluctuationScale: 3,
+    trailFluctuationBias: -0.5,
+    trailAttenuationBias: -1.5,
+  },
+  prism: {
+    bloomEffect: true,
+    bloomStrength: 1.2,
+    bloomThreshold: 0.5,
+    bloomRadius: 0.2,
+    particleSaturation: 0.8,
+    particleLightness: 0.6,
+    particleMode: 'prism',
+    trailLength: 24,
+    trailStep: 1,
+    trailFluctuationScale: 0,
+    trailAttenuationBias: -3,
   },
 };

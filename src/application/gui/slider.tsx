@@ -3,6 +3,7 @@ import { h, Component } from 'preact';
 export type Props = {
   range: [number, number, number];
   className?: string;
+  disabled?: boolean;
   value: number;
   onChange(value: number): void;
 };
@@ -21,6 +22,7 @@ export class Slider extends Component<Props, {}> {
   }
 
   private handleSliderMoveStart = (ev: MouseEvent) => {
+    if (this.props.disabled) return;
     document.addEventListener('mousemove', this.handleSliderMove);
     document.addEventListener('mouseup', this.handleSliderMoveEnd);
 
@@ -42,12 +44,12 @@ export class Slider extends Component<Props, {}> {
   };
 
   render() {
-    const { className, range: [min, max, step], value, children } = this.props;
+    const { className, disabled, range: [min, max, step], value, children } = this.props;
     const width = ((value - min) / (max - min) * 100) + '%';
-    const number = String(value).replace(/(\.[0-9]*?)0{4,}[0-9]$/, '$1');
+    const number = Slider.numberString(value, step);
 
     return (
-      <div className={`slider ${className || ''}`} ref={d => this.container = d}>
+      <div className={`slider ${disabled ? 'disabled' : ''} ${className || ''}`} ref={d => this.container = d}>
         <div className="slider-body" style={{ width }} />
         <div className="slider-surface">
           {children}
@@ -57,5 +59,23 @@ export class Slider extends Component<Props, {}> {
         </div>
       </div>
     );
+  }
+
+  static numberString(value: number, step: number): string {
+    let decimal = 0;
+    while (step < 1) ++decimal, step *= 10;
+    let s = value < 0 ? "-" : "";
+    let t = String(Math.round(Math.abs(value) * 10 ** decimal));
+    let u = "";
+    for (; decimal > 0; --decimal) {
+      if (t.length > 1) {
+        u = t.substr(t.length - 1) + u;
+        t = t.substr(0, t.length - 1);
+      } else {
+        u = t + u;
+        t = "0";
+      }
+    }
+    return s + t + (u == "" ? "" : "." + u);
   }
 }

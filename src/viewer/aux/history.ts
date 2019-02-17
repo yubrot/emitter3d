@@ -33,13 +33,6 @@ export class History<A> {
     }
   }
 
-  *snapshots(start = 0, length = this.payload.length, step = 1): Iterable<Iterable<A>> {
-    console.assert(length <= this.payload.length);
-    for (let i = start; i < start + length; i += step) {
-      yield this.snapshot(i);
-    }
-  }
-
   *snapshot(index: number): Iterable<A> {
     console.assert(index < this.payload.length);
     const snapshot = this.payload[(this.head - index + this.payload.length) % this.payload.length];

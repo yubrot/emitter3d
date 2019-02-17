@@ -116,7 +116,7 @@ export class GeometryBuilder extends THREE.Object3D {
     return this;
   }
 
-  build(): { position: THREE.BufferAttribute, color: THREE.BufferAttribute, index: THREE.BufferAttribute } {
+  build(): ObjectGeometry {
     this.updateMatrixWorld(true);
 
     const positions: number[] = [];
@@ -154,6 +154,12 @@ export class GeometryBuilder extends THREE.Object3D {
     return { position, color, index };
   }
 }
+
+export type ObjectGeometry = {
+  position: THREE.BufferAttribute;
+  color: THREE.BufferAttribute;
+  index: THREE.BufferAttribute;
+};
 
 function triangleFan<T>(ls: T[], handler: (a: T, b: T, c: T) => void): void {
   console.assert(ls.length > 2);

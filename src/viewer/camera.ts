@@ -110,7 +110,7 @@ export class CameraController {
   };
 
   private onWheel = (ev: WheelEvent) => {
-    this.handleZoom(20 * (ev.deltaY < 0 ? -1 : 1));
+    this.handleZoom(ev.deltaY < 0 ? -10 : 10);
   };
 
   private onTouchStart = (ev: TouchEvent) => {
