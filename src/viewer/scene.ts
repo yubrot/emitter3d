@@ -59,7 +59,7 @@ export class Scene extends THREE.Scene {
     this.fog = new THREE.FogExp2(0x000000, 0.0003);
     this.history = new History(allocateParticle, 60);
 
-    this.space = new Space(600, 4000, 10000, 100, 2);
+    this.space = new Space(600, 4000, 10000, 200, 2);
     this.add(this.space);
 
     this.points = new Points(40000);

@@ -57,15 +57,25 @@ export class PointsMaterial extends THREE.PointsMaterial {
     });
   }
 
-  private _shellWidth = 0.5;
+  private _coreWidth = 0.5;
+  private _coreSharpness = 0;
   private _shellLightness = 0.5;
 
-  get shellWidth(): number {
-    return this._shellWidth;
+  get coreWidth(): number {
+    return this._coreWidth;
   }
 
-  set shellWidth(width: number) {
-    this._shellWidth = width;
+  set coreWidth(width: number) {
+    this._coreWidth = width;
+    this.mapNeedsUpdate = true;
+  }
+
+  get coreSharpness(): number {
+    return this._coreSharpness;
+  }
+
+  set coreSharpness(sharpness: number) {
+    this._coreSharpness = sharpness;
     this.mapNeedsUpdate = true;
   }
 
@@ -83,8 +93,8 @@ export class PointsMaterial extends THREE.PointsMaterial {
   updateMap(): void {
     if (!this.mapNeedsUpdate) return;
     this.map = new RadialTexture()
-      .easeInTo(this.shellWidth, this.shellLightness)
-      .easeOutTo(1, 1, 2 ** Math.exp(this._shellWidth*2 - 1))
+      .easeInTo(1 - this.coreWidth, this.shellLightness)
+      .easeOutTo(1, 1, 2 ** Math.exp(this.coreSharpness))
       .render();
     this.mapNeedsUpdate = false;
   }

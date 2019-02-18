@@ -43,10 +43,10 @@ export class Space extends THREE.Group {
       for (let j = 0; j < gnum; ++j) {
         const l = 0.5 + 0.5 * Math.random() ** 0.5;
         pos.set(near + l * (far - near), 0, 0);
-        pos.applyEuler(euler.set(0, rand(Math.PI), rand(0.05)));
+        pos.applyEuler(euler.set(0, rand(Math.PI), rand(0.1)));
         pos.applyQuaternion(rotation);
         pos.add(center);
-        color.setHSL(((pos.x + pos.y + pos.z) / (far * 3)) % 1, 0.4, 0.04 + rand(0.03));
+        color.setHSL(((pos.x + pos.y + pos.z) / (far * 3) + rand(0.1)) % 1, 0.4, 0.1 + rand(0.07));
 
         const idx = i * gnum + j;
         gasPositions.setXYZ(idx, pos.x, pos.y, pos.z);
@@ -70,7 +70,7 @@ export class Space extends THREE.Group {
   static starMaterial(): THREE.PointsMaterial {
     return new THREE.PointsMaterial({
       color: 0xffffff,
-      map: new RadialTexture().easeInTo(0.8, 0.3).easeOutTo(1, 1, 6).render(),
+      map: new RadialTexture().easeInTo(0.7, 0.3).easeOutTo(1, 1, 6).render(),
       vertexColors: THREE.VertexColors,
       size: 32,
       transparent: true,

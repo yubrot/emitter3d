@@ -76,7 +76,8 @@ export type SceneState = {
   particleLightness: number;
   particleMode: ParticleMode;
   particlePointSize: number;
-  particlePointShellWidth: number;
+  particlePointCoreWidth: number;
+  particlePointCoreSharpness: number;
   particlePointShellLightness: number;
   trailLength: number;
   trailStep: number;
@@ -91,7 +92,8 @@ export const initialSceneState: SceneState = {
   particleLightness: 0.5,
   particleMode: particleModes[0],
   particlePointSize: 3,
-  particlePointShellWidth: 0.5,
+  particlePointCoreWidth: 0.5,
+  particlePointCoreSharpness: 0,
   particlePointShellLightness: 0.5,
   trailLength: 1,
   trailStep: 1,
@@ -125,7 +127,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleLightness: 0.9,
     particleMode: 'points',
     particlePointSize: 14,
-    particlePointShellWidth: 0.92,
+    particlePointCoreWidth: 0.05,
+    particlePointCoreSharpness: 3,
     particlePointShellLightness: 0.15,
     trailLength: 45,
     trailStep: 1,
@@ -142,7 +145,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleLightness: 1.0,
     particleMode: 'points',
     particlePointSize: 5,
-    particlePointShellWidth: 0.25,
+    particlePointCoreWidth: 0.75,
+    particlePointCoreSharpness: 0,
     particlePointShellLightness: 0.85,
     trailLength: 32,
     trailStep: 1,
@@ -161,6 +165,6 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailLength: 24,
     trailStep: 1,
     trailFluctuationScale: 0,
-    trailAttenuationBias: -3,
+    trailAttenuationBias: -1.75,
   },
 };

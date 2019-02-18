@@ -49,7 +49,8 @@ export class Screen extends Component<Props, {}> {
     this.scene.particleSaturation = this.props.particleSaturation;
     this.scene.particleLightness = this.props.particleLightness;
     this.scene.points.mat.size = this.props.particlePointSize;
-    this.scene.points.mat.shellWidth = this.props.particlePointShellWidth;
+    this.scene.points.mat.coreWidth = this.props.particlePointCoreWidth;
+    this.scene.points.mat.coreSharpness = this.props.particlePointCoreSharpness;
     this.scene.points.mat.shellLightness = this.props.particlePointShellLightness;
     this.scene.trailLength = this.props.trailLength;
     this.scene.trailStep = this.props.trailStep;
@@ -88,7 +89,8 @@ export class Screen extends Component<Props, {}> {
       this.props.particleSaturation != prevProps.particleSaturation ||
       this.props.particleLightness != prevProps.particleLightness ||
       this.props.particlePointSize != prevProps.particlePointSize ||
-      this.props.particlePointShellWidth != prevProps.particlePointShellWidth ||
+      this.props.particlePointCoreWidth != prevProps.particlePointCoreWidth ||
+      this.props.particlePointCoreSharpness != prevProps.particlePointCoreSharpness ||
       this.props.particlePointShellLightness != prevProps.particlePointShellLightness ||
       this.props.trailLength != prevProps.trailLength ||
       this.props.trailStep != prevProps.trailStep ||
