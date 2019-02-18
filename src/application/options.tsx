@@ -38,6 +38,7 @@ export class Options extends Component<Props, {}> {
           <Slider range={[0, 1, 0.01]} value={props.particleLightness} onChange={change.particleLightness}>particle lightness</Slider>
           <Select options={state.particleModes} value={props.particleMode} onChange={change.particleMode}>particle mode</Select>
           <Slider disabled={props.particleMode != 'points'} range={[0.1, 16, 0.1]} value={props.particlePointSize} onChange={change.particlePointSize}>particle point size</Slider>
+          <Toggle disabled={props.particleMode != 'points'} value={props.particlePointSizeAttenuation} onChange={change.particlePointSizeAttenuation}>particle point size attenuation</Toggle>
           <Slider disabled={props.particleMode != 'points'} range={[0.05, 0.95, 0.01]} value={props.particlePointCoreWidth} onChange={change.particlePointCoreWidth}>particle point core width</Slider>
           <Slider disabled={props.particleMode != 'points'} range={[-3, 3, 0.01]} value={props.particlePointCoreSharpness} onChange={change.particlePointCoreSharpness}>particle point core sharpness</Slider>
           <Slider disabled={props.particleMode != 'points'} range={[0.05, 0.95, 0.01]} value={props.particlePointShellLightness} onChange={change.particlePointShellLightness}>particle point shell lightness</Slider>

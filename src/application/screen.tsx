@@ -52,6 +52,8 @@ export class Screen extends Component<Props, {}> {
     this.scene.points.mat.coreWidth = this.props.particlePointCoreWidth;
     this.scene.points.mat.coreSharpness = this.props.particlePointCoreSharpness;
     this.scene.points.mat.shellLightness = this.props.particlePointShellLightness;
+    this.scene.points.mat.needsUpdate = this.scene.points.mat.sizeAttenuation != this.props.particlePointSizeAttenuation;
+    this.scene.points.mat.sizeAttenuation = this.props.particlePointSizeAttenuation;
     this.scene.trailLength = this.props.trailLength;
     this.scene.trailStep = this.props.trailStep;
     this.scene.trailFluctuationScale = this.props.trailFluctuationScale;
@@ -62,7 +64,7 @@ export class Screen extends Component<Props, {}> {
 
   componentDidMount() {
     this._scene = new viewer.Scene();
-    this._camera = new viewer.Camera(70, 1, 1, 5000, { x: 0, y: 40, d: 200 });
+    this._camera = new viewer.Camera(70, 1, 1, 5000, { x: 0, y: 40, d: 150 });
     this.renderer = new viewer.Renderer(this.scene, this.camera);
     this.cameraController = new viewer.CameraController(this.camera);
 
@@ -92,6 +94,7 @@ export class Screen extends Component<Props, {}> {
       this.props.particlePointCoreWidth != prevProps.particlePointCoreWidth ||
       this.props.particlePointCoreSharpness != prevProps.particlePointCoreSharpness ||
       this.props.particlePointShellLightness != prevProps.particlePointShellLightness ||
+      this.props.particlePointSizeAttenuation != prevProps.particlePointSizeAttenuation ||
       this.props.trailLength != prevProps.trailLength ||
       this.props.trailStep != prevProps.trailStep ||
       this.props.trailFluctuationScale != prevProps.trailFluctuationScale ||

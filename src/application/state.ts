@@ -76,6 +76,7 @@ export type SceneState = {
   particleLightness: number;
   particleMode: ParticleMode;
   particlePointSize: number;
+  particlePointSizeAttenuation: boolean;
   particlePointCoreWidth: number;
   particlePointCoreSharpness: number;
   particlePointShellLightness: number;
@@ -92,6 +93,7 @@ export const initialSceneState: SceneState = {
   particleLightness: 0.5,
   particleMode: particleModes[0],
   particlePointSize: 3,
+  particlePointSizeAttenuation: true,
   particlePointCoreWidth: 0.5,
   particlePointCoreSharpness: 0,
   particlePointShellLightness: 0.5,
@@ -109,6 +111,8 @@ export const presetNames: PresetName[] = ['crystal', 'stardust', 'wisp', 'prism'
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   crystal: {
+    antialiasMode: 'MSAA x4',
+    focusEffect: false,
     bloomEffect: true,
     bloomStrength: 0.7,
     bloomThreshold: 0.5,
@@ -122,21 +126,25 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailAttenuationBias: -2,
   },
   stardust: {
+    antialiasMode: 'OFF',
+    focusEffect: true,
     bloomEffect: false,
-    particleSaturation: 0.9,
-    particleLightness: 0.9,
+    particleSaturation: 1.0,
+    particleLightness: 0.8,
     particleMode: 'points',
     particlePointSize: 14,
     particlePointCoreWidth: 0.05,
     particlePointCoreSharpness: 3,
-    particlePointShellLightness: 0.15,
+    particlePointShellLightness: 0.1,
     trailLength: 45,
     trailStep: 1,
     trailFluctuationScale: 15,
     trailFluctuationBias: 0,
-    trailAttenuationBias: 0,
+    trailAttenuationBias: 1,
   },
   wisp: {
+    antialiasMode: 'OFF',
+    focusEffect: false,
     bloomEffect: true,
     bloomStrength: 0.7,
     bloomThreshold: 0.5,
@@ -155,6 +163,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailAttenuationBias: -1.5,
   },
   prism: {
+    antialiasMode: 'SMAA',
+    focusEffect: true,
     bloomEffect: true,
     bloomStrength: 1.2,
     bloomThreshold: 0.5,
