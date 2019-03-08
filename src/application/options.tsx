@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { Accordion, Toggle, Slider, Select, Button } from './gui';
+import { Accordion, Toggle, Slider, Select, Button } from './components';
 import * as state from './state';
 
 export type Props = {

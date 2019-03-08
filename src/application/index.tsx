@@ -1,15 +1,13 @@
 import { h, Component } from 'preact';
 
-import { Stats } from './aux/stats';
-import { Updater } from './aux/updater';
+import { Stats } from './stats';
 import { Screen } from './screen';
 import { Options } from './options';
 import { Editor } from './editor';
-import { ApplicationState, initialApplicationState, ExplorerState } from './state';
-import { Store, InMemoryStore, StorageStore } from './store';
+import { Explorer } from './explorer';
+import { ApplicationState, initialApplicationState } from './state';
 
-import * as builtin from './builtin';
-import * as bridge from './bridge';
+import * as bridge from '../bridge';
 import * as simulator from '../simulator';
 
 export class Application extends Component<{}, ApplicationState> {
@@ -143,44 +141,31 @@ export class Application extends Component<{}, ApplicationState> {
   }
 }
 
-export class Explorer {
-  private stores = [
-    {
-      name: 'local',
-      store: new StorageStore(localStorage, 'e3d-user-'),
-      writable: true,
-    },
-    {
-      name: 'examples',
-      store: builtin.install(new InMemoryStore, builtin.examples),
-      writable: false,
-    },
-    {
-      name: 'reference',
-      store: builtin.install(new InMemoryStore, builtin.reference),
-      writable: false,
-    },
-    {
-      name: 'history',
-      store: new InMemoryStore,
-      writable: true,
-    },
-  ];
+export class Updater extends Component<{
+  stepsPerSecond: number;
+  onUpdate(deltaStep: number): void;
+}, {}> {
+  private lastTime!: number;
+  private requestId?: any;
 
-  load(store: string, item: string): string {
-    return this.stores.find(s => s.name == store)!.store.read(item);
+  componentDidMount() {
+    this.lastTime = performance.now();
+    this.requestId = requestAnimationFrame(this.update);
   }
 
-  save(store: string, item: string, code: string): void {
-    this.stores.find(s => s.name == store)!.store.write(item, code);
+  componentWillUnmount() {
+    cancelAnimationFrame(this.requestId);
   }
 
-  delete(store: string, item: string): void {
-    return this.stores.find(s => s.name == store)!.store.delete(item);
-  }
+  private update = () => {
+    const currentTime = performance.now();
+    const deltaTime = currentTime - this.lastTime;
+    this.props.onUpdate(deltaTime / 1000 * this.props.stepsPerSecond);
+    this.lastTime = currentTime;
+    this.requestId = requestAnimationFrame(this.update);
+  };
 
-  get state(): ExplorerState {
-    return this.stores.map(
-      ({ name, store, writable }) => ({ name, items: store.items(), writable }));
+  render() {
+    return null;
   }
 }

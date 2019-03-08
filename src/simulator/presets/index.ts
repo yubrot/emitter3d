@@ -1,8 +1,11 @@
-import { Store } from '../store';
 export { examples } from './examples';
 export { reference } from './reference';
 
-export function install(store: Store, text: string): Store {
+export type Store = {
+  write(title: string, body: string): void;
+};
+
+export function install<T extends Store>(store: T, text: string): T {
   let title: string | undefined;
   let body = '';
 

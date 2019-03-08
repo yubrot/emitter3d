@@ -1,5 +1,5 @@
-import * as viewer from '../viewer';
-import * as simulator from '../simulator';
+import * as viewer from './viewer';
+import * as simulator from './simulator';
 
 export function copyParticle(source: simulator.Particle, dest: viewer.Particle): void {
   dest.lifeTime = source.lifeTime;
