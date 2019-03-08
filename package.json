@@ -3,21 +3,21 @@
   "version": "1.0.0",
   "description": "generative fireworks 3D",
   "dependencies": {
-    "gl-matrix": "^2.8.1",
+    "gl-matrix": "^3.0.0",
     "preact": "^8.4.2"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.4.5",
-    "@types/jest": "^23.3.14",
+    "@types/jest": "^24.0.9",
     "@types/stats": "^0.16.30",
-    "@types/three": "^0.92.18",
-    "jest": "^23.6.0",
-    "ts-jest": "^23.10.5",
+    "@types/three": "^0.93.26",
+    "jest": "^24.3.1",
+    "ts-jest": "^24.0.0",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3",
-    "webpack": "^4.29.4",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.2.1"
   },
   "scripts": {
     "build": "webpack -p",
