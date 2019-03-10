@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "generative fireworks 3D",
   "dependencies": {
+    "aphrodite": "^2.3.1",
     "gl-matrix": "^3.0.0",
-    "preact": "^8.4.2"
+    "preact": "^10.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.4.5",
@@ -17,7 +18,8 @@
     "typescript": "^3.3.3333",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.2.1"
+    "webpack-dev-server": "^3.2.1",
+    "webpack-modules": "^1.0.0"
   },
   "scripts": {
     "build": "webpack -p",

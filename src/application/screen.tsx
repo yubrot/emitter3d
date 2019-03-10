@@ -103,6 +103,13 @@ export class Screen extends Component<Props, {}> {
   }
 
   render() {
-    return <div className="screen" ref={d => this.container = d} />;
+    return <div
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+      }}
+      ref={d => this.container = d}
+    />;
   }
 }

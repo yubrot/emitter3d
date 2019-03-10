@@ -1,3 +1,5 @@
+const WebpackModules = require('webpack-modules');
+
 module.exports = {
   mode: 'production',
   entry: __dirname + '/src/main.tsx',
@@ -19,4 +21,7 @@ module.exports = {
     'three': 'THREE',
     'stats.js': 'Stats',
   },
+  plugins: [
+    new WebpackModules(),
+  ]
 };
