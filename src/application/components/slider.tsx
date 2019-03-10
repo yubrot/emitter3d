@@ -1,81 +1,119 @@
-import { h, Component } from 'preact';
+import { h, FunctionalComponent } from 'preact';
+import { useRef, useMemo } from 'preact/hooks';
+import { useMouseDragEvent } from '../hooks';
+import { StyleSheet, css } from 'aphrodite';
 
 export type Props = {
   range: [number, number, number];
-  className?: string;
   disabled?: boolean;
   value: number;
   onChange(value: number): void;
+  style?: any;
 };
 
-export class Slider extends Component<Props, {}> {
-  private container!: HTMLElement;
+export const Slider: FunctionalComponent<Props> = props => {
+  const { range: [min, max, step], disabled, value, onChange, style, children } = props;
 
-  componentDidMount() {
-    this.container.addEventListener('mousedown', this.handleSliderMoveStart);
-  }
+  const sliderRef = useRef<HTMLElement>();
 
-  componentWillUnmount() {
-    document.removeEventListener('mousemove', this.handleSliderMove);
-    document.removeEventListener('mouseup', this.handleSliderMoveEnd);
-    this.container.removeEventListener('mousedown', this.handleSliderMoveStart);
-  }
-
-  private handleSliderMoveStart = (ev: MouseEvent) => {
-    if (this.props.disabled) return;
-    document.addEventListener('mousemove', this.handleSliderMove);
-    document.addEventListener('mouseup', this.handleSliderMoveEnd);
-
-    this.handleSliderMove(ev);
-  };
-
-  private handleSliderMove = (ev: MouseEvent) => {
-    const { left, width } = this.container.getBoundingClientRect();
+  const [sliderHover, sliderActive] = useMouseDragEvent(sliderRef, (ev: MouseEvent) => {
+    if (disabled) return;
+    const { left, width } = sliderRef.current!.getBoundingClientRect();
     const r = Math.min(1, Math.max(0, (ev.clientX - left) / width));
+    onChange(min + step * Math.round(r * (max - min) / step));
+  }, [min, max, step, disabled, onChange]);
 
-    const { range: [min, max, step] } = this.props;
-    const value = min + step * Math.round(r * (max - min) / step);
-    this.props.onChange(value);
-  };
+  const width = useMemo(() => ((value - min) / (max - min) * 100) + '%', [value, min, max]);
+  const number = useMemo(() => numberString(value, step), [value, step]);
 
-  private handleSliderMoveEnd = (ev: MouseEvent) => {
-    document.removeEventListener('mousemove', this.handleSliderMove);
-    document.removeEventListener('mouseup', this.handleSliderMoveEnd);
-  };
-
-  render() {
-    const { className, disabled, range: [min, max, step], value, children } = this.props;
-    const width = ((value - min) / (max - min) * 100) + '%';
-    const number = Slider.numberString(value, step);
-
-    return (
-      <div className={`slider ${disabled ? 'disabled' : ''} ${className || ''}`} ref={d => this.container = d}>
-        <div className="slider-body" style={{ width }} />
-        <div className="slider-surface">
-          {children}
-          <div className="slider-number">
-            {number}
-          </div>
+  return (
+    <div
+      className={css(styles.slider, disabled ? styles.sliderDisabled : styles.sliderEnabled)}
+      style={style}
+      ref={sliderRef}
+    >
+      <div
+        className={css(
+          styles.sliderBody,
+          !disabled && sliderHover && styles.sliderBodyHover,
+          !disabled && sliderActive && styles.sliderBodyActive
+        )}
+        style={{ width }}
+      />
+      <div className={css(styles.sliderSurface)}>
+        {children}
+        <div className={css(styles.sliderNumber)}>
+          {number}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-  static numberString(value: number, step: number): string {
-    let decimal = 0;
-    while (step < 1) ++decimal, step *= 10;
-    let s = value < 0 ? "-" : "";
-    let t = String(Math.round(Math.abs(value) * 10 ** decimal));
-    let u = "";
-    for (; decimal > 0; --decimal) {
-      if (t.length > 1) {
-        u = t.substr(t.length - 1) + u;
-        t = t.substr(0, t.length - 1);
-      } else {
-        u = t + u;
-        t = "0";
-      }
+export function numberString(value: number, step: number): string {
+  let decimal = 0;
+  while (step < 1) ++decimal, step *= 10;
+  let s = value < 0 ? "-" : "";
+  let t = String(Math.round(Math.abs(value) * 10 ** decimal));
+  let u = "";
+  for (; decimal > 0; --decimal) {
+    if (t.length > 1) {
+      u = t.substr(t.length - 1) + u;
+      t = t.substr(0, t.length - 1);
+    } else {
+      u = t + u;
+      t = "0";
     }
-    return s + t + (u == "" ? "" : "." + u);
   }
+  return s + t + (u == "" ? "" : "." + u);
 }
+
+const styles = StyleSheet.create({
+  slider: {
+    position: 'relative',
+    cursor: 'ew-resize',
+    padding: '2px 4px',
+    transition: '0.2s',
+    border: '1px solid rgba(255, 255, 255, 0)',
+  },
+  sliderEnabled: {
+    color: '#aaa',
+    ':hover': {
+      color: '#fff',
+      background: 'rgba(255, 255, 255, 0.1)',
+      borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    ':active': {
+      color: '#fff',
+      background: 'rgba(255, 255, 255, 0.1)',
+      borderColor: 'rgba(255, 255, 255, 0.7)',
+    },
+  },
+  sliderDisabled: {
+    color: 'rgba(255, 255, 255, 0.1)',
+  },
+  sliderBody: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '100%',
+    background: 'rgba(255, 255, 255, 0.1)',
+    transition: '0.2s',
+  },
+  sliderBodyHover: {
+    background: 'rgba(255, 255, 255, 0.3)',
+    transitionProperty: 'background',
+  },
+  sliderBodyActive: {
+    background: 'rgba(255, 255, 255, 0.7)',
+    transitionProperty: 'background',
+  },
+  sliderSurface: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sliderNumber: {
+    margin: '0 4px 0 12px',
+  }
+});

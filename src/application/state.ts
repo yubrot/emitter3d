@@ -16,15 +16,13 @@ export function initialApplicationState(): ApplicationState {
 export type CoreState = {
   isPaused: boolean;
   showStats: boolean;
-  showEditor: boolean;
   stepsPerSecond: number;
   cameraRevolve: boolean;
 };
 
 export const initialCoreState: CoreState = {
   isPaused: false,
-  showStats: true,
-  showEditor: false,
+  showStats: false,
   stepsPerSecond: 60,
   cameraRevolve: true,
 };

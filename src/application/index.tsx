@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-
+import { useAnimationFrame } from './hooks';
 import { Stats } from './stats';
 import { Screen } from './screen';
 import { Options } from './options';
@@ -74,7 +74,7 @@ export class Application extends Component<{}, ApplicationState> {
     this.updatePattern(code, clear);
   };
 
-  private updatePattern = (code: string, clear = true) => {
+  private updatePattern = (code = this.state.editingCode, clear = true) => {
     try {
       const program = simulator.parse(code);
       this.pattern = simulator.compile(program);
@@ -110,62 +110,50 @@ export class Application extends Component<{}, ApplicationState> {
     this.field.clear();
   };
 
+  private handleChange = (s: Partial<ApplicationState>) => {
+    this.setState(s as any);
+  };
+
   render() {
-    const { showStats, showEditor, stepsPerSecond } = this.state;
+    const { showStats, stepsPerSecond } = this.state;
+
+    useAnimationFrame(deltaTime => this.update(deltaTime * stepsPerSecond));
+
     return (
-      <div className="application" onContextMenu={this.togglePauseAndCameraRevolve}>
+      <div
+        style={{
+          fontSize: '12px',
+          userSelect: 'none',
+          MozUserSelect: 'none',
+          MsUserSelect: 'none',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+        onContextMenu={this.togglePauseAndCameraRevolve}
+      >
         <Stats ref={s => this.stats = s} visible={showStats} />
-        <Updater stepsPerSecond={stepsPerSecond} onUpdate={this.update} />
         <Screen
           ref={s => this.screen = s}
           {...this.state}
         />
         <Options
-          onChange={s => this.setState(s as any)}
+          onChange={this.handleChange}
           {...this.state}
         />
-        { showEditor ? (
-          <Editor
-            onChange={s => this.setState(s as any)}
-            onSave={this.handleSave}
-            onLoad={this.handleLoad}
-            onDelete={this.handleDelete}
-            onCommitCodeChange={this.updatePattern}
-            onGenerate={this.generatePattern}
-            onReset={this.handleReset}
-            {...this.state}
-          />
-        ) : null }
+        <Editor
+          onChange={this.handleChange}
+          onSave={this.handleSave}
+          onLoad={this.handleLoad}
+          onDelete={this.handleDelete}
+          onCommitCodeChange={this.updatePattern}
+          onGenerate={this.generatePattern}
+          onReset={this.handleReset}
+          {...this.state}
+        />
       </div>
     );
-  }
-}
-
-export class Updater extends Component<{
-  stepsPerSecond: number;
-  onUpdate(deltaStep: number): void;
-}, {}> {
-  private lastTime!: number;
-  private requestId?: any;
-
-  componentDidMount() {
-    this.lastTime = performance.now();
-    this.requestId = requestAnimationFrame(this.update);
-  }
-
-  componentWillUnmount() {
-    cancelAnimationFrame(this.requestId);
-  }
-
-  private update = () => {
-    const currentTime = performance.now();
-    const deltaTime = currentTime - this.lastTime;
-    this.props.onUpdate(deltaTime / 1000 * this.props.stepsPerSecond);
-    this.lastTime = currentTime;
-    this.requestId = requestAnimationFrame(this.update);
-  };
-
-  render() {
-    return null;
   }
 }
