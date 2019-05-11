@@ -109,8 +109,7 @@ export const presetNames: PresetName[] = ['crystal', 'stardust', 'wisp', 'prism'
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   crystal: {
-    antialiasMode: 'MSAA x4',
-    focusEffect: false,
+    antialiasMode: 'SSAA x4',
     bloomEffect: true,
     bloomStrength: 0.7,
     bloomThreshold: 0.5,
@@ -125,7 +124,6 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   },
   stardust: {
     antialiasMode: 'OFF',
-    focusEffect: true,
     bloomEffect: false,
     particleSaturation: 1.0,
     particleLightness: 0.8,
@@ -142,7 +140,6 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   },
   wisp: {
     antialiasMode: 'OFF',
-    focusEffect: false,
     bloomEffect: true,
     bloomStrength: 0.7,
     bloomThreshold: 0.5,
@@ -162,7 +159,6 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   },
   prism: {
     antialiasMode: 'SMAA',
-    focusEffect: true,
     bloomEffect: true,
     bloomStrength: 1.2,
     bloomThreshold: 0.5,

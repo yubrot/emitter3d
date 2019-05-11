@@ -7,6 +7,6 @@ export function useTimeout(inputs: ReadonlyArray<unknown>): (handler: () => void
 
   return useCallback((handler: () => void, delay: number) => {
     clearTimeout(timeoutIdRef.current);
-    timeoutIdRef.current = setTimeout(handler, delay);
+    timeoutIdRef.current = window.setTimeout(handler, delay);
   }, []);
 }

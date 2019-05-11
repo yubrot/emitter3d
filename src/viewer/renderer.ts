@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
-export type AntialiasMode = 'OFF' | 'SMAA' | 'MSAA x2' | 'MSAA x4';
+export type AntialiasMode = 'OFF' | 'SMAA' | 'SSAA x2' | 'SSAA x4';
 
-export const antialiasModes: AntialiasMode[] = ['OFF', 'SMAA', 'MSAA x2', 'MSAA x4'];
+export const antialiasModes: AntialiasMode[] = ['OFF', 'SMAA', 'SSAA x2', 'SSAA x4'];
 
 export class Renderer {
   private webGL: THREE.WebGLRenderer;
   private passes: {
     render: THREE.RenderPass,
-    renderMSAA: THREE.ManualMSAARenderPass,
+    renderSSAA: THREE.SSAARenderPass,
     focus: THREE.ShaderPass,
     bloom: THREE.UnrealBloomPass,
     copy: THREE.ShaderPass,
@@ -21,7 +21,7 @@ export class Renderer {
     this.webGL.setPixelRatio(window.devicePixelRatio);
     this.passes = {
       render: new THREE.RenderPass(scene, camera),
-      renderMSAA: new THREE.ManualMSAARenderPass(scene, camera),
+      renderSSAA: new THREE.SSAARenderPass(scene, camera),
       focus: new THREE.ShaderPass(THREE.FocusShader),
       bloom: new THREE.UnrealBloomPass(),
       copy: new THREE.ShaderPass(THREE.CopyShader),
@@ -32,7 +32,7 @@ export class Renderer {
 
     this.composer = new THREE.EffectComposer(this.webGL);
     this.composer.addPass(this.passes.render);
-    this.composer.addPass(this.passes.renderMSAA);
+    this.composer.addPass(this.passes.renderSSAA);
     this.composer.addPass(this.passes.focus);
     this.composer.addPass(this.passes.bloom);
     this.composer.addPass(this.passes.copy);
@@ -47,10 +47,10 @@ export class Renderer {
   }
 
   set antialiasMode(mode: AntialiasMode) {
-    this.passes.renderMSAA.enabled = mode.slice(0, 4) == 'MSAA';
-    this.passes.renderMSAA.sampleLevel = (mode == 'MSAA x2') ? 1 : (mode == 'MSAA x4') ? 2 : 0;
+    this.passes.renderSSAA.enabled = mode.slice(0, 4) == 'SSAA';
+    this.passes.renderSSAA.sampleLevel = (mode == 'SSAA x2') ? 1 : (mode == 'SSAA x4') ? 2 : 0;
     this.passes.SMAA.enabled = mode == 'SMAA';
-    this.passes.render.enabled = !this.passes.renderMSAA.enabled;
+    this.passes.render.enabled = !this.passes.renderSSAA.enabled;
     this.passes.copy.enabled = !this.passes.SMAA.enabled;
   }
 
