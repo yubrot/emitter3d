@@ -103,27 +103,14 @@ export const initialSceneState: SceneState = {
   showSpace: true,
 };
 
-export type PresetName = 'crystal' | 'stardust' | 'wisp' | 'prism';
+export type PresetName = 'stardust' | 'prism' | 'wisp' | 'crystal';
 
-export const presetNames: PresetName[] = ['crystal', 'stardust', 'wisp', 'prism'];
+export const presetNames: PresetName[] = ['stardust', 'prism', 'wisp', 'crystal'];
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
-  crystal: {
-    antialiasMode: 'SSAA x4',
-    bloomEffect: true,
-    bloomStrength: 0.7,
-    bloomThreshold: 0.5,
-    bloomRadius: 0.2,
-    particleSaturation: 0.9,
-    particleLightness: 0.7,
-    particleMode: 'crystal',
-    trailLength: 40,
-    trailStep: 2,
-    trailFluctuationScale: 0,
-    trailAttenuationBias: -2,
-  },
   stardust: {
     antialiasMode: 'OFF',
+    focusEffect: true,
     bloomEffect: false,
     particleSaturation: 1.0,
     particleLightness: 0.8,
@@ -137,9 +124,27 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailFluctuationScale: 15,
     trailFluctuationBias: 0,
     trailAttenuationBias: 1,
+    showSpace: true,
+  },
+  prism: {
+    antialiasMode: 'SMAA',
+    focusEffect: false,
+    bloomEffect: true,
+    bloomStrength: 1.2,
+    bloomThreshold: 0.0,
+    bloomRadius: 1.0,
+    particleSaturation: 0.9,
+    particleLightness: 0.7,
+    particleMode: 'prism',
+    trailLength: 24,
+    trailStep: 1,
+    trailFluctuationScale: 0,
+    trailAttenuationBias: -2,
+    showSpace: false,
   },
   wisp: {
     antialiasMode: 'OFF',
+    focusEffect: true,
     bloomEffect: true,
     bloomStrength: 0.7,
     bloomThreshold: 0.5,
@@ -156,19 +161,22 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailFluctuationScale: 3,
     trailFluctuationBias: -0.5,
     trailAttenuationBias: -1.5,
+    showSpace: true,
   },
-  prism: {
-    antialiasMode: 'SMAA',
+  crystal: {
+    antialiasMode: 'SSAA x4',
+    focusEffect: false,
     bloomEffect: true,
-    bloomStrength: 1.2,
+    bloomStrength: 0.9,
     bloomThreshold: 0.5,
     bloomRadius: 0.2,
-    particleSaturation: 0.8,
-    particleLightness: 0.6,
-    particleMode: 'prism',
-    trailLength: 24,
-    trailStep: 1,
+    particleSaturation: 0.9,
+    particleLightness: 0.7,
+    particleMode: 'crystal',
+    trailLength: 40,
+    trailStep: 2,
     trailFluctuationScale: 0,
-    trailAttenuationBias: -1.75,
+    trailAttenuationBias: -2,
+    showSpace: true,
   },
 };
