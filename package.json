@@ -5,21 +5,21 @@
   "dependencies": {
     "aphrodite": "^2.3.1",
     "gl-matrix": "^3.0.0",
-    "preact": "^10.0.0-alpha.1"
+    "preact": "^10.0.0-beta.1",
+    "stats.js": "^0.17.0",
+    "three": "^0.104.0"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.4.5",
-    "@types/jest": "^24.0.9",
-    "@types/stats": "^0.16.30",
-    "@types/three": "^0.93.26",
-    "jest": "^24.3.1",
-    "ts-jest": "^24.0.0",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3333",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.2.1",
-    "webpack-modules": "^1.0.0"
+    "@types/jest": "^24.0.12",
+    "@types/stats.js": "^0.17.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "ts-loader": "^6.0.0",
+    "typescript": "^3.4.5",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.3.1"
   },
   "scripts": {
     "build": "webpack -p",
