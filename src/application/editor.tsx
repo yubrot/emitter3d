@@ -76,11 +76,11 @@ export const Editor: FunctionalComponent<Props> = props => {
                   <div className={css(styles.storeItemOpen)} onClick={() => onLoad(store, item)}>
                     {item}
                   </div>
-                  { writable ? (
+                  {writable ? (
                     <div className={css(styles.storeItemDelete)} onClick={() => onDelete(store, item)}>
                       x
                     </div>
-                  ) : null }
+                  ) : null}
                 </li>
               ))}
             </ul>

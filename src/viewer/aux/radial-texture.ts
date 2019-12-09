@@ -27,7 +27,7 @@ export class RadialTexture {
       const t = (i - this.px) / (x - this.px);
       const offset = s - i;
       const alpha = f(t) * (y - this.py) + this.py;
-      this.gradient.addColorStop(offset/s, `rgba(255, 255, 255, ${alpha/s})`);
+      this.gradient.addColorStop(offset / s, `rgba(255, 255, 255, ${alpha / s})`);
     }
     this.px = x;
     this.py = y;

@@ -1,5 +1,5 @@
 export const examples =
-`
+  `
 --- sphere
 model arrow
 hue <>

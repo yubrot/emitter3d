@@ -226,7 +226,7 @@ test('emit', () => {
   testEmit(4, 3, 1, (s, created) => {
     const w1 = [0, 1, 2, 3];
     const w2 = [4, 5, 6, 7];
-    const w3 = [8, 9,10,11];
+    const w3 = [8, 9, 10, 11];
     s.lifespan(2).update(1);
     expect(created.sort()).toEqual(w1.sort());
     s.update(0.9);
@@ -237,8 +237,8 @@ test('emit', () => {
 
   testEmit(1, 3, 4, (s, created) => {
     const w1 = [0, 3, 6, 9];
-    const w2 = [1, 4, 7,10];
-    const w3 = [2, 5, 8,11];
+    const w2 = [1, 4, 7, 10];
+    const w3 = [2, 5, 8, 11];
     s.lifespan(2).update(1);
     expect(created.sort()).toEqual(w1.sort());
     s.update(0.9);
@@ -248,9 +248,9 @@ test('emit', () => {
   });
 
   testEmit(2, 3, 5, (s, created) => {
-    const w1 = [0, 1, 6, 7, 12,13,18,19,24,25];
-    const w2 = [2, 3, 8, 9, 14,15,20,21,26,27];
-    const w3 = [4, 5, 10,11,16,17,22,23,28,29];
+    const w1 = [0, 1, 6, 7, 12, 13, 18, 19, 24, 25];
+    const w2 = [2, 3, 8, 9, 14, 15, 20, 21, 26, 27];
+    const w3 = [4, 5, 10, 11, 16, 17, 22, 23, 28, 29];
     s.lifespan(2).update(1);
     expect(created.sort()).toEqual(w1.sort());
     s.update(0.9);
@@ -297,7 +297,7 @@ test('continuous', () => {
     .update(10)
     .tap(s => {
       expect(s.particle.speed).toBeCloseTo(3);
-        expect(s.field).not.toContain(s.particle);
+      expect(s.field).not.toContain(s.particle);
     });
 
   new Simulator(new behavior.RepeatBehavior(addSpeedBehavior(1, 2), 3))

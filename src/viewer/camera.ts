@@ -50,7 +50,7 @@ export class CameraController {
     return this._isDragging;
   }
 
-  constructor(private _camera: Camera) {}
+  constructor(private _camera: Camera) { }
 
   bind(container: HTMLElement): void {
     container.addEventListener('mousedown', this.onMouseDown, false);

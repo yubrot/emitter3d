@@ -139,7 +139,7 @@ abstract class ConstructedUnit extends Unit {
   }
 }
 
-class NilUnit extends Unit {}
+class NilUnit extends Unit { }
 
 class NumberUnit extends Unit {
   constructor(private value: number) {

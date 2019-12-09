@@ -1,6 +1,6 @@
 import { Particle, Behavior, Field } from './particle';
 
-export class NopBehavior extends Behavior {}
+export class NopBehavior extends Behavior { }
 
 export class SetBehavior extends Behavior {
   constructor(
@@ -100,7 +100,7 @@ export class EmitBehavior extends Behavior {
       [...Array(Math.floor(times))].map((_, t) =>
         [...Array(Math.floor(count))].map((_, n) =>
           [...Array(Math.floor(parallel))].map((_, p) =>
-            n + count*t + times*count*p)));
+            n + count * t + times * count * p)));
   }
 
   readonly indices: number[][][];

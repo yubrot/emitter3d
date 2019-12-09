@@ -103,7 +103,7 @@ export class GeometryBuilder extends THREE.Object3D {
       const lf = this.putPoint(l.position.clone().add(v), color);
       const rf = this.putPoint(r.position.clone().add(v), color);
       this.fillTriangleStrip(lt, lf, l, rf, r, rt);
-      v.applyAxisAngle(d, Math.PI/2);
+      v.applyAxisAngle(d, Math.PI / 2);
     }
     return this;
   }

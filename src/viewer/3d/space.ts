@@ -30,7 +30,7 @@ export class Space extends THREE.Group {
         const l = Math.random() ** 0.3;
         const d = (1 - Math.random() ** (1 - l ** 0.2)) * (rand(1) > 0 ? 1 : -1);
         pos.set(near + l * (far - near), 0, 0);
-        pos.applyEuler(euler.set(0, rand(Math.PI), d * Math.PI/2));
+        pos.applyEuler(euler.set(0, rand(Math.PI), d * Math.PI / 2));
         pos.applyQuaternion(rotation);
         pos.add(center);
         color.setHSL(((pos.x + pos.y + pos.z) / (far * 3)) % 1, 0.5, 0.85);

@@ -1,5 +1,5 @@
 export const reference =
-`
+  `
 --- nop
 speed 1
 model missile

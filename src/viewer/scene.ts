@@ -157,9 +157,9 @@ export class Scene extends THREE.Scene {
         const opacity = 1 - t ** Math.exp(this.trailAttenuationBias);
         position.copy(particle.position).addScaledVector(particle.fluctuation, fluctuation);
         color.setHSL(
-          (1 + particle.hue/360 + position.y * 0.001) % 1,
+          (1 + particle.hue / 360 + position.y * 0.001) % 1,
           this.particleSaturation,
-          this.particleLightness * particle.opacity * opacity * Math.min(1, particle.lifeTime*0.03));
+          this.particleLightness * particle.opacity * opacity * Math.min(1, particle.lifeTime * 0.03));
         handler(particle, position, color);
       }
     }

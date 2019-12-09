@@ -22,14 +22,14 @@ export const TextField: FunctionalComponent<Props> = props => {
       onInput={handleChange}
     />
   ) : (
-    <input
-      type="text"
-      className={css(styles.normal)}
-      style={style}
-      value={value}
-      onInput={handleChange}
-    />
-  );
+      <input
+        type="text"
+        className={css(styles.normal)}
+        style={style}
+        value={value}
+        onInput={handleChange}
+      />
+    );
 };
 
 const styles = StyleSheet.create({

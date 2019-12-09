@@ -102,8 +102,8 @@ export function claw(): ObjectGeometry {
 
   for (let i = 0; i < 3; ++i) {
     if (i != 2) {
-      const faceCenter = center(line.body[i].position, line.body[i+1].position);
-      g1.fillInner([line.head, line.body[i], line.tail, line.body[i+1], line.head], fin, black, faceCenter);
+      const faceCenter = center(line.body[i].position, line.body[i + 1].position);
+      g1.fillInner([line.head, line.body[i], line.tail, line.body[i + 1], line.head], fin, black, faceCenter);
     }
     const lineCenter = center(line.head.position, line.tail.position);
     g1.fillOuter([line.head, line.body[i], line.tail], fin, black, lineCenter);

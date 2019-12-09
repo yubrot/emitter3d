@@ -67,7 +67,7 @@ export class Application extends Component<{}, ApplicationState> {
   private generatePattern = (clear = true) => {
     ++this.generationCount;
     const program = simulator.generate(this.state.generatorStrength);
-    const item =  `Generation ${this.generationCount}`;
+    const item = `Generation ${this.generationCount}`;
     const code = simulator.print(program);
     this.explorer.save('history', item, code);
     this.setState({ explorer: this.explorer.state, editingItem: item, editingCode: code });
@@ -83,9 +83,9 @@ export class Application extends Component<{}, ApplicationState> {
 
     } catch (e) {
       const message =
-        (e instanceof simulator.ParseError) ?  `Parse error: ${e.message}` :
-        (e instanceof simulator.CompileError) ?  `Compile error: ${e.message}` :
-        `Unknown error: ${e.message}`;
+        (e instanceof simulator.ParseError) ? `Parse error: ${e.message}` :
+          (e instanceof simulator.CompileError) ? `Compile error: ${e.message}` :
+            `Unknown error: ${e.message}`;
       this.setState({ editorNotification: message });
     }
   };

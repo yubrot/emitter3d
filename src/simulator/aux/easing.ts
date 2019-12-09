@@ -1,5 +1,5 @@
 export class Easing {
-  constructor(private readonly f: (t: number) => number) {}
+  constructor(private readonly f: (t: number) => number) { }
 
   // We treat that any transitions complete at a positive infinitesimal when n = 0.
   // This is why Behavior.update must be called with arguments that satisfy `start < end`.

@@ -36,9 +36,9 @@ function pattern(spec: Spec): Code {
       if (strength < 8 || randf() < 0.7 || spec.generation.length == 0) {
         const parallel = (randf() < 0.1 || strength < 8) ? 1 : randr(2, 3, 4, 5, 6, 8);
         const { code: layoutCode, r } = layout1(spec);
-        const p = strength/parallel < 2 ? 1 : randi(2, Math.max(2, Math.min(strength/parallel, r/10/parallel)), 1, 1 / (1 + spec.fineness));
+        const p = strength / parallel < 2 ? 1 : randi(2, Math.max(2, Math.min(strength / parallel, r / 10 / parallel)), 1, 1 / (1 + spec.fineness));
         const [count, times] = (6 <= p && randf() < 0.8) ? [1, p] : [p, 1];
-        const duration = times == 1 ? 0 : randi(p*2, p*10);
+        const duration = times == 1 ? 0 : randi(p * 2, p * 10);
         const childPatternCount = (16 <= parallel * p && (parallel * p) % 2 == 0 && randf() < 0.5) ? 2 : 1;
         const childHues = array(childPatternCount, j => 60 + i * 40 + j * 40);
         const childCodes = array(childPatternCount, j => pattern({
@@ -66,8 +66,8 @@ function pattern(spec: Spec): Code {
         const { code: layoutCode, speed, r: r2 } = layout2(spec, strength >= 24);
         const r = r1 + r2;
         const p = randi(
-          Math.max(4, Math.min(strength, r/45)),
-          Math.max(4, Math.min(strength, duration/2, r/10)), 1, 1 / (1 + spec.fineness));
+          Math.max(4, Math.min(strength, r / 45)),
+          Math.max(4, Math.min(strength, duration / 2, r / 10)), 1, 1 / (1 + spec.fineness));
         const childHue = 60 + i * 40;
         const childCode = pattern({
           strength: strength / p,
@@ -93,9 +93,9 @@ function pattern(spec: Spec): Code {
 
   const model =
     flag.accelerate && flag.rotate ? 'missile' :
-    flag.accelerate ? randf() < 0.7 ? 'arrow' : 'missile' :
-    flag.rotate ? randf() < 0.7 ? 'claw' : 'missile' :
-    randf() < 0.7 ? 'arrow' : 'missile';
+      flag.accelerate ? randf() < 0.7 ? 'arrow' : 'missile' :
+        flag.rotate ? randf() < 0.7 ? 'claw' : 'missile' :
+          randf() < 0.7 ? 'arrow' : 'missile';
 
   return new Code().put('model', model).putCode(code);
 }
@@ -145,7 +145,7 @@ function move1(spec: Spec, flag: Flag): Code {
           code.join().putCode(rotation(duration, 6, 6, 6).code);
         }
         if (randf() < 0.3) {
-          code.join().put(duration/2, 'nop').put(duration/2, 'hue+', randr(2, -2) * duration);
+          code.join().put(duration / 2, 'nop').put(duration / 2, 'hue+', randr(2, -2) * duration);
         }
       })
       .end();
@@ -223,8 +223,8 @@ function layout1(spec: Spec): { code: Code, r: number } {
 
   const layoutCandidates =
     spec.generation.length == 0 ? ['horizontal'] :
-    (spec.directivity > 1 || around) ? ['horizontal', 'split'] :
-    ['horizontal', 'vertical', 'split'];
+      (spec.directivity > 1 || around) ? ['horizontal', 'split'] :
+        ['horizontal', 'vertical', 'split'];
 
   const layoutType = randr(layoutCandidates);
   const sign = randf() < 0.5 ? 1 : -1;
@@ -238,14 +238,14 @@ function layout1(spec: Spec): { code: Code, r: number } {
         r += 360;
       } else {
         const r1 = randi(15, 75);
-        code.put('rotate', 0, Code.eachRange(-r1*sign, r1*sign), 0);
+        code.put('rotate', 0, Code.eachRange(-r1 * sign, r1 * sign), 0);
         r += r1 * 2;
       }
       break;
     case 'vertical':
       {
         const r1 = randi(10, 40);
-        code.put('rotate', Code.eachRange(-r1*sign, r1*sign), 0, 0);
+        code.put('rotate', Code.eachRange(-r1 * sign, r1 * sign), 0, 0);
         r += r1 * 2;
       }
       break;

@@ -1,7 +1,7 @@
 import { Store } from './store';
 
 export class StorageStore implements Store {
-  constructor(private storage: Storage, private prefix: string = '') {}
+  constructor(private storage: Storage, private prefix: string = '') { }
 
   read(item: string): string {
     const result = this.storage.getItem(this.prefix + item);
