@@ -2,6 +2,6 @@
 
 ![](./screenshots/stardust.png)
 
-    $ npm install
+    $ npm ci
     $ npm run build
 
