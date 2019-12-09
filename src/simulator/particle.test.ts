@@ -57,12 +57,12 @@ test('core', () => {
 
   {
     const field = new Field();
-    expect(field.isEmpty).toEqual(true);
+    expect([...field].length).toEqual(0);
     const particle = new Particle(new behavior.NopBehavior());
     field.add(particle);
-    expect(field.isEmpty).toEqual(false);
+    expect([...field].length).toEqual(1);
     field.update(1);
-    expect(field.isEmpty).toEqual(true);
+    expect([...field].length).toEqual(0);
   }
 });
 
@@ -92,11 +92,11 @@ test('set', () => {
     .update(1)
     .tap(s => expect(s.particle.speed).toEqual(5));
 
-  new Simulator(new behavior.SetModelBehavior('missile'))
+  new Simulator(new behavior.SwitchBehavior(p => p.model = 'missile'))
     .update(1)
     .tap(s => expect(s.particle.model).toEqual('missile'));
 
-  new Simulator(new behavior.SetModelBehavior('missile'))
+  new Simulator(new behavior.SwitchBehavior(p => p.model = 'missile'))
     .lifespan(4)
     .update(1)
     .tap(s => {
