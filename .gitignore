@@ -1,5 +1,6 @@
 node_modules/
 gh-pages/
 coverage/
+dist/emitter3d.js
 .vscode/
 npm-debug.log

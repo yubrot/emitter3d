@@ -1,8 +1,9 @@
 # [emitter3d](https://yubrot.github.io/emitter3d/)
 
+![](https://github.com/yubrot/emitter3d/workflows/Build,%20test%20and%20deploy/badge.svg)
+
 ![](./screenshots/stardust.png)
 
-    $ git worktree add -b gh-pages gh-pages origin/gh-pages
-    $ npm install
+    $ npm ci
     $ npm run build
 
