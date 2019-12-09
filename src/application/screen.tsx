@@ -6,7 +6,7 @@ import * as viewer from '../viewer';
 export type Props = SceneState & RendererState;
 
 export class Screen extends Component<Props, {}> {
-  private container!: HTMLElement;
+  private container!: HTMLDivElement;
   private _scene!: viewer.Scene;
   private _camera!: viewer.Camera;
   private renderer!: viewer.Renderer;
@@ -109,7 +109,7 @@ export class Screen extends Component<Props, {}> {
         width: '100%',
         height: '100%',
       }}
-      ref={d => this.container = d}
+      ref={d => this.container = d!}
     />;
   }
 }

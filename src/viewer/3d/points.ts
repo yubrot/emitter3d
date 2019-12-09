@@ -18,8 +18,8 @@ export class Points extends THREE.Points {
     super(new THREE.BufferGeometry(), new PointsMaterial());
     this.positions = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
     this.colors = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
-    this.positions.setDynamic(true);
-    this.colors.setDynamic(true);
+    this.positions.setUsage(THREE.DynamicDrawUsage);
+    this.colors.setUsage(THREE.DynamicDrawUsage);
     this.buffer.addAttribute('position', this.positions);
     this.buffer.addAttribute('color', this.colors);
     this.buffer.setDrawRange(0, 0);

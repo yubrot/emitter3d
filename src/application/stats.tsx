@@ -6,7 +6,7 @@ export type Props = {
 };
 
 export class Stats extends Component<Props, {}> {
-  private container!: HTMLElement;
+  private container!: HTMLDivElement;
   private stats!: StatsJS;
 
   get internal(): StatsJS {
@@ -28,8 +28,8 @@ export class Stats extends Component<Props, {}> {
     const { visible } = this.props;
     return (
       <div
-        style={{display: visible != false ? 'block' : 'none'}}
-        ref={d => this.container = d}
+        style={{ display: visible != false ? 'block' : 'none' }}
+        ref={d => this.container = d!}
       />
     );
   }

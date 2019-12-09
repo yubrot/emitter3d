@@ -1,26 +1,7 @@
 {
   "name": "emitter3d",
   "version": "1.0.0",
-  "description": "generative fireworks 3D",
-  "dependencies": {
-    "aphrodite": "^2.3.1",
-    "gl-matrix": "^3.0.0",
-    "preact": "^10.0.0-beta.1",
-    "stats.js": "^0.17.0",
-    "three": "^0.104.0"
-  },
-  "devDependencies": {
-    "@types/gl-matrix": "^2.4.5",
-    "@types/jest": "^24.0.12",
-    "@types/stats.js": "^0.17.0",
-    "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "ts-loader": "^6.0.0",
-    "typescript": "^3.4.5",
-    "webpack": "^4.31.0",
-    "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.3.1"
-  },
+  "description": "Geometric fireworks",
   "scripts": {
     "build": "webpack -p",
     "test": "jest --watch",
@@ -36,5 +17,24 @@
     "url": "git+https://github.com/yubrot/emitter3d.git"
   },
   "author": "yubrot",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "aphrodite": "^2.4.0",
+    "gl-matrix": "^3.1.0",
+    "preact": "^10.0.5",
+    "stats.js": "^0.17.0",
+    "three": "^0.111.0"
+  },
+  "devDependencies": {
+    "@types/gl-matrix": "^2.4.5",
+    "@types/jest": "^24.0.23",
+    "@types/stats.js": "^0.17.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  }
 }

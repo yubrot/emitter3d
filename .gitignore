@@ -1,4 +1,5 @@
 node_modules/
 gh-pages/
 coverage/
+.vscode/
 npm-debug.log

@@ -13,10 +13,10 @@ export type Props = {
 };
 
 export const Window: FunctionalComponent<Props> = props => {
-  const { children, width, height, ...position } = props;
+  const { children, width, height, top, bottom, left, right } = props;
 
-  const flexDirection = position.top ? 'column' : 'column-reverse';
-  const alignItems = position.left ? 'flex-start' : 'flex-end';
+  const flexDirection = top ? 'column' : 'column-reverse';
+  const alignItems = left ? 'flex-start' : 'flex-end';
 
   const [isOpened, setIsOpened] = useState(false);
   const handleToggle = useCallback(() => setIsOpened(isOpened => !isOpened), []);
@@ -24,14 +24,21 @@ export const Window: FunctionalComponent<Props> = props => {
   return (
     <div
       className={css(styles.window, isOpened && styles.windowOpened)}
-      style={{ flexDirection, alignItems, ...position }}
+      style={{
+        flexDirection,
+        alignItems,
+        top: top || 'auto',
+        bottom: bottom || 'auto',
+        left: left || 'auto',
+        right: right || 'auto',
+      }}
     >
       <Button onClick={handleToggle}>
         {isOpened ? '-' : '+'}
       </Button>
       <div
         className={css(styles.content, isOpened && styles.contentOpened)}
-        style={{ width, height }}
+        style={{ width: width || 'auto', height: height || 'auto' }}
       >
         {children}
       </div>

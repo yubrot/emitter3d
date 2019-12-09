@@ -14,7 +14,7 @@ export type Props = {
 export const Slider: FunctionalComponent<Props> = props => {
   const { range: [min, max, step], disabled, value, onChange, style, children } = props;
 
-  const sliderRef = useRef<HTMLElement>();
+  const sliderRef = useRef<HTMLDivElement>();
 
   const [sliderHover, sliderActive] = useMouseDragEvent(sliderRef, (ev: MouseEvent) => {
     if (disabled) return;
@@ -52,7 +52,7 @@ export const Slider: FunctionalComponent<Props> = props => {
 
 export function numberString(value: number, step: number): string {
   let decimal = 0;
-  while (step < 1) ++decimal, step *= 10;
+  while (step < 1)++decimal, step *= 10;
   let s = value < 0 ? "-" : "";
   let t = String(Math.round(Math.abs(value) * 10 ** decimal));
   let u = "";

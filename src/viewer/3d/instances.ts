@@ -34,7 +34,7 @@ export class Instances extends THREE.Mesh {
   static geometry(capacity: number, objectGeometry: ObjectGeometry): THREE.InstancedBufferGeometry {
     function instancedBufferAttribute(n: number): THREE.InstancedBufferAttribute {
       const attr = new THREE.InstancedBufferAttribute(new Float32Array(capacity * n), n);
-      attr.setDynamic(true);
+      attr.setUsage(THREE.DynamicDrawUsage);
       return attr;
     }
 
