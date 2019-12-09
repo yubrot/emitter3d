@@ -4,9 +4,9 @@
   "description": "Geometric fireworks",
   "scripts": {
     "build": "webpack -p",
-    "test": "jest --watch",
+    "test": "jest",
     "coverage": "jest --coverage",
-    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./gh-pages"
+    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./dist"
   },
   "jest": {
     "preset": "ts-jest",
