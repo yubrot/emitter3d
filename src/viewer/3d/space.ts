@@ -55,14 +55,14 @@ export class Space extends THREE.Group {
     }
 
     const starGeometry = new THREE.BufferGeometry();
-    starGeometry.addAttribute('position', starPositions);
-    starGeometry.addAttribute('color', starColors);
+    starGeometry.setAttribute('position', starPositions);
+    starGeometry.setAttribute('color', starColors);
     const stars = new THREE.Points(starGeometry, Space.starMaterial());
     this.add(stars);
 
     const gasGeometry = new THREE.BufferGeometry();
-    gasGeometry.addAttribute('position', gasPositions);
-    gasGeometry.addAttribute('color', gasColors);
+    gasGeometry.setAttribute('position', gasPositions);
+    gasGeometry.setAttribute('color', gasColors);
     const gases = new THREE.Points(gasGeometry, Space.gasMaterial());
     this.add(gases);
   }

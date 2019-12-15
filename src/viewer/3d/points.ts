@@ -20,8 +20,8 @@ export class Points extends THREE.Points {
     this.colors = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
     this.positions.setUsage(THREE.DynamicDrawUsage);
     this.colors.setUsage(THREE.DynamicDrawUsage);
-    this.buffer.addAttribute('position', this.positions);
-    this.buffer.addAttribute('color', this.colors);
+    this.buffer.setAttribute('position', this.positions);
+    this.buffer.setAttribute('color', this.colors);
     this.buffer.setDrawRange(0, 0);
     this.frustumCulled = false;
   }

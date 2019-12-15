@@ -41,11 +41,11 @@ export class Instances extends THREE.Mesh {
     const geometry = new THREE.InstancedBufferGeometry();
     geometry.maxInstancedCount = 0;
 
-    geometry.addAttribute('objectPosition', objectGeometry.position);
-    geometry.addAttribute('objectColor', objectGeometry.color);
-    geometry.addAttribute('position', instancedBufferAttribute(3));
-    geometry.addAttribute('rotation', instancedBufferAttribute(4));
-    geometry.addAttribute('color', instancedBufferAttribute(3));
+    geometry.setAttribute('objectPosition', objectGeometry.position);
+    geometry.setAttribute('objectColor', objectGeometry.color);
+    geometry.setAttribute('position', instancedBufferAttribute(3));
+    geometry.setAttribute('rotation', instancedBufferAttribute(4));
+    geometry.setAttribute('color', instancedBufferAttribute(3));
 
     geometry.setIndex(objectGeometry.index);
 
