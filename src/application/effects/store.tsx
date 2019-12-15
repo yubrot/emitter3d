@@ -1,4 +1,34 @@
-import { AntialiasMode, antialiasModes, ParticleMode, particleModes } from '../viewer';
+import { h, FunctionalComponent, createContext } from 'preact';
+import { useContext, useState, useCallback } from 'preact/hooks';
+
+export interface Store {
+  readonly state: ApplicationState;
+  update(updater: Updater<ApplicationState>): void;
+}
+
+const Context = createContext(undefined as unknown as Store);
+
+export const RunStore: FunctionalComponent<{}> = props => {
+  const [state, setState] = useState(initialApplicationState);
+  const update = useCallback((updater: Updater<ApplicationState>) => {
+    setState(s => ({
+      ...s,
+      ...updater instanceof Function ? updater(s) : updater
+    }));
+  }, [setState]);
+
+  return (
+    <Context.Provider value={{ state, update }}>
+      {props.children}
+    </Context.Provider>
+  );
+};
+
+export const useStore: () => Store = () => useContext(Context);
+
+type Updater<S> = Partial<S> | ((s: S) => Partial<S>);
+
+import { AntialiasMode, antialiasModes, ParticleMode, particleModes } from '../../viewer';
 export { AntialiasMode, antialiasModes, ParticleMode, particleModes };
 
 export type ApplicationState = CoreState & EditorState & RendererState & SceneState;
@@ -31,13 +61,15 @@ export type EditorState = {
   editingItem: string;
   editingCode: string;
   editorNotification: string;
+  editorCompilation: ['required', number] | ['cancelRequired'] | ['none'];
+  generatorGeneration: number;
   generatorStrength: number;
   generateAutomatically: boolean;
   explorer: ExplorerState;
 };
 
 export type ExplorerState = {
-  name: string;
+  path: string;
   items: string[];
   writable: boolean;
 }[];
@@ -46,6 +78,8 @@ export const initialEditorState: EditorState = {
   editingItem: '',
   editingCode: '',
   editorNotification: '',
+  editorCompilation: ['none'],
+  generatorGeneration: 0,
   generatorStrength: 400,
   generateAutomatically: true,
   explorer: [],
