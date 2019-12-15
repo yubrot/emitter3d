@@ -12,7 +12,7 @@ export const Editor: FunctionalComponent<{}> = props => {
   const codeSave = useCodeSave();
   const codeDelete = useCodeDelete();
   const codeLoad = useCodeLoad();
-  const codeGenerate = useCodeGenerate();
+  const codeGenerate = useCodeGenerate(true);
 
   const update = store.update;
   const {

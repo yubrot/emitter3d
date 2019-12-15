@@ -118,7 +118,7 @@ function useSystemUpdater(): (deltaTime: number) => void {
   const simulator = useSimulator();
   const viewer = useViewer();
   const stats = useStats();
-  const codeGenerate = useCodeGenerate();
+  const codeGenerate = useCodeGenerate(false);
 
   const { stepsPerSecond, isPaused, cameraRevolve, generateAutomatically } = store.state;
 
@@ -203,7 +203,7 @@ export function useCodeLoad(): (path: string, item: string) => void {
   }, [update, explorer]);
 }
 
-export function useCodeGenerate(): () => void {
+export function useCodeGenerate(clear: boolean): () => void {
   const store = useStore();
   const explorer = useExplorer();
   const simulator = useSimulator();
@@ -212,7 +212,7 @@ export function useCodeGenerate(): () => void {
   const { generatorGeneration, generatorStrength } = store.state;
 
   return useCallback(async () => {
-    const { code } = simulator.generatePattern(generatorStrength, true);
+    const { code } = simulator.generatePattern(generatorStrength, clear);
     const generation = generatorGeneration + 1;
     const item = `Generation ${generation}`
     update(state => ({
@@ -228,5 +228,5 @@ export function useCodeGenerate(): () => void {
       generatorGeneration: generation,
     }));
     await explorer.write('history', item, code);
-  }, [update, explorer, simulator, generatorGeneration, generatorStrength]);
+  }, [update, clear, explorer, simulator, generatorGeneration, generatorStrength]);
 }
