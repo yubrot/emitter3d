@@ -1,57 +1,52 @@
 import { h, FunctionalComponent } from 'preact';
 import { useState, useCallback } from 'preact/hooks';
-import { useTimeout } from './hooks';
 import { StyleSheet, css } from 'aphrodite';
 import { Window, Accordion, Toggle, Slider, Button, TextField } from './components';
-import { EditorState } from './state';
+import { useStore } from './effects/store';
+import { useSimulator } from './effects/simulator';
+import { useCodeSave, useCodeDelete, useCodeLoad, useCodeGenerate } from './system';
 
-export type Props = {
-  onChange(diff: Partial<EditorState>): void;
-  onSave(store: string, item: string, code: string): void;
-  onLoad(store: string, item: string): void;
-  onDelete(store: string, item: string): void;
-  onCommitCodeChange(): void;
-  onGenerate(): void;
-  onReset(): void;
-} & EditorState;
+export const Editor: FunctionalComponent<{}> = props => {
+  const store = useStore();
+  const simulator = useSimulator();
+  const codeSave = useCodeSave();
+  const codeDelete = useCodeDelete();
+  const codeLoad = useCodeLoad();
+  const codeGenerate = useCodeGenerate();
 
-export const Editor: FunctionalComponent<Props> = props => {
+  const update = store.update;
   const {
-    onChange, onSave, onLoad, onDelete, onCommitCodeChange, onGenerate, onReset,
-    explorer, editingItem, editingCode, editorNotification, generatorStrength, generateAutomatically,
-  } = props;
+    editorNotification, editingItem, editingCode, explorer,
+    generatorStrength, generateAutomatically
+  } = store.state;
 
-  const handleItemNameChange = useCallback((editingItem: string) => {
-    onChange({
+  const itemNameChange = useCallback((editingItem: string) => {
+    update({
       editingItem,
       generateAutomatically: false,
     });
-  }, [onChange]);
+  }, [update]);
 
-  const commitCodeChangeTimeout = useTimeout([]);
-
-  const handleCodeChange = useCallback((editingCode: string) => {
-    onChange({
+  const codeChange = useCallback((editingCode: string) => {
+    update({
       editingCode,
       generateAutomatically: false,
       editorNotification: '...',
+      editorCompilation: ['required', 500],
     });
-    commitCodeChangeTimeout(onCommitCodeChange, 500);
-  }, [onChange, onCommitCodeChange]);
+  }, [update]);
 
-  const handleGeneratorStrengthChange = useCallback((generatorStrength: number) => {
-    onChange({ generatorStrength });
-  }, [onChange]);
+  const generatorStrengthChange = useCallback((generatorStrength: number) => {
+    update({ generatorStrength });
+  }, [update]);
 
-  const handleGenerateAutomaticallyChange = useCallback((generateAutomatically: boolean) => {
-    onChange({ generateAutomatically });
-  }, [onChange]);
+  const generateAutomaticallyChange = useCallback((generateAutomatically: boolean) => {
+    update({ generateAutomatically });
+  }, [update]);
 
-  const handleSave = useCallback(() => {
-    const firstWritableStore = explorer.find(store => store.writable);
-    if (!firstWritableStore) return;
-    onSave(firstWritableStore.name, editingItem, editingCode);
-  }, [explorer, editingItem, editingCode, onSave]);
+  const reset = useCallback(() => {
+    simulator.reset();
+  }, [simulator]);
 
   const [showExplorer, setShowExplorer] = useState(false);
   const toggleShowExplorer = useCallback(() => setShowExplorer(show => !show), []);
@@ -61,23 +56,23 @@ export const Editor: FunctionalComponent<Props> = props => {
       <div className={css(styles.items)}>
         <TextField
           value={editingItem}
-          onChange={handleItemNameChange}
+          onChange={itemNameChange}
           style={{ flex: "1" }}
         />
-        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={codeSave}>Save</Button>
         <Button onClick={toggleShowExplorer}>{showExplorer ? "Open -" : "Open +"}</Button>
       </div>
       <div className={css(styles.explorer, showExplorer && styles.explorerOpened)}>
-        {explorer.map(({ name: store, items, writable }) => (
-          <Accordion header={store} initiallyOpened={false}>
-            <ul className={css(styles.store)}>
-              {items.map(item => (
-                <li className={css(styles.storeItem)}>
-                  <div className={css(styles.storeItemOpen)} onClick={() => onLoad(store, item)}>
+        {explorer.map(storage => (
+          <Accordion header={storage.path} initiallyOpened={false}>
+            <ul className={css(styles.storage)}>
+              {storage.items.map(item => (
+                <li className={css(styles.storageItem)}>
+                  <div className={css(styles.storageItemOpen)} onClick={() => codeLoad(storage.path, item)}>
                     {item}
                   </div>
-                  {writable ? (
-                    <div className={css(styles.storeItemDelete)} onClick={() => onDelete(store, item)}>
+                  {storage.writable ? (
+                    <div className={css(styles.storageItemDelete)} onClick={() => codeDelete(storage.path, item)}>
                       x
                     </div>
                   ) : null}
@@ -92,7 +87,7 @@ export const Editor: FunctionalComponent<Props> = props => {
       </div>
       <TextField
         value={editingCode}
-        onChange={handleCodeChange}
+        onChange={codeChange}
         multiline={true}
         style={{ width: '440px', height: '350px' }}
       />
@@ -100,20 +95,20 @@ export const Editor: FunctionalComponent<Props> = props => {
         <Slider
           range={[10, 1000, 1]}
           value={generatorStrength}
-          onChange={handleGeneratorStrengthChange}
+          onChange={generatorStrengthChange}
           style={{ flex: "1" }}
         >
           strength
         </Slider>
         <Toggle
           value={generateAutomatically}
-          onChange={handleGenerateAutomaticallyChange}
+          onChange={generateAutomaticallyChange}
           style={{ flex: "1" }}
         >
           automatically
         </Toggle>
-        <Button onClick={onGenerate}>Generate!</Button>
-        <Button onClick={onReset}>Reset</Button>
+        <Button onClick={codeGenerate}>Generate!</Button>
+        <Button onClick={reset}>Reset</Button>
       </div>
     </Window>
   );
@@ -140,11 +135,11 @@ const styles = StyleSheet.create({
   explorerOpened: {
     display: 'block',
   },
-  store: {
+  storage: {
     margin: 0,
     padding: 0,
   },
-  storeItem: {
+  storageItem: {
     display: 'flex',
     alignItems: 'center',
     margin: '2px 0',
@@ -164,10 +159,10 @@ const styles = StyleSheet.create({
       borderColor: 'rgba(255, 255, 255, 0.7)',
     },
   },
-  storeItemOpen: {
+  storageItemOpen: {
     flex: "1",
   },
-  storeItemDelete: {
+  storageItemDelete: {
     padding: '0 3px',
     transition: '0.2s',
     ':hover': {

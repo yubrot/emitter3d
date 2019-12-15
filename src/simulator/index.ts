@@ -38,3 +38,53 @@ export function compile(program: Program): (index: [number, number]) => Behavior
 
 export const ParseError = dslParser.ParseError;
 export const CompileError = dslCompiler.CompileError;
+
+export class Simulator {
+  private field = new Field();
+  private pattern = compile([]);
+
+  get closed(): boolean {
+    return this.field.closed;
+  }
+
+  get particles(): Iterable<Particle> {
+    return this.field;
+  }
+
+  reset(): void {
+    this.field.clear();
+  }
+
+  update(deltaTime: number): void {
+    this.field.update(deltaTime);
+  }
+
+  emitRootParticle(): void {
+    const behavior = this.pattern([0, 1]);
+    this.field.add(new Particle(behavior));
+  }
+
+  generatePattern(strength: number, clear: boolean): { code: string } {
+    const program = generate(strength);
+    const code = print(program);
+    const { success, message } = this.compilePattern(code, clear);
+    console.assert(success, message);
+    return { code };
+  }
+
+  compilePattern(code: string, clear: boolean): { success: boolean, message: string } {
+    try {
+      const program = parse(code);
+      this.pattern = compile(program);
+      if (clear) this.field.clear();
+      return { success: true, message: 'Successfully compiled.' };
+
+    } catch (e) {
+      const message =
+        (e instanceof ParseError) ? `Parse error: ${e.message}` :
+          (e instanceof CompileError) ? `Compile error: ${e.message}` :
+            `Unknown error: ${e.message}`;
+      return { success: false, message };
+    }
+  }
+}
