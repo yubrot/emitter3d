@@ -1,4 +1,4 @@
-export const examples =
+export const text =
   `
 --- sphere
 model arrow

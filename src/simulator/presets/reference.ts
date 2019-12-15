@@ -1,4 +1,4 @@
-export const reference =
+export const text =
   `
 --- nop
 speed 1

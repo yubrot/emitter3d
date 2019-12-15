@@ -1,17 +1,14 @@
-export { examples } from './examples';
-export { reference } from './reference';
+import { text as examplesText } from './examples';
+import { text as referenceText } from './reference';
 
-export type Store = {
-  write(title: string, body: string): void;
-};
-
-export function install<T extends Store>(store: T, text: string): T {
+function preset(text: string): Map<string, string> {
+  const map = new Map<string, string>();
   let title: string | undefined;
   let body = '';
 
   for (const line of text.split(/\n/)) {
     if (line.startsWith('---')) {
-      if (title) store.write(title, body.trim());
+      if (title) map.set(title, body.trim());
       title = line.substring(3).trim();
       body = '';
     } else {
@@ -19,5 +16,8 @@ export function install<T extends Store>(store: T, text: string): T {
     }
   }
 
-  return store;
+  return map;
 }
+
+export const examples = preset(examplesText);
+export const reference = preset(referenceText);
