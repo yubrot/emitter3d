@@ -68,26 +68,25 @@ function useViewerOptionApplier(): void {
   const store = useStore();
   const viewer = useViewer();
 
-  const { antialiasMode, focusEffect, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } = store.state;
+  const { antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } = store.state;
 
   useEffect(() => {
-    viewer.renderer.antialiasMode = antialiasMode;
-    viewer.renderer.focus = focusEffect;
+    viewer.renderer.antialias = antialias;
     viewer.renderer.bloom = bloomEffect;
     viewer.renderer.bloomStrength = bloomStrength;
     viewer.renderer.bloomThreshold = bloomThreshold;
     viewer.renderer.bloomRadius = bloomRadius;
-  }, [antialiasMode, focusEffect, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
+  }, [antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
 
   const {
-    particleMode, particleSaturation, particleLightness, particlePointSize,
+    particlePoint, particlePrism, particleSaturation, particleLightness, particlePointSize,
     particlePointCoreWidth, particlePointCoreSharpness, particlePointShellLightness, particlePointSizeAttenuation,
     trailLength, trailStep, trailFluctuationScale, trailFluctuationBias, trailAttenuationBias,
-    showSpace,
   } = store.state;
 
   useEffect(() => {
-    viewer.scene.particleMode = particleMode;
+    viewer.scene.points.visible = particlePoint;
+    viewer.scene.prisms.visible = particlePrism;
     viewer.scene.particleSaturation = particleSaturation;
     viewer.scene.particleLightness = particleLightness;
     viewer.scene.points.mat.size = particlePointSize;
@@ -103,13 +102,11 @@ function useViewerOptionApplier(): void {
     viewer.scene.trailFluctuationScale = trailFluctuationScale;
     viewer.scene.trailFluctuationBias = trailFluctuationBias;
     viewer.scene.trailAttenuationBias = trailAttenuationBias;
-    viewer.scene.space.visible = showSpace;
     viewer.scene.needsUpdate = true;
   }, [
-    particleMode, particleSaturation, particleLightness, particlePointSize,
+    particlePoint, particlePrism, particleSaturation, particleLightness, particlePointSize,
     particlePointCoreWidth, particlePointCoreSharpness, particlePointShellLightness, particlePointSizeAttenuation,
     trailLength, trailStep, trailFluctuationScale, trailFluctuationBias, trailAttenuationBias,
-    showSpace,
   ]);
 }
 

@@ -28,9 +28,6 @@ export const useStore: () => Store = () => useContext(Context);
 
 type Updater<S> = Partial<S> | ((s: S) => Partial<S>);
 
-import { AntialiasMode, antialiasModes, ParticleMode, particleModes } from '../../viewer';
-export { AntialiasMode, antialiasModes, ParticleMode, particleModes };
-
 export type ApplicationState = CoreState & EditorState & RendererState & SceneState;
 
 export function initialApplicationState(): ApplicationState {
@@ -86,8 +83,7 @@ export const initialEditorState: EditorState = {
 };
 
 export type RendererState = {
-  antialiasMode: AntialiasMode;
-  focusEffect: boolean;
+  antialias: boolean;
   bloomEffect: boolean;
   bloomStrength: number;
   bloomThreshold: number;
@@ -95,8 +91,7 @@ export type RendererState = {
 };
 
 export const initialRendererState: RendererState = {
-  antialiasMode: antialiasModes[0],
-  focusEffect: false,
+  antialias: false,
   bloomEffect: false,
   bloomStrength: 0.5,
   bloomThreshold: 0.5,
@@ -104,9 +99,10 @@ export const initialRendererState: RendererState = {
 };
 
 export type SceneState = {
+  particlePoint: boolean;
+  particlePrism: boolean;
   particleSaturation: number;
   particleLightness: number;
-  particleMode: ParticleMode;
   particlePointSize: number;
   particlePointSizeAttenuation: boolean;
   particlePointCoreWidth: number;
@@ -117,13 +113,13 @@ export type SceneState = {
   trailFluctuationScale: number;
   trailFluctuationBias: number;
   trailAttenuationBias: number;
-  showSpace: boolean;
 };
 
 export const initialSceneState: SceneState = {
+  particlePoint: true,
+  particlePrism: true,
   particleSaturation: 0.5,
   particleLightness: 0.5,
-  particleMode: particleModes[0],
   particlePointSize: 3,
   particlePointSizeAttenuation: true,
   particlePointCoreWidth: 0.5,
@@ -134,21 +130,20 @@ export const initialSceneState: SceneState = {
   trailFluctuationScale: 0,
   trailFluctuationBias: 0,
   trailAttenuationBias: 0,
-  showSpace: true,
 };
 
-export type PresetName = 'stardust' | 'prism' | 'wisp' | 'crystal';
+export type PresetName = 'stardust' | 'prism';
 
-export const presetNames: PresetName[] = ['stardust', 'prism', 'wisp', 'crystal'];
+export const presetNames: PresetName[] = ['stardust', 'prism'];
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   stardust: {
-    antialiasMode: 'OFF',
-    focusEffect: true,
+    antialias: false,
     bloomEffect: false,
+    particlePoint: true,
+    particlePrism: false,
     particleSaturation: 1.0,
     particleLightness: 0.8,
-    particleMode: 'points',
     particlePointSize: 14,
     particlePointCoreWidth: 0.05,
     particlePointCoreSharpness: 3,
@@ -158,59 +153,20 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     trailFluctuationScale: 15,
     trailFluctuationBias: 0,
     trailAttenuationBias: 1,
-    showSpace: true,
   },
   prism: {
-    antialiasMode: 'SMAA',
-    focusEffect: false,
+    antialias: true,
     bloomEffect: true,
     bloomStrength: 1.2,
     bloomThreshold: 0.0,
     bloomRadius: 1.0,
+    particlePoint: false,
+    particlePrism: true,
     particleSaturation: 0.9,
     particleLightness: 0.7,
-    particleMode: 'prism',
     trailLength: 24,
     trailStep: 1,
     trailFluctuationScale: 0,
     trailAttenuationBias: -2,
-    showSpace: false,
-  },
-  wisp: {
-    antialiasMode: 'OFF',
-    focusEffect: true,
-    bloomEffect: true,
-    bloomStrength: 0.7,
-    bloomThreshold: 0.5,
-    bloomRadius: 1,
-    particleSaturation: 0.9,
-    particleLightness: 1.0,
-    particleMode: 'points',
-    particlePointSize: 5,
-    particlePointCoreWidth: 0.75,
-    particlePointCoreSharpness: 0,
-    particlePointShellLightness: 0.85,
-    trailLength: 32,
-    trailStep: 1,
-    trailFluctuationScale: 3,
-    trailFluctuationBias: -0.5,
-    trailAttenuationBias: -1.5,
-    showSpace: true,
-  },
-  crystal: {
-    antialiasMode: 'SSAA x4',
-    focusEffect: false,
-    bloomEffect: true,
-    bloomStrength: 0.9,
-    bloomThreshold: 0.5,
-    bloomRadius: 0.2,
-    particleSaturation: 0.9,
-    particleLightness: 0.7,
-    particleMode: 'crystal',
-    trailLength: 40,
-    trailStep: 2,
-    trailFluctuationScale: 0,
-    trailAttenuationBias: -2,
-    showSpace: true,
   },
 };

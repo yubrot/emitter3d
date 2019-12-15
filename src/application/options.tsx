@@ -1,15 +1,12 @@
 import { h, FunctionalComponent } from 'preact';
 import { useCallback } from 'preact/hooks';
-import { Window, Accordion, Toggle, Slider, Select, Button } from './components';
-import {
-  useStore, antialiasModes, particleModes, presetNames, presetStates,
-  ApplicationState, PresetName,
-} from './effects/store';
+import { Window, Accordion, Toggle, Slider, Button } from './components';
+import { useStore, presetNames, presetStates, ApplicationState, PresetName } from './effects/store';
 
 export const Options: FunctionalComponent<{}> = props => {
   const store = useStore();
 
-  const { bloomEffect, particleMode, trailLength, trailFluctuationScale } = store.state;
+  const { bloomEffect, particlePoint, trailLength, trailFluctuationScale } = store.state;
   const update = store.update;
 
   const option = <K extends keyof ApplicationState>(key: K) => ({
@@ -22,11 +19,8 @@ export const Options: FunctionalComponent<{}> = props => {
   return (
     <Window top="5px" right="5px" width="240px">
       <Accordion header="Renderer">
-        <Select options={antialiasModes} {...option('antialiasMode')}>
+        <Toggle {...option('antialias')}>
           antialias
-        </Select>
-        <Toggle {...option('focusEffect')}>
-          focus effect
         </Toggle>
         <Toggle {...option('bloomEffect')}>
           bloom effect
@@ -48,24 +42,27 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider range={[0, 1, 0.01]} {...option('particleLightness')}>
           particle lightness
         </Slider>
-        <Select options={particleModes} {...option('particleMode')}>
-          particle mode
-        </Select>
-        <Slider disabled={particleMode != 'points'} range={[0.1, 16, 0.1]} {...option('particlePointSize')}>
+        <Toggle {...option('particlePoint')}>
+          point particle
+        </Toggle>
+        <Slider disabled={!particlePoint} range={[0.1, 16, 0.1]} {...option('particlePointSize')}>
           particle point size
         </Slider>
-        <Toggle disabled={particleMode != 'points'} {...option('particlePointSizeAttenuation')}>
+        <Toggle disabled={!particlePoint} {...option('particlePointSizeAttenuation')}>
           particle point size attenuation
         </Toggle>
-        <Slider disabled={particleMode != 'points'} range={[0.05, 0.95, 0.01]} {...option('particlePointCoreWidth')}>
+        <Slider disabled={!particlePoint} range={[0.05, 0.95, 0.01]} {...option('particlePointCoreWidth')}>
           particle point core width
         </Slider>
-        <Slider disabled={particleMode != 'points'} range={[-3, 3, 0.01]} {...option('particlePointCoreSharpness')}>
+        <Slider disabled={!particlePoint} range={[-3, 3, 0.01]} {...option('particlePointCoreSharpness')}>
           particle point core sharpness
         </Slider>
-        <Slider disabled={particleMode != 'points'} range={[0.05, 0.95, 0.01]} {...option('particlePointShellLightness')}>
+        <Slider disabled={!particlePoint} range={[0.05, 0.95, 0.01]} {...option('particlePointShellLightness')}>
           particle point shell lightness
         </Slider>
+        <Toggle {...option('particlePrism')}>
+          prism particle
+        </Toggle>
         <Slider range={[1, 60, 1]} {...option('trailLength')}>
           trail length
         </Slider>
@@ -81,9 +78,6 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={trailLength == 1} range={[-3, 3, 0.01]} {...option('trailAttenuationBias')}>
           trail attenuation bias
         </Slider>
-        <Toggle {...option('showSpace')}>
-          show space
-        </Toggle>
       </Accordion>
       <Accordion header="Core" initiallyOpened={true}>
         <Toggle {...option('isPaused')}>

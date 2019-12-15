@@ -3,8 +3,8 @@ import * as dslParser from './dsl-parser';
 import * as dslPrinter from './dsl-printer';
 import * as dslCompiler from './dsl-compiler';
 
-import { Model, Particle, Behavior, Field } from './particle';
-export { Model, Particle, Behavior, Field };
+import { Particle, Behavior, Field } from './particle';
+export { Particle, Behavior, Field };
 import * as patternGenerator from './pattern-generator';
 
 const printer = new dslPrinter.Printer();

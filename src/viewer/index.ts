@@ -1,10 +1,8 @@
 import './three-plugins/install';
-import { Particle, ParticleMode, particleModes, Scene } from './scene';
-export { Particle, ParticleMode, particleModes, Scene };
-import { Renderer, AntialiasMode, antialiasModes } from './renderer';
-export { Renderer, AntialiasMode, antialiasModes };
+import { Particle, Scene } from './scene';
+import { Renderer } from './renderer';
 import { CameraPosition, Camera, CameraController } from './camera';
-export { CameraPosition, Camera, CameraController };
+export { Particle, Scene, Renderer, CameraPosition, Camera, CameraController };
 
 export class Viewer {
   readonly scene = new Scene();

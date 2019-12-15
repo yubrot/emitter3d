@@ -91,13 +91,7 @@ function pattern(spec: Spec): Code {
     }
   }
 
-  const model =
-    flag.accelerate && flag.rotate ? 'missile' :
-      flag.accelerate ? randf() < 0.7 ? 'arrow' : 'missile' :
-        flag.rotate ? randf() < 0.7 ? 'claw' : 'missile' :
-          randf() < 0.7 ? 'arrow' : 'missile';
-
-  return new Code().put('model', model).putCode(code);
+  return new Code().putCode(code);
 }
 
 function move1(spec: Spec, flag: Flag): Code {

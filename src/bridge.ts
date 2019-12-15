@@ -8,5 +8,4 @@ export function copyParticle(source: simulator.Particle, dest: viewer.Particle):
   dest.fluctuation.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
   dest.opacity = source.opacity;
   dest.hue = source.hue;
-  dest.objectModel = source.model || 'meta';
 }
