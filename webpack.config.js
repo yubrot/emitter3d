@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'production',
-  entry: __dirname + '/src/main.tsx',
+  entry: __dirname + '/src/index.tsx',
   output: {
     path: __dirname + '/dist',
     publicPath: '/',
