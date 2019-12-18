@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 
+// TODO: Avoid banding
 export class RadialTexture {
   readonly canvas: HTMLCanvasElement;
   readonly context: CanvasRenderingContext2D;
   readonly gradient: CanvasGradient;
 
-  constructor(readonly resolution = 512, readonly division = 16) {
+  constructor(readonly resolution = 512, readonly division = 4) {
     this.canvas = document.createElement('canvas');
     this.canvas.width = resolution;
     this.canvas.height = resolution;

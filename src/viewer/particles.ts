@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-import { RadialTexture } from '../aux/radial-texture';
+import { RadialTexture } from './aux/radial-texture';
 
-export class Points extends THREE.Points {
+export class Particles extends THREE.Points {
   private positions: THREE.BufferAttribute;
   private colors: THREE.BufferAttribute;
 
@@ -10,12 +10,12 @@ export class Points extends THREE.Points {
     return this.geometry as THREE.BufferGeometry;
   }
 
-  get mat(): PointsMaterial {
-    return this.material as PointsMaterial;
+  get mat(): ParticlesMaterial {
+    return this.material as ParticlesMaterial;
   }
 
   constructor(private capacity: number) {
-    super(new THREE.BufferGeometry(), new PointsMaterial());
+    super(new THREE.BufferGeometry(), new ParticlesMaterial());
     this.positions = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
     this.colors = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
     this.positions.setUsage(THREE.DynamicDrawUsage);
@@ -46,7 +46,7 @@ export class Points extends THREE.Points {
   }
 }
 
-export class PointsMaterial extends THREE.PointsMaterial {
+export class ParticlesMaterial extends THREE.PointsMaterial {
   constructor() {
     super({
       color: 0xffffff,
@@ -57,38 +57,32 @@ export class PointsMaterial extends THREE.PointsMaterial {
     });
   }
 
-  private _coreWidth = 0.5;
-  private _coreSharpness = 0;
-  private _shellLightness = 0.5;
-
-  get coreWidth(): number {
-    return this._coreWidth;
-  }
-
-  set coreWidth(width: number) {
-    this._coreWidth = width;
-    this.mapNeedsUpdate = true;
-  }
-
-  get coreSharpness(): number {
-    return this._coreSharpness;
-  }
-
-  set coreSharpness(sharpness: number) {
-    this._coreSharpness = sharpness;
-    this.mapNeedsUpdate = true;
-  }
-
-  get shellLightness(): number {
-    return this._shellLightness;
-  }
-
-  set shellLightness(lightness: number) {
-    this._shellLightness = lightness;
-    this.mapNeedsUpdate = true;
-  }
+  private coreWidth = 0.5;
+  private coreSharpness = 0;
+  private shellLightness = 0.5;
 
   mapNeedsUpdate = true;
+
+  changeOptions(
+    sizeAttenuation: boolean,
+    coreRadius: number,
+    coreSharpness: number,
+    shellRadius: number,
+    shellLightness: number): void {
+    this.needsUpdate = this.sizeAttenuation != sizeAttenuation;
+    this.sizeAttenuation = sizeAttenuation;
+
+    this.size = (coreRadius + shellRadius) * 2;
+    const coreWidth = coreRadius / (coreRadius + shellRadius);
+    this.mapNeedsUpdate =
+      this.mapNeedsUpdate ||
+      this.coreWidth != coreWidth ||
+      this.coreSharpness != coreSharpness ||
+      this.shellLightness != shellLightness;
+    this.coreWidth = coreWidth;
+    this.coreSharpness = coreSharpness;
+    this.shellLightness = shellLightness;
+  }
 
   updateMap(): void {
     if (!this.mapNeedsUpdate) return;

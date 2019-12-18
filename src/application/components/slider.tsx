@@ -1,7 +1,7 @@
 import { h, FunctionalComponent } from 'preact';
 import { useRef, useMemo } from 'preact/hooks';
-import { useMouseDragEvent } from '../hooks';
 import { StyleSheet, css } from 'aphrodite';
+import { useMouseDragEvent } from '../hooks';
 
 export type Props = {
   range: [number, number, number];
