@@ -60,7 +60,7 @@ THREE.EffectComposer = function ( renderer, renderTarget ) {
 
 	this.copyPass = new THREE.ShaderPass( THREE.CopyShader );
 
-	this._previousFrameTime = Date.now();
+	this.clock = new THREE.Clock();
 
 };
 
@@ -77,9 +77,7 @@ Object.assign( THREE.EffectComposer.prototype, {
 	addPass: function ( pass ) {
 
 		this.passes.push( pass );
-
-		var size = this.renderer.getDrawingBufferSize( new THREE.Vector2() );
-		pass.setSize( size.width, size.height );
+		pass.setSize( this._width * this._pixelRatio, this._height * this._pixelRatio );
 
 	},
 
@@ -111,11 +109,9 @@ Object.assign( THREE.EffectComposer.prototype, {
 
 		if ( deltaTime === undefined ) {
 
-			deltaTime = ( Date.now() - this._previousFrameTime ) * 0.001;
+			deltaTime = this.clock.getDelta();
 
 		}
-
-		this._previousFrameTime = Date.now();
 
 		var currentRenderTarget = this.renderer.getRenderTarget();
 
@@ -136,13 +132,16 @@ Object.assign( THREE.EffectComposer.prototype, {
 
 				if ( maskActive ) {
 
-					var context = this.renderer.context;
+					var context = this.renderer.getContext();
+					var stencil = this.renderer.state.buffers.stencil;
 
-					context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+					//context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+					stencil.setFunc( context.NOTEQUAL, 1, 0xffffffff );
 
 					this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, deltaTime );
 
-					context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+					//context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+					stencil.setFunc( context.EQUAL, 1, 0xffffffff );
 
 				}
 
@@ -242,9 +241,9 @@ THREE.Pass = function () {
 
 Object.assign( THREE.Pass.prototype, {
 
-	setSize: function ( width, height ) {},
+	setSize: function ( /* width, height */ ) {},
 
-	render: function ( renderer, writeBuffer, readBuffer, deltaTime, maskActive ) {
+	render: function ( /* renderer, writeBuffer, readBuffer, deltaTime, maskActive */ ) {
 
 		console.error( 'THREE.Pass: .render() must be implemented in derived pass.' );
 
@@ -281,6 +280,12 @@ THREE.Pass.FullScreenQuad = ( function () {
 	} );
 
 	Object.assign( FullScreenQuad.prototype, {
+
+		dispose: function () {
+
+			this._mesh.geometry.dispose();
+
+		},
 
 		render: function ( renderer ) {
 

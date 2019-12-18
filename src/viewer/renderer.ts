@@ -59,8 +59,7 @@ export class Renderer {
 
   setSize(width: number, height: number): void {
     this.webGL.setSize(width, height);
-    const ratio = this.webGL.getPixelRatio();
-    this.composer.setSize(Math.floor(width * ratio), Math.floor(height * ratio));
+    this.composer.setSize(width, height);
   }
 
   render(): void {
