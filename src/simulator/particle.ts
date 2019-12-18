@@ -1,8 +1,6 @@
 import * as math from 'gl-matrix';
 import { Easing } from './aux/easing';
 
-export type Model = 'missile' | 'arrow' | 'claw';
-
 export class Particle {
   readonly position = math.vec3.create();
   readonly rotation = math.quat.create();
@@ -11,7 +9,6 @@ export class Particle {
   opacity = 1;
   hue = 0;
   closed = false;
-  model?: Model;
 
   constructor(readonly behavior: Behavior) { }
 
@@ -21,7 +18,6 @@ export class Particle {
     math.quat.copy(p.rotation, this.rotation);
     p.speed = this.speed;
     p.hue = this.hue;
-    if (this.model) p.model = this.model;
     return p;
   }
 

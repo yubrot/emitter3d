@@ -22,7 +22,7 @@ export class Camera extends THREE.PerspectiveCamera {
     this.updateProjectionMatrix();
   }
 
-  update(deltaTime: number): void {
+  update(): void {
     this.targetPosition.y = THREE.Math.clamp(this.targetPosition.y, -90, 90);
     this.targetPosition.d = Math.max(this.targetPosition.d, 10);
     this.currentPosition.x = this.currentPosition.x * this.delayFactor + this.targetPosition.x * (1 - this.delayFactor);

@@ -92,19 +92,16 @@ test('set', () => {
     .update(1)
     .tap(s => expect(s.particle.speed).toEqual(5));
 
-  new Simulator(new behavior.SwitchBehavior(p => p.model = 'missile'))
+  new Simulator(new behavior.SwitchBehavior(p => p.closed = true))
     .update(1)
-    .tap(s => expect(s.particle.model).toEqual('missile'));
+    .tap(s => expect(s.particle.closed).toEqual(true));
 
-  new Simulator(new behavior.SwitchBehavior(p => p.model = 'missile'))
+  new Simulator(new behavior.SwitchBehavior(p => p.closed = true))
     .lifespan(4)
     .update(1)
-    .tap(s => {
-      expect(s.particle.model).toEqual(undefined);
-      s.field.clear();
-    })
+    .tap(s => expect(s.particle.closed).toEqual(false))
     .update(5)
-    .tap(s => expect(s.particle.model).toEqual(undefined));
+    .tap(s => expect(s.particle.closed).toEqual(true));
 });
 
 test('add', () => {

@@ -1,84 +1,68 @@
 import * as THREE from 'three';
 
 import { History } from './aux/history';
-import { Space } from './3d/space';
-import { Points } from './3d/points';
-import { Instances } from './3d/instances';
-import * as models from './3d/models';
+import { Particles } from './particles';
+import { Prisms } from './prisms';
 
-export type ParticleMode = 'points' | 'crystal' | 'prism';
-
-export const particleModes: ParticleMode[] = ['points', 'crystal', 'prism'];
-
-export type ObjectModel = 'missile' | 'claw' | 'arrow' | 'meta';
-
-export type Particle = {
+export type Dot = {
   lifeTime: number;
   position: THREE.Vector3;
   rotation: THREE.Quaternion;
-  fluctuation: THREE.Vector3;
+  diffusion: THREE.Vector3;
   opacity: number;
   hue: number;
-  objectModel: ObjectModel;
 };
 
-function allocateParticle(): Particle {
+function allocateDot(): Dot {
   return {
     lifeTime: 0,
     position: new THREE.Vector3(),
     rotation: new THREE.Quaternion(),
-    fluctuation: new THREE.Vector3(),
-    objectModel: 'meta',
+    diffusion: new THREE.Vector3(),
     hue: 0,
     opacity: 0,
   };
 }
 
 export class Scene extends THREE.Scene {
-  readonly history: History<Particle>;
-  readonly space: Space;
-  readonly points: Points;
-  readonly missiles: Instances;
-  readonly claws: Instances;
-  readonly arrows: Instances;
-  readonly prisms: Instances;
+  readonly history: History<Dot>;
+  readonly prisms: Prisms;
+  readonly particles: Particles;
+
+  readonly prismOptions = {
+    saturation: 0.5,
+    lightness: 0.5,
+    snapshotOffset: 0,
+    trailLength: 1,
+    trailStep: 1,
+    trailAttenuation: (x: number) => 1 - x,
+  };
+
+  readonly particleOptions = {
+    saturation: 0.5,
+    lightness: 0.5,
+    snapshotOffset: 10,
+    trailLength: 1,
+    trailAttenuation: (x: number) => 1 - x,
+    trailDiffusionScale: 0,
+    trailDiffusionTransition: (x: number) => 1 - x,
+  };
 
   needsUpdate = false;
-
-  particleMode: ParticleMode = 'points';
-  particleSaturation = 0.9;
-  particleLightness = 0.7;
-  trailLength = 1;
-  trailStep = 1;
-  trailFluctuationScale = 0;
-  trailFluctuationBias = 0;
-  trailAttenuationBias = 0;
 
   constructor() {
     super();
     this.fog = new THREE.FogExp2(0x000000, 0.0003);
-    this.history = new History(allocateParticle, 60);
+    this.history = new History(allocateDot, 240);
 
-    this.space = new Space(600, 4000, 10000, 200, 2);
-    this.add(this.space);
+    this.particles = new Particles(40000);
+    this.add(this.particles);
 
-    this.points = new Points(40000);
-    this.add(this.points);
-
-    this.missiles = new Instances(10000, models.missile());
-    this.add(this.missiles);
-
-    this.claws = new Instances(10000, models.claw());
-    this.add(this.claws);
-
-    this.arrows = new Instances(10000, models.arrow());
-    this.add(this.arrows);
-
-    this.prisms = new Instances(40000, models.prism());
+    this.prisms = new Prisms(40000);
     this.add(this.prisms);
   }
 
-  update(deltaTime: number): void {
+  update(): void {
     if (this.needsUpdate) {
       this.needsUpdate = false;
       this.updateParticles();
@@ -86,82 +70,52 @@ export class Scene extends THREE.Scene {
   }
 
   private updateParticles(): void {
-    switch (this.particleMode) {
-      case 'points': {
-        this.points.visible = true;
-        this.arrows.visible = this.missiles.visible = this.claws.visible = this.prisms.visible = false;
-        const points = this.points.beginUpdate();
-        this.iterateParticles((particle, position, color) => {
-          if (particle.objectModel == 'meta') return;
-          points.put(position, color);
-        });
-        points.complete();
-        break;
-      }
-      case 'crystal': {
-        this.arrows.visible = this.missiles.visible = this.claws.visible = true;
-        this.points.visible = this.prisms.visible = false;
-        const missiles = this.missiles.beginUpdate();
-        const claws = this.claws.beginUpdate();
-        const arrows = this.arrows.beginUpdate();
-        const p = new THREE.Quaternion();
-        const q = new THREE.Quaternion();
-        const e = new THREE.Euler();
-        this.iterateParticles((particle, position, color) => {
-          switch (particle.objectModel) {
-            case 'missile':
-              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * particle.lifeTime)));
-              missiles.put(position, p, color);
-              break;
-            case 'arrow':
-              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.01 * particle.lifeTime)));
-              arrows.put(position, p, color);
-              break;
-            case 'claw':
-              p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.01 * particle.lifeTime)));
-              claws.put(position, p, color);
-              break;
-          }
-        });
-        missiles.complete();
-        arrows.complete();
-        claws.complete();
-        break;
-      }
-      case 'prism': {
-        this.prisms.visible = true;
-        this.points.visible = this.arrows.visible = this.missiles.visible = this.claws.visible = false;
-        const prisms = this.prisms.beginUpdate();
-        const p = new THREE.Quaternion();
-        const q = new THREE.Quaternion();
-        const e = new THREE.Euler();
-        this.iterateParticles((particle, position, color) => {
-          if (particle.objectModel == 'meta') return;
-          p.copy(particle.rotation).multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * particle.lifeTime)));
-          prisms.put(position, p, color);
-        });
-        prisms.complete();
-        break;
-      }
-    }
-  }
-
-  private iterateParticles(handler: (particle: Particle, position: THREE.Vector3, color: THREE.Color) => void): void {
     const position = new THREE.Vector3();
+    const rotation = new THREE.Quaternion();
     const color = new THREE.Color();
+    const q = new THREE.Quaternion();
+    const e = new THREE.Euler();
 
-    for (let i = 0; i < this.trailLength; i += Math.floor(this.trailStep)) {
-      const t = i / (this.trailLength - 0.9);
-      for (const particle of this.history.snapshot(i)) {
-        const fluctuation = this.trailFluctuationScale * t ** Math.exp(this.trailFluctuationBias);
-        const opacity = 1 - t ** Math.exp(this.trailAttenuationBias);
-        position.copy(particle.position).addScaledVector(particle.fluctuation, fluctuation);
-        color.setHSL(
-          (1 + particle.hue / 360 + position.y * 0.001) % 1,
-          this.particleSaturation,
-          this.particleLightness * particle.opacity * opacity * Math.min(1, particle.lifeTime * 0.03));
-        handler(particle, position, color);
+    if (this.prisms.visible) {
+      const prisms = this.prisms.beginUpdate();
+      const prismOptions = this.prismOptions;
+      for (let i = 0; i < prismOptions.trailLength; i += Math.floor(prismOptions.trailStep)) {
+        const t = i / (prismOptions.trailLength - 0.9);
+        const a = prismOptions.trailAttenuation(t);
+        for (const dot of this.history.snapshot(i + prismOptions.snapshotOffset)) {
+          if (dot.opacity == 0) continue;
+          position.copy(dot.position);
+          color.setHSL(
+            (1 + dot.hue / 360 + position.y * 0.001) % 1,
+            prismOptions.saturation,
+            prismOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
+          rotation
+            .copy(dot.rotation)
+            .multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * dot.lifeTime)));
+          prisms.put(position, rotation, color);
+        }
       }
+      prisms.complete();
+    }
+
+    if (this.particles.visible) {
+      const particles = this.particles.beginUpdate();
+      const particleOptions = this.particleOptions;
+      for (let i = 0; i < particleOptions.trailLength; i++) {
+        const t = i / (particleOptions.trailLength - 0.9);
+        const a = particleOptions.trailAttenuation(t);
+        const f = (1 - particleOptions.trailDiffusionTransition(t)) * particleOptions.trailDiffusionScale;
+        for (const dot of this.history.snapshot(i + particleOptions.snapshotOffset)) {
+          if (dot.opacity == 0) continue;
+          position.copy(dot.position).addScaledVector(dot.diffusion, f);
+          color.setHSL(
+            (1 + dot.hue / 360 + position.y * 0.001) % 1,
+            particleOptions.saturation,
+            particleOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
+          particles.put(position, color);
+        }
+      }
+      particles.complete();
     }
   }
 }

@@ -186,8 +186,7 @@ describe('printer', () => {
     testPrintAndParse(`
       // comment
       {
-        speed 5.5; model missile
-        hue 100
+        speed 5.5; hue 100
         {
           /* comment */
           10 [ease-in ease-out] pitch+ 10

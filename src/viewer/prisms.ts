@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
-import { ObjectGeometry } from '../aux/geometry-builder';
+import { at, color, GeometryBuilder, ObjectGeometry } from './aux/geometry-builder';
 
-export class Instances extends THREE.Mesh {
-  constructor(private capacity: number, objectGeometry: ObjectGeometry) {
-    super(Instances.geometry(capacity, objectGeometry), Instances.material());
+export class Prisms extends THREE.Mesh {
+  constructor(private capacity: number) {
+    super(Prisms.geometry(capacity, Prisms.model()), Prisms.material());
   }
 
   beginUpdate(): { put(position: THREE.Vector3, rotation: THREE.Quaternion, color: THREE.Color): void; complete(): void; } {
@@ -62,6 +62,23 @@ export class Instances extends THREE.Mesh {
       blending: THREE.AdditiveBlending,
       depthTest: false,
     });
+  }
+
+  static model(): ObjectGeometry {
+    const g = new GeometryBuilder();
+
+    const face = {
+      head: g.putPoint(at(0, 0, 1), color(1, 1, 1)),
+      body: [color(1, 0, 0), color(0, 1, 0), color(0, 0, 1)].map((color, i) => {
+        const r = Math.PI * 2 / 3 * i;
+        return g.putPoint(at(Math.cos(r), Math.sin(r), -1), color);
+      }),
+    };
+
+    g.fillTriangleFan(face.head, ...face.body, face.body[0]);
+
+    g.scale.set(2, 2, 4);
+    return g.build();
   }
 }
 

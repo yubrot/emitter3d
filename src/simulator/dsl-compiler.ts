@@ -1,5 +1,5 @@
 import { Easing } from './aux/easing';
-import { Model, Behavior } from './particle';
+import { Behavior } from './particle';
 import * as behavior from './particle-behavior';
 import * as dsl from './dsl';
 
@@ -45,10 +45,6 @@ export class Compiler {
   }
 
   private initializeUnits(): void {
-    this.units.set('missile', new ModelUnit('missile'));
-    this.units.set('arrow', new ModelUnit('arrow'));
-    this.units.set('claw', new ModelUnit('claw'));
-
     this.units.set('linear', new EasingUnit(Easing.linear));
     this.units.set('ease-in', new EasingUnit(Easing.easeIn));
     this.units.set('ease-out', new EasingUnit(Easing.easeOut));
@@ -64,7 +60,6 @@ export class Compiler {
     this.units.set('opacity*', new UnitConstructor(MultiplyOpacityUnit));
     this.units.set('hue', new UnitConstructor(SetHueUnit));
     this.units.set('hue+', new UnitConstructor(AddHueUnit));
-    this.units.set('model', new UnitConstructor(SetModelUnit));
     this.units.set('translate', new UnitConstructor(TranslateUnit));
     this.units.set('rotate', new UnitConstructor(RotateUnit));
     this.units.set('emit', new UnitConstructor(EmitUnit));
@@ -84,10 +79,6 @@ export class Compiler {
 export abstract class Unit {
   withArguments(args: dsl.AST[]): Unit {
     throw new CompileError(`${this.constructor.name} takes no arguments`);
-  }
-
-  model(env: Compiler): Gen<Model> {
-    throw new CompileError(`Expected model but got ${this.constructor.name}`);
   }
 
   number(env: Compiler): Gen<number> {
@@ -114,7 +105,6 @@ class UnitConstructor extends Unit {
 }
 
 type TakeArgs = {
-  model(): Gen<Model>;
   number(): Gen<number>;
   easing(): Gen<Easing>;
   behavior(): Gen<Behavior>;
@@ -131,7 +121,6 @@ abstract class ConstructedUnit extends Unit {
     }
     let i = 0;
     return {
-      model: () => env.getUnit(this.args[i++]).model(env),
       easing: () => env.getUnit(this.args[i++]).easing(env),
       number: () => env.getUnit(this.args[i++]).number(env),
       behavior: () => env.getUnit(this.args[i++]).behavior(env),
@@ -207,17 +196,6 @@ class PutEasingUnit extends ConstructedUnit {
   }
 }
 
-class ModelUnit extends Unit {
-  constructor(readonly value: Model) {
-    super();
-  }
-
-  model(env: Compiler): Gen<Model> {
-    const value = this.value;
-    return _ => value;
-  }
-}
-
 class NopUnit extends Unit {
   behavior(env: Compiler): Gen<Behavior> {
     return _ => new behavior.NopBehavior();
@@ -283,16 +261,6 @@ class AddHueUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const hueGen = this.takeArgs(env, 1).number();
     return index => new behavior.AddBehavior(hueGen(index), (p, v) => p.hue += v);
-  }
-}
-
-class SetModelUnit extends ConstructedUnit {
-  behavior(env: Compiler): Gen<Behavior> {
-    const modelGen = this.takeArgs(env, 1).model();
-    return index => {
-      const model = modelGen(index);
-      return new behavior.SwitchBehavior(p => p.model = model);
-    };
   }
 }
 
@@ -385,10 +353,6 @@ abstract class ChoiceUnit extends ConstructedUnit {
 
   withArguments(args: dsl.AST[]): Unit {
     return new ChoiceUnitWithArguments(this.args, this, args);
-  }
-
-  model(env: Compiler): Gen<Model> {
-    return this.gen(env, unit => unit.model(env));
   }
 
   number(env: Compiler): Gen<number> {

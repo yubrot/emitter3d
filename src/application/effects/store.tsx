@@ -28,18 +28,16 @@ export const useStore: () => Store = () => useContext(Context);
 
 type Updater<S> = Partial<S> | ((s: S) => Partial<S>);
 
-import { AntialiasMode, antialiasModes, ParticleMode, particleModes } from '../../viewer';
-export { AntialiasMode, antialiasModes, ParticleMode, particleModes };
-
-export type ApplicationState = CoreState & EditorState & RendererState & SceneState;
+export type ApplicationState = CoreState & EditorState & RendererState & PrismState & ParticleState;
 
 export function initialApplicationState(): ApplicationState {
   return {
     ...initialCoreState,
     ...initialEditorState,
     ...initialRendererState,
-    ...initialSceneState,
-    ...presetStates[presetNames[Math.floor(Math.random() * presetNames.length)]],
+    ...initialPrismState,
+    ...initialParticleState,
+    ...presetStates['unified'],
   };
 }
 
@@ -47,14 +45,8 @@ export type CoreState = {
   isPaused: boolean;
   showStats: boolean;
   stepsPerSecond: number;
+  stepsPerUpdate: number;
   cameraRevolve: boolean;
-};
-
-export const initialCoreState: CoreState = {
-  isPaused: false,
-  showStats: false,
-  stepsPerSecond: 60,
-  cameraRevolve: true,
 };
 
 export type EditorState = {
@@ -74,143 +66,179 @@ export type ExplorerState = {
   writable: boolean;
 }[];
 
-export const initialEditorState: EditorState = {
-  editingItem: '',
-  editingCode: '',
-  editorNotification: '',
-  editorCompilation: ['none'],
-  generatorGeneration: 0,
-  generatorStrength: 400,
-  generateAutomatically: true,
-  explorer: [],
-};
-
 export type RendererState = {
-  antialiasMode: AntialiasMode;
-  focusEffect: boolean;
+  antialias: boolean;
   bloomEffect: boolean;
   bloomStrength: number;
   bloomThreshold: number;
   bloomRadius: number;
 };
 
-export const initialRendererState: RendererState = {
-  antialiasMode: antialiasModes[0],
-  focusEffect: false,
-  bloomEffect: false,
-  bloomStrength: 0.5,
-  bloomThreshold: 0.5,
-  bloomRadius: 0.5,
+export type Transition = {
+  init: number;
+  center: number;
+  exponent: number;
 };
 
-export type SceneState = {
+export type PrismState = {
+  prism: boolean;
+  prismSaturation: number;
+  prismLightness: number;
+  prismSnapshotOffset: number;
+  prismTrailLength: number;
+  prismTrailStep: number;
+  prismTrailAttenuation: Transition;
+};
+
+export type ParticleState = {
+  particle: boolean;
   particleSaturation: number;
   particleLightness: number;
-  particleMode: ParticleMode;
-  particlePointSize: number;
-  particlePointSizeAttenuation: boolean;
-  particlePointCoreWidth: number;
-  particlePointCoreSharpness: number;
-  particlePointShellLightness: number;
-  trailLength: number;
-  trailStep: number;
-  trailFluctuationScale: number;
-  trailFluctuationBias: number;
-  trailAttenuationBias: number;
-  showSpace: boolean;
+  particleSizeAttenuation: boolean;
+  particleCoreRadius: number;
+  particleCoreSharpness: number;
+  particleShellRadius: number;
+  particleShellLightness: number;
+  particleSnapshotOffset: number;
+  particleTrailLength: number;
+  particleTrailAttenuation: Transition;
+  particleTrailDiffusionScale: number;
+  particleTrailDiffusionTransition: Transition;
 };
 
-export const initialSceneState: SceneState = {
-  particleSaturation: 0.5,
-  particleLightness: 0.5,
-  particleMode: particleModes[0],
-  particlePointSize: 3,
-  particlePointSizeAttenuation: true,
-  particlePointCoreWidth: 0.5,
-  particlePointCoreSharpness: 0,
-  particlePointShellLightness: 0.5,
-  trailLength: 1,
-  trailStep: 1,
-  trailFluctuationScale: 0,
-  trailFluctuationBias: 0,
-  trailAttenuationBias: 0,
-  showSpace: true,
+export function compileTransition({ init, center: l, exponent }: Transition): (x: number) => number {
+  const tail = 1 - init;
+  const r = 1 - l;
+  const p = Math.exp(exponent);
+  const x1 = l * tail;
+  const x2 = r * tail;
+  const initx = init + x1;
+  return n =>
+    n < init
+      ? 1 - (1 - (n / init)) ** p
+      : n < initx
+        ? l * (1 - ((n - init) / x1) ** p) + r
+        : n < 1
+          ? r * ((1 - (n - initx) / x2) ** p)
+          : 0;
+}
+
+export const initialCoreState: CoreState = {
+  isPaused: false,
+  showStats: false,
+  stepsPerSecond: 60,
+  stepsPerUpdate: 1,
+  cameraRevolve: true,
 };
 
-export type PresetName = 'stardust' | 'prism' | 'wisp' | 'crystal';
+export const initialEditorState: EditorState = {
+  editingItem: '',
+  editingCode: '',
+  editorNotification: '',
+  editorCompilation: ['none'],
+  generatorGeneration: 0,
+  generatorStrength: 300,
+  generateAutomatically: true,
+  explorer: [],
+};
 
-export const presetNames: PresetName[] = ['stardust', 'prism', 'wisp', 'crystal'];
+export const initialRendererState: RendererState = {
+  antialias: false,
+  bloomEffect: false,
+  bloomStrength: 0,
+  bloomThreshold: 0,
+  bloomRadius: 0,
+};
+
+export const initialPrismState: PrismState = {
+  prism: false,
+  prismSaturation: 0.3,
+  prismLightness: 0.8,
+  prismSnapshotOffset: 0,
+  prismTrailLength: 40,
+  prismTrailStep: 2,
+  prismTrailAttenuation: { init: 0.6, center: 1, exponent: -1 },
+};
+
+export const initialParticleState: ParticleState = {
+  particle: false,
+  particleSaturation: 0.8,
+  particleLightness: 0.7,
+  particleSizeAttenuation: true,
+  particleCoreRadius: 1.7,
+  particleCoreSharpness: 0,
+  particleShellRadius: 0.8,
+  particleShellLightness: 0.85,
+  particleSnapshotOffset: 0,
+  particleTrailLength: 32,
+  particleTrailAttenuation: { init: 0, center: 0, exponent: 1 },
+  particleTrailDiffusionScale: 6,
+  particleTrailDiffusionTransition: { init: 0, center: 0, exponent: -1 },
+};
+
+export type PresetName = 'unified' | 'neon' | 'prism';
+
+export const presetNames: PresetName[] = ['unified', 'neon', 'prism'];
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
-  stardust: {
-    antialiasMode: 'OFF',
-    focusEffect: true,
-    bloomEffect: false,
-    particleSaturation: 1.0,
-    particleLightness: 0.8,
-    particleMode: 'points',
-    particlePointSize: 14,
-    particlePointCoreWidth: 0.05,
-    particlePointCoreSharpness: 3,
-    particlePointShellLightness: 0.1,
-    trailLength: 45,
-    trailStep: 1,
-    trailFluctuationScale: 15,
-    trailFluctuationBias: 0,
-    trailAttenuationBias: 1,
-    showSpace: true,
-  },
-  prism: {
-    antialiasMode: 'SMAA',
-    focusEffect: false,
+  unified: {
+    antialias: true,
     bloomEffect: true,
-    bloomStrength: 1.2,
-    bloomThreshold: 0.0,
-    bloomRadius: 1.0,
-    particleSaturation: 0.9,
-    particleLightness: 0.7,
-    particleMode: 'prism',
-    trailLength: 24,
-    trailStep: 1,
-    trailFluctuationScale: 0,
-    trailAttenuationBias: -2,
-    showSpace: false,
-  },
-  wisp: {
-    antialiasMode: 'OFF',
-    focusEffect: true,
-    bloomEffect: true,
-    bloomStrength: 0.7,
+    bloomStrength: 0.6,
     bloomThreshold: 0.5,
     bloomRadius: 1,
-    particleSaturation: 0.9,
-    particleLightness: 1.0,
-    particleMode: 'points',
-    particlePointSize: 5,
-    particlePointCoreWidth: 0.75,
-    particlePointCoreSharpness: 0,
-    particlePointShellLightness: 0.85,
-    trailLength: 32,
-    trailStep: 1,
-    trailFluctuationScale: 3,
-    trailFluctuationBias: -0.5,
-    trailAttenuationBias: -1.5,
-    showSpace: true,
+    prism: true,
+    prismSaturation: 0.8,
+    prismLightness: 0.6,
+    prismSnapshotOffset: 0,
+    prismTrailLength: 16,
+    prismTrailStep: 1,
+    prismTrailAttenuation: { init: 0, center: 1, exponent: -1 },
+    particle: true,
+    particleSaturation: 0.7,
+    particleLightness: 0.6,
+    particleSizeAttenuation: true,
+    particleCoreRadius: 0.4,
+    particleCoreSharpness: 3,
+    particleShellRadius: 7,
+    particleShellLightness: 0.08,
+    particleSnapshotOffset: 6,
+    particleTrailLength: 45,
+    particleTrailAttenuation: { init: 0.3, center: 1, exponent: 0.5 },
+    particleTrailDiffusionScale: 15,
+    particleTrailDiffusionTransition: { init: 0, center: 1, exponent: 0.5 },
   },
-  crystal: {
-    antialiasMode: 'SSAA x4',
-    focusEffect: false,
-    bloomEffect: true,
-    bloomStrength: 0.9,
-    bloomThreshold: 0.5,
-    bloomRadius: 0.2,
+  neon: {
+    antialias: false,
+    bloomEffect: false,
+    prism: false,
+    particle: true,
     particleSaturation: 0.9,
-    particleLightness: 0.7,
-    particleMode: 'crystal',
-    trailLength: 40,
-    trailStep: 2,
-    trailFluctuationScale: 0,
-    trailAttenuationBias: -2,
-    showSpace: true,
+    particleLightness: 0.75,
+    particleSizeAttenuation: true,
+    particleCoreRadius: 0.4,
+    particleCoreSharpness: 3,
+    particleShellRadius: 6.6,
+    particleShellLightness: 0.07,
+    particleSnapshotOffset: 0,
+    particleTrailLength: 60,
+    particleTrailAttenuation: { init: 0.1, center: 1, exponent: 1 },
+    particleTrailDiffusionScale: 10,
+    particleTrailDiffusionTransition: { init: 0.5, center: 1, exponent: 1.5 },
+  },
+  prism: {
+    antialias: true,
+    bloomEffect: true,
+    bloomStrength: 1,
+    bloomThreshold: 0,
+    bloomRadius: 1,
+    prism: true,
+    prismSaturation: 0.9,
+    prismLightness: 0.7,
+    prismSnapshotOffset: 0,
+    prismTrailLength: 24,
+    prismTrailStep: 1,
+    prismTrailAttenuation: { init: 0, center: 1, exponent: -2 },
+    particle: false,
   },
 };

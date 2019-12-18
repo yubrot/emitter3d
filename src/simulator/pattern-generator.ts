@@ -15,7 +15,7 @@ type Flag = {
 
 export function generate(strength: number): dsl.AST[] {
   return new Code()
-    .put('hue', Code.randomAngle)
+    .put('hue', Math.floor(Math.random() * 360))
     .putCode(pattern({ generation: [], strength, directivity: 1, fineness: 1 }))
     .toProgram();
 }
@@ -28,7 +28,7 @@ function pattern(spec: Spec): Code {
     code.putCode(move1(spec, flag));
 
   } else {
-    const iterations = (spec.strength < 64) ? 1 : randr(1, 1, 1, 1, 1, 1, 1, 1, 2);
+    const iterations = (spec.strength < 64) ? 1 : randr(1, 1, 1, 1, 1, 1, 2);
 
     for (let i = 0; i < iterations; ++i) {
       const strength = spec.strength / iterations;
@@ -36,7 +36,7 @@ function pattern(spec: Spec): Code {
       if (strength < 8 || randf() < 0.7 || spec.generation.length == 0) {
         const parallel = (randf() < 0.1 || strength < 8) ? 1 : randr(2, 3, 4, 5, 6, 8);
         const { code: layoutCode, r } = layout1(spec);
-        const p = strength / parallel < 2 ? 1 : randi(2, Math.max(2, Math.min(strength / parallel, r / 10 / parallel)), 1, 1 / (1 + spec.fineness));
+        const p = strength / parallel < 2 ? 1 : randi(2, Math.max(2, Math.min(strength / parallel, r / 10 / parallel)), 1, 3 / (1 + spec.fineness));
         const [count, times] = (6 <= p && randf() < 0.8) ? [1, p] : [p, 1];
         const duration = times == 1 ? 0 : randi(p * 2, p * 10);
         const childPatternCount = (16 <= parallel * p && (parallel * p) % 2 == 0 && randf() < 0.5) ? 2 : 1;
@@ -91,13 +91,7 @@ function pattern(spec: Spec): Code {
     }
   }
 
-  const model =
-    flag.accelerate && flag.rotate ? 'missile' :
-      flag.accelerate ? randf() < 0.7 ? 'arrow' : 'missile' :
-        flag.rotate ? randf() < 0.7 ? 'claw' : 'missile' :
-          randf() < 0.7 ? 'arrow' : 'missile';
-
-  return new Code().put('model', model).putCode(code);
+  return new Code().putCode(code);
 }
 
 function move1(spec: Spec, flag: Flag): Code {

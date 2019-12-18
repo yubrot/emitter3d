@@ -1,10 +1,8 @@
 import './three-plugins/install';
-import { Particle, ParticleMode, particleModes, Scene } from './scene';
-export { Particle, ParticleMode, particleModes, Scene };
-import { Renderer, AntialiasMode, antialiasModes } from './renderer';
-export { Renderer, AntialiasMode, antialiasModes };
+import { Dot, Scene } from './scene';
+import { Renderer } from './renderer';
 import { CameraPosition, Camera, CameraController } from './camera';
-export { CameraPosition, Camera, CameraController };
+export { Dot, Scene, Renderer, CameraPosition, Camera, CameraController };
 
 export class Viewer {
   readonly scene = new Scene();
@@ -22,9 +20,9 @@ export class Viewer {
     this.renderer.setSize(width, height);
   }
 
-  update(deltaTime: number): void {
-    this.scene.update(deltaTime);
-    this.camera.update(deltaTime);
+  update(): void {
+    this.scene.update();
+    this.camera.update();
     this.renderer.render();
   }
 }

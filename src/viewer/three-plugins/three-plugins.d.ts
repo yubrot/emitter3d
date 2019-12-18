@@ -14,12 +14,6 @@ declare module 'three' {
     constructor(scene: THREE.Scene, camera: THREE.Camera);
   }
 
-  class SSAARenderPass extends Pass {
-    constructor(scene: THREE.Scene, camera: THREE.Camera);
-    sampleLevel: number;
-    unbiased: boolean;
-  }
-
   class SMAAPass extends Pass {
     constructor(width: number, height: number);
   }
@@ -32,7 +26,6 @@ declare module 'three' {
   }
 
   const CopyShader: Shader;
-  const FocusShader: Shader;
 
   class EffectComposer {
     constructor(renderer: THREE.WebGLRenderer);
