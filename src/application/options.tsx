@@ -48,7 +48,7 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!prism} range={[0, 1, 0.02]} {...option('prismLightness')}>
           lightness
         </Slider>
-        <Slider disabled={!prism} range={[0, 120, 1]} {...option('prismSnapshotOffset')}>
+        <Slider disabled={!prism} range={[0, 60, 1]} {...option('prismSnapshotOffset')}>
           snapshot offset
         </Slider>
         <Slider disabled={!prism} range={[1, 120, 1]} {...option('prismTrailLength')}>
@@ -86,7 +86,7 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!particle} range={[0.02, 0.98, 0.01]} {...option('particleShellLightness')}>
           shell lightness
         </Slider>
-        <Slider disabled={!particle} range={[0, 120, 1]} {...option('particleSnapshotOffset')}>
+        <Slider disabled={!particle} range={[0, 60, 1]} {...option('particleSnapshotOffset')}>
           snapshot offset
         </Slider>
         <Slider disabled={!particle} range={[1, 120, 1]} {...option('particleTrailLength')}>
