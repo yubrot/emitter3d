@@ -8,8 +8,8 @@ export interface Store {
 
 const Context = createContext(undefined as unknown as Store);
 
-export const RunStore: FunctionalComponent<{}> = props => {
-  const [state, setState] = useState(initialApplicationState);
+export const RunStore: FunctionalComponent<{ initialState: ApplicationState }> = props => {
+  const [state, setState] = useState(props.initialState);
   const update = useCallback((updater: Updater<ApplicationState>) => {
     setState(s => ({
       ...s,
@@ -105,6 +105,63 @@ export type ParticleState = {
   particleTrailDiffusionScale: number;
   particleTrailDiffusionTransition: Transition;
 };
+
+export function serializeState(state: ApplicationState): string {
+  function structurallyEqual(a: any, b: any): boolean {
+    if (a === b) return true;
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; ++i) {
+        if (!structurallyEqual(a[i], b[i])) return false;
+      }
+      return true;
+    }
+    if (typeof a == 'object' && typeof b == 'object') {
+      // We assume that a and b have same props since these are part of ApplicationState.
+      for (const key in a) {
+        if (!structurallyEqual(a[key], b[key])) return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  const data = { ...state };
+
+  // Drop unnecessary props
+  delete data.isPaused;
+  delete data.showStats;
+  delete data.cameraRevolve;
+  delete data.editorNotification;
+  delete data.editorCompilation;
+  delete data.generatorGeneration;
+  delete data.explorer;
+
+  if (data.generateAutomatically) {
+    delete data.editingItem;
+    delete data.editingCode;
+  }
+
+  // Drop props which have the default value
+  const initialState = initialApplicationState();
+  for (const key in initialState) {
+    if (structurallyEqual((initialState as any)[key], (data as any)[key])) {
+      delete (data as any)[key];
+    }
+  }
+
+  const json = JSON.stringify(data);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+export function deserializeState(data: string): Partial<ApplicationState> {
+  const json = decodeURIComponent(escape(atob(data)));
+  const state: ApplicationState = JSON.parse(json);
+
+  if (state.generateAutomatically === false) state.editorCompilation = ['required', 0];
+
+  return state;
+}
 
 export function compileTransition({ init, center: l, exponent }: Transition): (x: number) => number {
   const tail = 1 - init;

@@ -2,7 +2,7 @@ import { h, FunctionalComponent } from 'preact';
 import { useState, useCallback } from 'preact/hooks';
 import { StyleSheet, css } from 'aphrodite';
 import { Window, Accordion, Toggle, Slider, Button, TextField } from './components';
-import { useStore } from './effects/store';
+import { useStore, serializeState } from './effects/store';
 import { useSimulator } from './effects/simulator';
 import { useCodeSave, useCodeDelete, useCodeLoad, useCodeGenerate } from './system';
 
@@ -15,6 +15,7 @@ export const Editor: FunctionalComponent<{}> = props => {
   const codeGenerate = useCodeGenerate(true);
 
   const update = store.update;
+  const state = store.state;
   const {
     editorNotification, editingItem, editingCode, explorer,
     generatorStrength, generateAutomatically
@@ -47,6 +48,10 @@ export const Editor: FunctionalComponent<{}> = props => {
   const reset = useCallback(() => {
     simulator.reset();
   }, [simulator]);
+
+  const permalink = useCallback(() => {
+    location.hash = '#' + encodeURIComponent(serializeState(state));
+  }, [state]);
 
   const [showExplorer, setShowExplorer] = useState(false);
   const toggleShowExplorer = useCallback(() => setShowExplorer(show => !show), []);
@@ -105,10 +110,11 @@ export const Editor: FunctionalComponent<{}> = props => {
           onChange={generateAutomaticallyChange}
           style={{ flex: "1" }}
         >
-          automatically
+          auto-generate
         </Toggle>
         <Button onClick={codeGenerate}>Generate!</Button>
         <Button onClick={reset}>Reset</Button>
+        <Button onClick={permalink}>Permalink</Button>
       </div>
     </Window>
   );
