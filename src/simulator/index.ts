@@ -67,14 +67,14 @@ export class Simulator {
   generatePattern(strength: number, clear: boolean): { code: string } {
     const program = generate(strength);
     const code = print(program);
-    const { success, message } = this.compilePattern(code, clear);
+    const { success, message } = this.compilePattern(program, clear);
     console.assert(success, message);
     return { code };
   }
 
-  compilePattern(code: string, clear: boolean): { success: boolean, message: string } {
+  compilePattern(program: string | Program, clear: boolean): { success: boolean, message: string } {
     try {
-      const program = parse(code);
+      program = typeof program == 'string' ? parse(program) : program;
       this.pattern = compile(program);
       if (clear) this.field.clear();
       return { success: true, message: 'Successfully compiled.' };

@@ -63,13 +63,9 @@ export class Scene extends THREE.Scene {
   }
 
   update(): void {
-    if (this.needsUpdate) {
-      this.needsUpdate = false;
-      this.updateParticles();
-    }
-  }
+    if (!this.needsUpdate) return;
+    this.needsUpdate = false;
 
-  private updateParticles(): void {
     const position = new THREE.Vector3();
     const rotation = new THREE.Quaternion();
     const color = new THREE.Color();

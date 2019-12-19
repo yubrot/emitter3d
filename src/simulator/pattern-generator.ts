@@ -278,8 +278,8 @@ function layout2(spec: Spec, many: boolean): { code: Code, speed: number, r: num
     case 3:
       code.put(
         'rotate',
-        Code.randomRange(-Code.eachRange(10, 40), Code.eachRange(10, 40)),
-        Code.randomRange(-Code.eachRange(10, 40), Code.eachRange(10, 40)),
+        Code.randomRange(Code.eachRange(-10, -60), Code.eachRange(10, 60)),
+        Code.randomRange(Code.eachRange(-10, -60), Code.eachRange(10, 60)),
         Code.randomAngle);
       r = 360;
       break;
