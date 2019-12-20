@@ -14,13 +14,17 @@ close
 
 --- speed + *
 speed 1
+30 nop
 
-60 nop
+rotate 0 90 0
 speed 0.4
 60 nop
-speed+ -2
-60 nop
-120 speed* 0.1
+
+rotate 0 90 0
+60 speed+ 2
+
+rotate 0 90 0
+60 speed* 0.1
 
 --- opacity + *
 speed 0.5
@@ -34,7 +38,7 @@ speed 0.5
 speed 0.5
 
 180 hue 360
-speed* -1
+rotate 0 90 0
 180 hue+ -360
 
 --- translate
@@ -46,7 +50,7 @@ speed 0.2
 30 translate 0 30 0
 90 nop
 30 translate 0 0 30
-30 nop
+60 nop
 
 --- rotate
 speed 1
@@ -56,31 +60,31 @@ speed 1
 90 rotate 0 0 360
 
 --- emit
-60 emit 8 1 1 { speed 1; rotate 0 [] 0; 60 nop }
+60 emit 5 1 1 { speed 1; rotate 0 [] 0; 60 nop }
 60 nop
 hue+ 60
 60 emit 1 8 1 { speed 1; rotate 0 [] 0; 60 nop }
 60 nop
 hue+ 60
-60 emit 3 8 1 { speed 1; rotate 0 [] 0; 60 nop }
+60 emit 5 8 1 { speed 1; rotate 0 [] 0; 60 nop }
 60 nop
 hue+ 60
 60 emit 1 8 3 { speed 1; rotate 0 [] 0; 60 nop }
 60 nop
 hue+ 60
-60 emit 3 8 3 { speed 1; rotate 0 [] 0; 60 nop }
+60 emit 5 8 3 { speed 1; rotate 0 [] 0; 60 nop }
 120 nop
 hue+ 60
-60 emit 3 1 3 { speed 1; rotate 0 [] 0; 60 nop }
+60 emit 5 1 3 { speed 1; rotate 0 [] 0; 60 nop }
 
 --- loop
 speed 1
 
 400 loop {
-  hue+ 60
-  rotate 0 45 0
+  hue+ 10
+  rotate 0 15 0
   emit 1 1 1 { 90 nop }
-  30 nop
+  10 nop
 }
 
 --- repeat
@@ -95,55 +99,52 @@ repeat 12 {
 --- block
 speed 1
 
-repeat 4 {
-  60 emit 1 9 1 { rotate 0 180 0; 60 nop }
+{
+  360 emit 1 36 1 { rotate 0 180 0; 60 nop }
 |
-  60 rotate 0 90 0
+  180 rotate 0 360 0
+  180 rotate 0 -360 0
 |
-  60 hue+ 90
+  360 hue+ 360
 }
 
 --- (easing)
 emit 4 1 1 {
-  rotate 0 [] 0
-  speed 0
-  100 [linear ease-in ease-out ease-in-out] speed 2
+  translate [-20..20] 0 0
+  [40..200] nop
+  speed 2
+  100 [linear ease-in ease-out ease-in-out] speed 0
 }
 
 --- $each-choice
-speed 1
-
-emit 16 1 1 {
-  rotate 0 [] 0;
-  60 nop
-  60 rotate 0 [90 -90] 0
+128 emit 1 24 1 {
+  speed 1
+  30 nop
+  30 rotate 0 [-60 -20 20 60] 0
   60 nop
 }
 
 --- $each-range
-speed 1
-
-60 emit 10 1 1 { rotate 0 [-30..30] 0; 60 nop }
-speed* -1
-60 emit 10 1 1 { rotate 0 [-60..60] 0; 60 nop }
-speed* -1
-60 emit 10 1 1 { rotate 0 [-90..90] 0; 60 nop }
+60 emit 10 1 1 { speed 1; rotate 0 [-30..30] 0; 60 nop }
+translate 0 10 0
+60 emit 10 1 1 { speed 1; rotate 0 [-60..60] 0; 60 nop }
+translate 0 10 0
+60 emit 10 1 1 { speed 1; rotate 0 [-90..90] 0; 60 nop }
 
 --- $each-angle
-speed 1
-
-60 emit 8 1 1 { rotate 0 [] 0; hue []; 60 nop }
-speed* -1
-60 emit 16 1 1 { rotate 0 [] 0; hue []; 60 nop }
-speed* -1
-60 emit 32 1 1 { rotate 0 [] 0; hue []; 60 nop }
+60 emit 16 1 1 { speed 0.7; rotate 0 [] 0; hue []; 180 nop }
+60 emit 32 1 1 { speed 1; rotate 0 [] 0; hue []; 120 nop }
+60 emit 64 1 1 { speed 1.5; rotate 0 [] 0; hue []; 60 nop }
 
 --- $random-choice
-emit 8 1 1 {
-  speed <1 2 3>
-  rotate 0 [] 0
-  60 nop
-}
+speed 3
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
+rotate <-90 0 90> <-90 0 90> 0; 10 nop
 
 --- $random-range
 32 emit 1 32 1 {
