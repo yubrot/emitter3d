@@ -22,6 +22,9 @@ export const Options: FunctionalComponent<{}> = props => {
   return (
     <Window top="5px" right="5px" width="240px">
       <Accordion header="Renderer">
+        <Slider range={[45, 90, 1]} {...option('fieldOfView')}>
+          field of view
+        </Slider>
         <Toggle {...option('antialias')}>
           antialias
         </Toggle>
@@ -47,9 +50,6 @@ export const Options: FunctionalComponent<{}> = props => {
         </Slider>
         <Slider disabled={!prism} range={[0, 1, 0.02]} {...option('prismLightness')}>
           lightness
-        </Slider>
-        <Slider disabled={!prism} range={[0, 60, 1]} {...option('prismSnapshotOffset')}>
-          snapshot offset
         </Slider>
         <Slider disabled={!prism} range={[1, 120, 1]} {...option('prismTrailLength')}>
           trail length
@@ -77,7 +77,7 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!particle} range={[0.1, 7, 0.1]} {...option('particleCoreRadius')}>
           core radius
         </Slider>
-        <Slider disabled={!particle} range={[-3, 3, 0.01]} {...option('particleCoreSharpness')}>
+        <Slider disabled={!particle} range={[-3, 3, 0.1]} {...option('particleCoreSharpness')}>
           core sharpness
         </Slider>
         <Slider disabled={!particle} range={[0.1, 7, 0.1]} {...option('particleShellRadius')}>
@@ -85,9 +85,6 @@ export const Options: FunctionalComponent<{}> = props => {
         </Slider>
         <Slider disabled={!particle} range={[0.02, 0.98, 0.01]} {...option('particleShellLightness')}>
           shell lightness
-        </Slider>
-        <Slider disabled={!particle} range={[0, 60, 1]} {...option('particleSnapshotOffset')}>
-          snapshot offset
         </Slider>
         <Slider disabled={!particle} range={[1, 120, 1]} {...option('particleTrailLength')}>
           trail length
@@ -102,7 +99,21 @@ export const Options: FunctionalComponent<{}> = props => {
           trail diffusion transition
         </TransitionGraph>
       </Accordion>
-      <Accordion header="Core" initiallyOpened={true}>
+      <Accordion header="Adjusting">
+        <Slider disabled={!prism} range={[0, 60, 1]} {...option('prismSnapshotOffset')}>
+          prism snapshot
+        </Slider>
+        <Slider disabled={!particle} range={[0, 60, 1]} {...option('particleSnapshotOffset')}>
+          particle snapshot
+        </Slider>
+        <Slider disabled={!prism} range={[0, 360, 1]} {...option('prismHueOffset')}>
+          prism hue
+        </Slider>
+        <Slider disabled={!particle} range={[0, 360, 1]} {...option('particleHueOffset')}>
+          particle hue
+        </Slider>
+      </Accordion>
+      <Accordion header="System" initiallyOpened={true}>
         <Toggle {...option('isPaused')}>
           pause
         </Toggle>

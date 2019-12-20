@@ -33,6 +33,7 @@ export class Scene extends THREE.Scene {
     saturation: 0.5,
     lightness: 0.5,
     snapshotOffset: 0,
+    hueOffset: 0,
     trailLength: 1,
     trailStep: 1,
     trailAttenuation: (x: number) => 1 - x,
@@ -42,6 +43,7 @@ export class Scene extends THREE.Scene {
     saturation: 0.5,
     lightness: 0.5,
     snapshotOffset: 10,
+    hueOffset: 0,
     trailLength: 1,
     trailAttenuation: (x: number) => 1 - x,
     trailDiffusionScale: 0,
@@ -82,7 +84,7 @@ export class Scene extends THREE.Scene {
           if (dot.opacity == 0) continue;
           position.copy(dot.position);
           color.setHSL(
-            (1 + dot.hue / 360 + position.y * 0.001) % 1,
+            (1 + (dot.hue + prismOptions.hueOffset) / 360 + position.y * 0.001) % 1,
             prismOptions.saturation,
             prismOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
           rotation
@@ -105,7 +107,7 @@ export class Scene extends THREE.Scene {
           if (dot.opacity == 0) continue;
           position.copy(dot.position).addScaledVector(dot.diffusion, f);
           color.setHSL(
-            (1 + dot.hue / 360 + position.y * 0.001) % 1,
+            (1 + (dot.hue + particleOptions.hueOffset) / 360 + position.y * 0.001) % 1,
             particleOptions.saturation,
             particleOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
           particles.put(position, color);

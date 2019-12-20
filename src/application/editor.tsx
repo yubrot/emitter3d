@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     margin: '2px 0',
-    padding: '2px 8px',
     cursor: 'pointer',
     transition: '0.2s',
     color: '#aaa',
@@ -167,9 +166,12 @@ const styles = StyleSheet.create({
   },
   storageItemOpen: {
     flex: "1",
+    margin: '-1px',
+    padding: '2px 8px',
   },
   storageItemDelete: {
-    padding: '0 3px',
+    margin: '-1px',
+    padding: '2px 8px',
     transition: '0.2s',
     ':hover': {
       color: '#faa',

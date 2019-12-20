@@ -68,18 +68,21 @@ function useViewerOptionApplier(): void {
   const store = useStore();
   const viewer = useViewer();
 
-  const { antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } = store.state;
+  const { fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } = store.state;
 
   useEffect(() => {
+    const updateMatrix = viewer.camera.fov != fieldOfView;
+    viewer.camera.fov = fieldOfView;
+    if (updateMatrix) viewer.camera.updateProjectionMatrix();
     viewer.renderer.antialias = antialias;
     viewer.renderer.bloom = bloomEffect;
     viewer.renderer.bloomStrength = bloomStrength;
     viewer.renderer.bloomThreshold = bloomThreshold;
     viewer.renderer.bloomRadius = bloomRadius;
-  }, [antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
+  }, [fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
 
   const {
-    prism, prismSaturation, prismLightness, prismSnapshotOffset,
+    prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
     prismTrailLength, prismTrailStep, prismTrailAttenuation
   } = store.state;
 
@@ -88,19 +91,20 @@ function useViewerOptionApplier(): void {
     viewer.scene.prismOptions.saturation = prismSaturation;
     viewer.scene.prismOptions.lightness = prismLightness;
     viewer.scene.prismOptions.snapshotOffset = prismSnapshotOffset;
+    viewer.scene.prismOptions.hueOffset = prismHueOffset;
     viewer.scene.prismOptions.trailLength = prismTrailLength;
     viewer.scene.prismOptions.trailStep = prismTrailStep;
     viewer.scene.prismOptions.trailAttenuation = compileTransition(prismTrailAttenuation);
     viewer.scene.needsUpdate = true;
   }, [
-    prism, prismSaturation, prismLightness, prismSnapshotOffset,
+    prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
     prismTrailLength, prismTrailStep, prismTrailAttenuation
   ]);
 
   const {
     particle, particleSaturation, particleLightness, particleSizeAttenuation,
     particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleTrailLength, particleTrailAttenuation,
+    particleSnapshotOffset, particleHueOffset, particleTrailLength, particleTrailAttenuation,
     particleTrailDiffusionScale, particleTrailDiffusionTransition
   } = store.state;
 
@@ -115,6 +119,7 @@ function useViewerOptionApplier(): void {
       particleShellRadius,
       particleShellLightness);
     viewer.scene.particleOptions.snapshotOffset = particleSnapshotOffset;
+    viewer.scene.particleOptions.hueOffset = particleHueOffset;
     viewer.scene.particleOptions.trailLength = particleTrailLength;
     viewer.scene.particleOptions.trailAttenuation = compileTransition(particleTrailAttenuation);
     viewer.scene.particleOptions.trailDiffusionScale = particleTrailDiffusionScale;
@@ -123,7 +128,7 @@ function useViewerOptionApplier(): void {
   }, [
     particle, particleSaturation, particleLightness, particleSizeAttenuation,
     particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleTrailLength, particleTrailAttenuation,
+    particleSnapshotOffset, particleHueOffset, particleTrailLength, particleTrailAttenuation,
     particleTrailDiffusionScale, particleTrailDiffusionTransition
   ]);
 }

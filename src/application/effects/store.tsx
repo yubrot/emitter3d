@@ -67,6 +67,7 @@ export type ExplorerState = {
 }[];
 
 export type RendererState = {
+  fieldOfView: number;
   antialias: boolean;
   bloomEffect: boolean;
   bloomStrength: number;
@@ -82,6 +83,7 @@ export type Transition = {
 
 export type PrismState = {
   prism: boolean;
+  prismHueOffset: number;
   prismSaturation: number;
   prismLightness: number;
   prismSnapshotOffset: number;
@@ -92,6 +94,7 @@ export type PrismState = {
 
 export type ParticleState = {
   particle: boolean;
+  particleHueOffset: number;
   particleSaturation: number;
   particleLightness: number;
   particleSizeAttenuation: boolean;
@@ -194,12 +197,13 @@ export const initialEditorState: EditorState = {
   editorNotification: '',
   editorCompilation: ['none'],
   generatorGeneration: 0,
-  generatorStrength: 300,
+  generatorStrength: 350,
   generateAutomatically: true,
   explorer: [],
 };
 
 export const initialRendererState: RendererState = {
+  fieldOfView: 70,
   antialias: false,
   bloomEffect: false,
   bloomStrength: 0,
@@ -209,6 +213,7 @@ export const initialRendererState: RendererState = {
 
 export const initialPrismState: PrismState = {
   prism: false,
+  prismHueOffset: 0,
   prismSaturation: 0.3,
   prismLightness: 0.8,
   prismSnapshotOffset: 0,
@@ -219,6 +224,7 @@ export const initialPrismState: PrismState = {
 
 export const initialParticleState: ParticleState = {
   particle: false,
+  particleHueOffset: 0,
   particleSaturation: 0.8,
   particleLightness: 0.7,
   particleSizeAttenuation: true,
