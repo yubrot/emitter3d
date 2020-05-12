@@ -50,7 +50,7 @@ export class ParticlesMaterial extends THREE.PointsMaterial {
   constructor() {
     super({
       color: 0xffffff,
-      vertexColors: THREE.VertexColors,
+      vertexColors: true,
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,

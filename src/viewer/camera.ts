@@ -23,15 +23,15 @@ export class Camera extends THREE.PerspectiveCamera {
   }
 
   update(): void {
-    this.targetPosition.y = THREE.Math.clamp(this.targetPosition.y, -90, 90);
+    this.targetPosition.y = THREE.MathUtils.clamp(this.targetPosition.y, -90, 90);
     this.targetPosition.d = Math.max(this.targetPosition.d, 10);
     this.currentPosition.x = this.currentPosition.x * this.delayFactor + this.targetPosition.x * (1 - this.delayFactor);
     this.currentPosition.y = this.currentPosition.y * this.delayFactor + this.targetPosition.y * (1 - this.delayFactor);
     this.currentPosition.d = this.currentPosition.d * this.delayFactor + this.targetPosition.d * (1 - this.delayFactor);
 
-    const lat = THREE.Math.clamp(this.currentPosition.y, -90, 90);
-    const phi = THREE.Math.degToRad(90 - lat);
-    const theta = THREE.Math.degToRad(this.currentPosition.x);
+    const lat = THREE.MathUtils.clamp(this.currentPosition.y, -90, 90);
+    const phi = THREE.MathUtils.degToRad(90 - lat);
+    const theta = THREE.MathUtils.degToRad(this.currentPosition.x);
 
     this.position.set(
       this.currentPosition.d * Math.sin(phi) * Math.cos(theta),
