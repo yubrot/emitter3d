@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>emitter3d</title>
-    <script src="emitter3d.js"></script>
-    <script>window.onload = () => emitter3d(document.body);</script>
-  </head>
-  <body>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>emitter3d</title>
+  <link rel="manifest" href="emitter3d.webmanifest">
+  <script src="emitter3d.js"></script>
+  <script>
+    window.addEventListener('load', function() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/emitter3d/service-worker.js');
+      }
+      emitter3d(document.body);
+    });
+  </script>
+</head>
+
+<body>
+</body>
+
 </html>
