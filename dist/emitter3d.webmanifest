@@ -1,0 +1,19 @@
+{
+    "background_color": "black",
+    "description": "Geometric fireworks",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "src": "icons/192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "short_name": "emitter3d",
+    "start_url": "/emitter3d/index.html"
+}

@@ -3,7 +3,7 @@ module.exports = {
   entry: __dirname + '/src/index.tsx',
   output: {
     path: __dirname + '/dist',
-    publicPath: '/',
+    publicPath: '/emitter3d',
     filename: 'emitter3d.js',
     library: 'emitter3d'
   },
@@ -14,5 +14,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['*', '.js', '.ts', '.tsx']
+  },
+  devServer: {
+    contentBase: __dirname + '/dist',
+    contentBasePublicPath: '/emitter3d'
   },
 };

@@ -6,7 +6,7 @@
     "build": "webpack -p",
     "test": "jest",
     "coverage": "jest --coverage",
-    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000 --content-base ./dist"
+    "watch": "webpack-dev-server -d --host 0.0.0.0 --port 3000"
   },
   "jest": {
     "preset": "ts-jest",
