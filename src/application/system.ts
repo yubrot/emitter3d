@@ -83,7 +83,7 @@ function useViewerOptionApplier(): void {
 
   const {
     prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
-    prismTrailLength, prismTrailStep, prismTrailAttenuation
+    prismHueTransition, prismTrailLength, prismTrailStep, prismTrailAttenuation
   } = store.state;
 
   useEffect(() => {
@@ -92,20 +92,21 @@ function useViewerOptionApplier(): void {
     viewer.scene.prismOptions.lightness = prismLightness;
     viewer.scene.prismOptions.snapshotOffset = prismSnapshotOffset;
     viewer.scene.prismOptions.hueOffset = prismHueOffset;
+    viewer.scene.prismOptions.hueTransition = prismHueTransition;
     viewer.scene.prismOptions.trailLength = prismTrailLength;
     viewer.scene.prismOptions.trailStep = prismTrailStep;
     viewer.scene.prismOptions.trailAttenuation = compileTransition(prismTrailAttenuation);
     viewer.scene.needsUpdate = true;
   }, [
     prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
-    prismTrailLength, prismTrailStep, prismTrailAttenuation
+    prismHueTransition, prismTrailLength, prismTrailStep, prismTrailAttenuation
   ]);
 
   const {
     particle, particleSaturation, particleLightness, particleSizeAttenuation,
     particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleHueOffset, particleTrailLength, particleTrailAttenuation,
-    particleTrailDiffusionScale, particleTrailDiffusionTransition
+    particleSnapshotOffset, particleHueOffset, particleHueTransition, particleTrailLength,
+    particleTrailAttenuation, particleTrailDiffusionScale, particleTrailDiffusionTransition
   } = store.state;
 
   useEffect(() => {
@@ -120,6 +121,7 @@ function useViewerOptionApplier(): void {
       particleShellLightness);
     viewer.scene.particleOptions.snapshotOffset = particleSnapshotOffset;
     viewer.scene.particleOptions.hueOffset = particleHueOffset;
+    viewer.scene.particleOptions.hueTransition = particleHueTransition;
     viewer.scene.particleOptions.trailLength = particleTrailLength;
     viewer.scene.particleOptions.trailAttenuation = compileTransition(particleTrailAttenuation);
     viewer.scene.particleOptions.trailDiffusionScale = particleTrailDiffusionScale;
@@ -128,8 +130,8 @@ function useViewerOptionApplier(): void {
   }, [
     particle, particleSaturation, particleLightness, particleSizeAttenuation,
     particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleHueOffset, particleTrailLength, particleTrailAttenuation,
-    particleTrailDiffusionScale, particleTrailDiffusionTransition
+    particleSnapshotOffset, particleHueOffset, particleHueTransition, particleTrailLength,
+    particleTrailAttenuation, particleTrailDiffusionScale, particleTrailDiffusionTransition
   ]);
 }
 

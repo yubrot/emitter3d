@@ -84,6 +84,7 @@ export type Transition = {
 export type PrismState = {
   prism: boolean;
   prismHueOffset: number;
+  prismHueTransition: number;
   prismSaturation: number;
   prismLightness: number;
   prismSnapshotOffset: number;
@@ -95,6 +96,7 @@ export type PrismState = {
 export type ParticleState = {
   particle: boolean;
   particleHueOffset: number;
+  particleHueTransition: number;
   particleSaturation: number;
   particleLightness: number;
   particleSizeAttenuation: boolean;
@@ -214,6 +216,7 @@ export const initialRendererState: RendererState = {
 export const initialPrismState: PrismState = {
   prism: false,
   prismHueOffset: 0,
+  prismHueTransition: 0,
   prismSaturation: 0.3,
   prismLightness: 0.8,
   prismSnapshotOffset: 0,
@@ -225,6 +228,7 @@ export const initialPrismState: PrismState = {
 export const initialParticleState: ParticleState = {
   particle: false,
   particleHueOffset: 0,
+  particleHueTransition: 0,
   particleSaturation: 0.8,
   particleLightness: 0.7,
   particleSizeAttenuation: true,
@@ -251,6 +255,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     bloomThreshold: 0.5,
     bloomRadius: 1,
     prism: true,
+    prismHueOffset: 0,
+    prismHueTransition: 0,
     prismSaturation: 0.4,
     prismLightness: 0.4,
     prismSnapshotOffset: 0,
@@ -258,6 +264,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     prismTrailStep: 1,
     prismTrailAttenuation: { init: 0.2, center: 1, exponent: -2 },
     particle: true,
+    particleHueOffset: 0,
+    particleHueTransition: -60,
     particleSaturation: 0.7,
     particleLightness: 0.6,
     particleSizeAttenuation: true,
@@ -278,6 +286,7 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     bloomEffect: false,
     prism: false,
     particle: true,
+    particleHueTransition: 0,
     particleSaturation: 0.9,
     particleLightness: 0.75,
     particleSizeAttenuation: true,
@@ -299,6 +308,7 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     bloomThreshold: 0,
     bloomRadius: 1,
     prism: true,
+    prismHueTransition: 0,
     prismSaturation: 0.9,
     prismLightness: 0.7,
     prismSnapshotOffset: 0,

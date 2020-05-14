@@ -45,6 +45,9 @@ export const Options: FunctionalComponent<{}> = props => {
         <Toggle {...option('prism')}>
           enabled
         </Toggle>
+        <Slider disabled={!prism} range={[-360, 360, 5]} {...option('prismHueTransition')}>
+          hue transition
+        </Slider>
         <Slider disabled={!prism} range={[0, 1, 0.02]} {...option('prismSaturation')}>
           saturation
         </Slider>
@@ -65,6 +68,9 @@ export const Options: FunctionalComponent<{}> = props => {
         <Toggle {...option('particle')}>
           enabled
         </Toggle>
+        <Slider disabled={!particle} range={[-360, 360, 5]} {...option('particleHueTransition')}>
+          hue transition
+        </Slider>
         <Slider disabled={!particle} range={[0, 1, 0.01]} {...option('particleSaturation')}>
           saturation
         </Slider>
@@ -101,16 +107,16 @@ export const Options: FunctionalComponent<{}> = props => {
       </Accordion>
       <Accordion header="Adjusting">
         <Slider disabled={!prism} range={[0, 60, 1]} {...option('prismSnapshotOffset')}>
-          prism snapshot
+          prism snapshot offset
         </Slider>
         <Slider disabled={!particle} range={[0, 60, 1]} {...option('particleSnapshotOffset')}>
-          particle snapshot
+          particle snapshot offset
         </Slider>
         <Slider disabled={!prism} range={[0, 360, 1]} {...option('prismHueOffset')}>
-          prism hue
+          prism hue offset
         </Slider>
         <Slider disabled={!particle} range={[0, 360, 1]} {...option('particleHueOffset')}>
-          particle hue
+          particle hue offset
         </Slider>
       </Accordion>
       <Accordion header="System" initiallyOpened={true}>
