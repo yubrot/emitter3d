@@ -1,32 +1,36 @@
 import * as THREE from 'three';
 
 import { at, color, GeometryBuilder, ObjectGeometry } from './aux/geometry-builder';
+import { hsl2rgb } from './aux/shader-functions';
 
 export class Prisms extends THREE.Mesh {
   constructor(private capacity: number) {
     super(Prisms.geometry(capacity, Prisms.model()), Prisms.material());
   }
 
-  beginUpdate(): { put(position: THREE.Vector3, rotation: THREE.Quaternion, color: THREE.Color): void; complete(): void; } {
+  beginUpdate(): {
+    put(position: THREE.Vector3, rotation: THREE.Quaternion, hsla: THREE.Vector4): void;
+    complete(): void;
+  } {
     const geometry = this.geometry as THREE.InstancedBufferGeometry;
     const positions = geometry.getAttribute('position') as THREE.InstancedBufferAttribute;
     const rotations = geometry.getAttribute('rotation') as THREE.InstancedBufferAttribute;
-    const colors = geometry.getAttribute('color') as THREE.InstancedBufferAttribute;
+    const hslas = geometry.getAttribute('hsla') as THREE.InstancedBufferAttribute;
     let count = 0;
 
     return {
-      put: (position, rotation, color) => {
+      put: (position, rotation, hsla) => {
         if (count >= this.capacity) return;
         positions.setXYZ(count, position.x, position.y, position.z);
         rotations.setXYZW(count, rotation.x, rotation.y, rotation.z, rotation.w);
-        colors.setXYZ(count, color.r, color.g, color.b);
+        hslas.setXYZW(count, hsla.x, hsla.y, hsla.z, hsla.w);
         ++count;
       },
       complete: () => {
         geometry.maxInstancedCount = count;
         positions.needsUpdate = true;
         rotations.needsUpdate = true;
-        colors.needsUpdate = true;
+        hslas.needsUpdate = true;
       },
     };
   }
@@ -45,7 +49,7 @@ export class Prisms extends THREE.Mesh {
     geometry.setAttribute('objectColor', objectGeometry.color);
     geometry.setAttribute('position', instancedBufferAttribute(3));
     geometry.setAttribute('rotation', instancedBufferAttribute(4));
-    geometry.setAttribute('color', instancedBufferAttribute(3));
+    geometry.setAttribute('hsla', instancedBufferAttribute(4));
 
     geometry.setIndex(objectGeometry.index);
 
@@ -92,14 +96,16 @@ const vertexShader = `
   attribute vec3 objectColor;
   attribute vec3 position;
   attribute vec4 rotation;
-  attribute vec3 color;
+  attribute vec4 hsla;
 
-  varying vec4 vColor;
+  varying vec4 vHsla;
+  varying vec3 vColor;
 
   void main() {
     vec3 vPosition = objectPosition + cross(rotation.xyz, cross(rotation.xyz, objectPosition) + rotation.w * objectPosition) * 2.0;
 
-    vColor = vec4(objectColor * color, 1.0);
+    vHsla = vec4(hsla.x + position.y * 0.001, hsla.yzw);
+    vColor = objectColor;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position + vPosition, 1.0);
   }
@@ -108,9 +114,13 @@ const vertexShader = `
 const fragmentShader = `
   precision highp float;
 
-  varying vec4 vColor;
+  varying vec4 vHsla;
+  varying vec3 vColor;
+
+  ${hsl2rgb}
 
   void main() {
-    gl_FragColor = vColor;
+    vec3 rgb = hsl2rgb(vHsla.xyz);
+    gl_FragColor = vec4(vColor * rgb, vHsla.a);
   }
 `;

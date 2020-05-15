@@ -72,27 +72,29 @@ export class Scene extends THREE.Scene {
 
     const position = new THREE.Vector3();
     const rotation = new THREE.Quaternion();
-    const color = new THREE.Color();
+    const hsla = new THREE.Vector4();
     const q = new THREE.Quaternion();
     const e = new THREE.Euler();
 
     if (this.prisms.visible) {
       const prisms = this.prisms.beginUpdate();
-      const prismOptions = this.prismOptions;
-      for (let i = 0; i < prismOptions.trailLength; i += Math.floor(prismOptions.trailStep)) {
-        const t = i / (prismOptions.trailLength - 0.9);
-        const a = prismOptions.trailAttenuation(t);
-        for (const dot of this.history.snapshot(i + prismOptions.snapshotOffset)) {
+      const {
+        trailLength, trailStep, trailAttenuation,
+        snapshotOffset, hueOffset, hueTransition, saturation, lightness
+      } = this.prismOptions;
+      for (let i = 0; i < trailLength; i += Math.floor(trailStep)) {
+        const t = i / (trailLength - 0.9);
+        const l = trailAttenuation(t);
+        for (const dot of this.history.snapshot(i + snapshotOffset)) {
           if (dot.opacity == 0) continue;
           position.copy(dot.position);
-          color.setHSL(
-            (1 + (dot.hue + prismOptions.hueOffset + prismOptions.hueTransition * i / prismOptions.trailLength) / 360 + position.y * 0.001) % 1,
-            prismOptions.saturation,
-            prismOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
           rotation
             .copy(dot.rotation)
             .multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * dot.lifeTime)));
-          prisms.put(position, rotation, color);
+          const hue = (1 + (dot.hue + hueOffset + hueTransition * i / trailLength) / 360) % 1;
+          const alpha = dot.opacity * Math.min(1, dot.lifeTime * 0.1);
+          hsla.set(hue, saturation, lightness * l, alpha);
+          prisms.put(position, rotation, hsla);
         }
       }
       prisms.complete();
@@ -100,22 +102,28 @@ export class Scene extends THREE.Scene {
 
     if (this.particles.visible) {
       const particles = this.particles.beginUpdate();
-      const particleOptions = this.particleOptions;
-      for (let i = 0; i < particleOptions.trailLength; i++) {
-        const t = i / (particleOptions.trailLength - 0.9);
-        const a = particleOptions.trailAttenuation(t);
-        const f = (1 - particleOptions.trailDiffusionTransition(t)) * particleOptions.trailDiffusionScale;
-        for (const dot of this.history.snapshot(i + particleOptions.snapshotOffset)) {
+      const {
+        trailLength, trailAttenuation, trailDiffusionScale, trailDiffusionTransition,
+        snapshotOffset, hueOffset, hueTransition, saturation, lightness,
+      } = this.particleOptions;
+      for (let i = 0; i < trailLength; i++) {
+        const t = i / (trailLength - 0.9);
+        const l = trailAttenuation(t);
+        const f = (1 - trailDiffusionTransition(t)) * trailDiffusionScale;
+        for (const dot of this.history.snapshot(i + snapshotOffset)) {
           if (dot.opacity == 0) continue;
           position.copy(dot.position).addScaledVector(dot.diffusion, f);
-          color.setHSL(
-            (1 + (dot.hue + particleOptions.hueOffset + particleOptions.hueTransition * i / particleOptions.trailLength) / 360 + position.y * 0.001) % 1,
-            particleOptions.saturation,
-            particleOptions.lightness * dot.opacity * a * Math.min(1, dot.lifeTime * 0.1));
-          particles.put(position, color);
+          const hue = (1 + (dot.hue + hueOffset + hueTransition * i / trailLength) / 360) % 1;
+          const alpha = dot.opacity * Math.min(1, dot.lifeTime * 0.1);
+          hsla.set(hue, saturation, lightness * l, alpha);
+          particles.put(position, hsla);
         }
       }
       particles.complete();
     }
+  }
+
+  setSize(width: number, height: number): void {
+    this.particles.setSize(width, height);
   }
 }

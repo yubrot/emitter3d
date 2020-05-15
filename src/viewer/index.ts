@@ -16,6 +16,7 @@ export class Viewer {
   }
 
   setSize(width: number, height: number): void {
+    this.scene.setSize(width, height);
     this.camera.setSize(width, height);
     this.renderer.setSize(width, height);
   }
