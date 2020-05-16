@@ -80,13 +80,16 @@ export const Options: FunctionalComponent<{}> = props => {
         <Toggle disabled={!particle} {...option('particleSizeAttenuation')}>
           size attenuation
         </Toggle>
-        <Slider disabled={!particle} range={[0.1, 7, 0.1]} {...option('particleCoreRadius')}>
+        <TransitionGraph disabled={!particle} {...option('particleSizeTransition')}>
+          size transition
+        </TransitionGraph>
+        <Slider disabled={!particle} range={[0.1, 20, 0.1]} {...option('particleCoreRadius')}>
           core radius
         </Slider>
         <Slider disabled={!particle} range={[-3, 3, 0.1]} {...option('particleCoreSharpness')}>
           core sharpness
         </Slider>
-        <Slider disabled={!particle} range={[0.1, 7, 0.1]} {...option('particleShellRadius')}>
+        <Slider disabled={!particle} range={[0.1, 20, 0.1]} {...option('particleShellRadius')}>
           shell radius
         </Slider>
         <Slider disabled={!particle} range={[0.02, 0.98, 0.01]} {...option('particleShellLightness')}>
@@ -95,15 +98,21 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!particle} range={[1, 120, 1]} {...option('particleTrailLength')}>
           trail length
         </Slider>
-        <TransitionGraph disabled={!particle || particleTrailLength == 1} {...option('particleTrailAttenuation')}>
+        <TransitionGraph disabled={!particle} {...option('particleTrailAttenuation')}>
           trail attenuation
         </TransitionGraph>
-        <Slider disabled={!particle || particleTrailLength == 1} range={[0, 100, 1]} {...option('particleTrailDiffusionScale')}>
+        <Slider disabled={!particle} range={[0, 100, 1]} {...option('particleTrailDiffusionScale')}>
           trail diffusion
         </Slider>
-        <TransitionGraph disabled={!particle || particleTrailLength == 1 || particleTrailDiffusionScale == 0} {...option('particleTrailDiffusionTransition')}>
+        <TransitionGraph disabled={!particle} {...option('particleTrailDiffusionTransition')}>
           trail diffusion transition
         </TransitionGraph>
+        <Slider disabled={!particle} range={[0, 5, 0.1]} {...option('particleTrailDiffusionFineness')}>
+          trail diffusion fineness
+        </Slider>
+        <Slider disabled={!particle} range={[0, 5, 0.1]} {...option('particleTrailDiffusionShakiness')}>
+          trail diffusion shakiness
+        </Slider>
       </Accordion>
       <Accordion header="Adjusting">
         <Slider disabled={!prism} range={[0, 60, 1]} {...option('prismSnapshotOffset')}>

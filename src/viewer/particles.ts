@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { RadialTexture } from './aux/radial-texture';
-import { hsl2rgb } from './aux/shader-functions';
+import { hsl2rgb, snoise4d } from './aux/shader-functions';
 
 export class Particles extends THREE.Points {
   get buffer(): THREE.BufferGeometry {
@@ -15,41 +15,59 @@ export class Particles extends THREE.Points {
   constructor(private capacity: number) {
     super(new THREE.BufferGeometry(), new ParticlesMaterial());
     const positions = new THREE.BufferAttribute(new Float32Array(capacity * 3), 3);
-    const hslas = new THREE.BufferAttribute(new Float32Array(capacity * 4), 3);
+    const hslas = new THREE.BufferAttribute(new Float32Array(capacity * 4), 4);
+    const diffusion = new THREE.BufferAttribute(new Float32Array(capacity), 1);
+    const time = new THREE.BufferAttribute(new Float32Array(capacity), 1);
+    const scale = new THREE.BufferAttribute(new Float32Array(capacity), 1);
     positions.setUsage(THREE.DynamicDrawUsage);
     hslas.setUsage(THREE.DynamicDrawUsage);
+    diffusion.setUsage(THREE.DynamicDrawUsage);
+    time.setUsage(THREE.DynamicDrawUsage);
+    scale.setUsage(THREE.DynamicDrawUsage);
     this.buffer.setAttribute('position', positions);
     this.buffer.setAttribute('hsla', hslas);
+    this.buffer.setAttribute('diffusion', diffusion);
+    this.buffer.setAttribute('time', time);
+    this.buffer.setAttribute('scale', scale);
     this.buffer.setDrawRange(0, 0);
     this.frustumCulled = false;
   }
 
-  beginUpdate(): {
-    put(position: THREE.Vector3, hsla: THREE.Vector4): void;
+  setSize(width: number, height: number) {
+    this.mat.setSize(width, height);
+  }
+
+  beginUpdateState(): {
+    put(position: THREE.Vector3, hsla: THREE.Vector4, diffusion: number, time: number, scale: number): void;
     complete(): void;
   } {
     let count = 0;
     const positions = this.buffer.getAttribute('position') as THREE.BufferAttribute;
     const hslas = this.buffer.getAttribute('hsla') as THREE.BufferAttribute;
+    const diffusion = this.buffer.getAttribute('diffusion') as THREE.BufferAttribute;
+    const time = this.buffer.getAttribute('time') as THREE.BufferAttribute;
+    const scale = this.buffer.getAttribute('scale') as THREE.BufferAttribute;
 
     return {
-      put: (position, hsla) => {
+      put: (position, hsla, d, t, s) => {
         if (count >= this.capacity) return;
         positions.setXYZ(count, position.x, position.y, position.z);
         hslas.setXYZW(count, hsla.x, hsla.y, hsla.z, hsla.w);
+        diffusion.setX(count, d);
+        time.setX(count, t);
+        scale.setX(count, s);
         ++count;
       },
       complete: () => {
         this.buffer.setDrawRange(0, count);
         positions.needsUpdate = true;
         hslas.needsUpdate = true;
+        diffusion.needsUpdate = true;
+        time.needsUpdate = true;
+        scale.needsUpdate = true;
         this.mat.updateMap();
       },
     };
-  }
-
-  setSize(width: number, height: number) {
-    this.mat.uniforms.scale.value = height * 0.5;
   }
 }
 
@@ -57,9 +75,10 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
   constructor() {
     super({
       uniforms: {
-        size: { value: 1.0 },
+        globalSize: { value: 1.0 },
+        screenScale: { value: 1.0 },
         attenuation: { value: false },
-        scale: { value: 1.0 },
+        fineness: { value: 0.01 },
         map: { value: null },
       },
       vertexShader,
@@ -77,14 +96,20 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
 
   mapNeedsUpdate = true;
 
+  setSize(width: number, height: number) {
+    this.uniforms.screenScale.value = height * 0.5;
+  }
+
   changeOptions(
     sizeAttenuation: boolean,
     coreRadius: number,
     coreSharpness: number,
     shellRadius: number,
-    shellLightness: number): void {
-    this.uniforms.size.value = (coreRadius + shellRadius) * 2 * window.devicePixelRatio;
+    shellLightness: number,
+    diffusionFineness: number): void {
+    this.uniforms.globalSize.value = (coreRadius + shellRadius) * 2 * window.devicePixelRatio;
     this.uniforms.attenuation.value = sizeAttenuation;
+    this.uniforms.fineness.value = diffusionFineness;
     const coreWidth = coreRadius / (coreRadius + shellRadius);
     this.mapNeedsUpdate =
       this.mapNeedsUpdate ||
@@ -109,22 +134,33 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
 const vertexShader = `
   precision highp float;
 
-  uniform float size;
-  uniform float scale;
+  uniform float globalSize;
+  uniform float screenScale;
   uniform bool attenuation;
+  uniform float fineness;
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
 
   attribute vec3 position;
   attribute vec4 hsla;
+  attribute float diffusion;
+  attribute float time;
+  attribute float scale;
 
   varying vec4 vHsla;
 
+  ${snoise4d}
+
   void main() {
-    vHsla = vec4(hsla.x + position.y * 0.001, hsla.yzw);
-    gl_PointSize = size;
-    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    if (attenuation) gl_PointSize *= scale / -mvPosition.z;
+    vec3 pos = position;
+    pos.x += snoise(vec4(position.xyz * fineness + vec3(1, 0, 0), time)) * diffusion;
+    pos.y += snoise(vec4(position.yzx * fineness + vec3(0, 1, 0), time)) * diffusion;
+    pos.z += snoise(vec4(position.zxy * fineness + vec3(0, 0, 1), time)) * diffusion;
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+
+    vHsla = vec4(hsla.x + pos.y * 0.001, hsla.yzw);
+    gl_PointSize = globalSize * scale * hsla.w;
+    if (attenuation) gl_PointSize *= screenScale / -mvPosition.z;
     gl_Position = projectionMatrix * mvPosition;
   }
 `;

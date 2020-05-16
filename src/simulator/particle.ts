@@ -2,6 +2,7 @@ import * as math from 'gl-matrix';
 import { Easing } from './aux/easing';
 
 export class Particle {
+  readonly id: number;
   readonly position = math.vec3.create();
   readonly rotation = math.quat.create();
   lifeTime = 0;
@@ -10,7 +11,9 @@ export class Particle {
   hue = 0;
   closed = false;
 
-  constructor(readonly behavior: Behavior) { }
+  constructor(readonly behavior: Behavior) {
+    this.id = Math.random();
+  }
 
   clone(behavior: Behavior): Particle {
     const p = new Particle(behavior);

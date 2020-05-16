@@ -8,7 +8,7 @@ export class Prisms extends THREE.Mesh {
     super(Prisms.geometry(capacity, Prisms.model()), Prisms.material());
   }
 
-  beginUpdate(): {
+  beginUpdateState(): {
     put(position: THREE.Vector3, rotation: THREE.Quaternion, hsla: THREE.Vector4): void;
     complete(): void;
   } {

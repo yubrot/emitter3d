@@ -100,6 +100,7 @@ export type ParticleState = {
   particleSaturation: number;
   particleLightness: number;
   particleSizeAttenuation: boolean;
+  particleSizeTransition: Transition;
   particleCoreRadius: number;
   particleCoreSharpness: number;
   particleShellRadius: number;
@@ -109,6 +110,8 @@ export type ParticleState = {
   particleTrailAttenuation: Transition;
   particleTrailDiffusionScale: number;
   particleTrailDiffusionTransition: Transition;
+  particleTrailDiffusionFineness: number;
+  particleTrailDiffusionShakiness: number;
 };
 
 export function serializeState(state: ApplicationState): string {
@@ -232,6 +235,7 @@ export const initialParticleState: ParticleState = {
   particleSaturation: 0.8,
   particleLightness: 0.7,
   particleSizeAttenuation: true,
+  particleSizeTransition: { init: 0, center: 0, exponent: 1 },
   particleCoreRadius: 1.7,
   particleCoreSharpness: 0,
   particleShellRadius: 0.8,
@@ -241,6 +245,8 @@ export const initialParticleState: ParticleState = {
   particleTrailAttenuation: { init: 0, center: 0, exponent: 1 },
   particleTrailDiffusionScale: 6,
   particleTrailDiffusionTransition: { init: 0, center: 0, exponent: -1 },
+  particleTrailDiffusionFineness: 3,
+  particleTrailDiffusionShakiness: 3,
 };
 
 export type PresetName = 'unified' | 'neon' | 'prism';
@@ -269,15 +275,18 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleSaturation: 0.7,
     particleLightness: 0.6,
     particleSizeAttenuation: true,
-    particleCoreRadius: 0.4,
+    particleSizeTransition: { init: 0, center: 1, exponent: -1 },
+    particleCoreRadius: 1.2,
     particleCoreSharpness: 3,
-    particleShellRadius: 7,
+    particleShellRadius: 20,
     particleShellLightness: 0.08,
     particleSnapshotOffset: 10,
     particleTrailLength: 55,
     particleTrailAttenuation: { init: 0.3, center: 1, exponent: 0.5 },
     particleTrailDiffusionScale: 30,
     particleTrailDiffusionTransition: { init: 0, center: 0, exponent: -2 },
+    particleTrailDiffusionFineness: 3.5,
+    particleTrailDiffusionShakiness: 2,
     stepsPerUpdate: 1,
   },
   neon: {
@@ -290,7 +299,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleSaturation: 0.9,
     particleLightness: 0.75,
     particleSizeAttenuation: true,
-    particleCoreRadius: 0.4,
+    particleSizeTransition: { init: 0, center: 1, exponent: 3 },
+    particleCoreRadius: 0.5,
     particleCoreSharpness: 3,
     particleShellRadius: 6.6,
     particleShellLightness: 0.07,
@@ -299,6 +309,8 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleTrailAttenuation: { init: 0.1, center: 1, exponent: 1 },
     particleTrailDiffusionScale: 10,
     particleTrailDiffusionTransition: { init: 0.5, center: 1, exponent: 1.5 },
+    particleTrailDiffusionFineness: 3,
+    particleTrailDiffusionShakiness: 3,
   },
   prism: {
     stepsPerUpdate: 1,
