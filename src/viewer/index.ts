@@ -5,8 +5,8 @@ import { CameraPosition, Camera, CameraController } from './camera';
 export { Dot, Scene, Renderer, CameraPosition, Camera, CameraController };
 
 export class Viewer {
-  readonly scene = new Scene();
-  readonly camera = new Camera(70, 1, 1, 5000, { x: 0, y: 40, d: 150 });
+  readonly camera = new Camera(70, 1, 1, 1000, { x: 0, y: 40, d: 150 });
+  readonly scene = new Scene(this.camera);
   readonly renderer = new Renderer(this.scene, this.camera);
 
   setTrackpoint(container: HTMLElement): () => void {

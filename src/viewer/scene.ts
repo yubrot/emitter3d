@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { History } from './aux/history';
 import { Particles } from './particles';
 import { Prisms } from './prisms';
+import { Camera } from './camera';
 
 export type Dot = {
   seed: number;
@@ -56,7 +57,7 @@ export class Scene extends THREE.Scene {
 
   stateNeedsUpdate = false;
 
-  constructor() {
+  constructor(camera: Camera) {
     super();
     this.fog = new THREE.FogExp2(0x000000, 0.0003);
     this.history = new History(allocateDot, 180);
@@ -66,6 +67,8 @@ export class Scene extends THREE.Scene {
 
     this.prisms = new Prisms(40000);
     this.add(this.prisms);
+
+    this.particles.mat.setCameraClip(camera.near, camera.far);
   }
 
   update(): void {
@@ -129,6 +132,6 @@ export class Scene extends THREE.Scene {
   }
 
   setSize(width: number, height: number): void {
-    this.particles.setSize(width, height);
+    this.particles.mat.setSize(width, height);
   }
 }

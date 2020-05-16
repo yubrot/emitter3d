@@ -6,10 +6,7 @@ import { useStore, presetNames, presetStates, ApplicationState, PresetName } fro
 export const Options: FunctionalComponent<{}> = props => {
   const store = useStore();
 
-  const {
-    bloomEffect, prism, prismTrailLength,
-    particle, particleTrailLength, particleTrailDiffusionScale
-  } = store.state;
+  const { bloomEffect, prism, prismTrailLength, particle, particleDof } = store.state;
   const update = store.update;
 
   const option = <K extends keyof ApplicationState>(key: K) => ({
@@ -76,6 +73,15 @@ export const Options: FunctionalComponent<{}> = props => {
         </Slider>
         <Slider disabled={!particle} range={[0, 1, 0.01]} {...option('particleLightness')}>
           lightness
+        </Slider>
+        <Toggle disabled={!particle} {...option('particleDof')}>
+          depth of field
+        </Toggle>
+        <Slider disabled={!particle || !particleDof} range={[0, 1, 0.01]} {...option('particleDofFocus')}>
+          depth of field focus
+        </Slider>
+        <Slider disabled={!particle || !particleDof} range={[0, 5, 0.1]} {...option('particleDofAperture')}>
+          depth of field aperture
         </Slider>
         <Toggle disabled={!particle} {...option('particleSizeAttenuation')}>
           size attenuation

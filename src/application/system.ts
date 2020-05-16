@@ -103,11 +103,11 @@ function useViewerOptionApplier(): void {
   ]);
 
   const {
-    particle, particleSaturation, particleLightness, particleSizeAttenuation, particleSizeTransition,
-    particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleHueOffset, particleHueTransition, particleTrailLength,
-    particleTrailAttenuation, particleTrailDiffusionScale, particleTrailDiffusionTransition,
-    particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
+    particle, particleSaturation, particleLightness, particleDof, particleDofFocus, particleDofAperture,
+    particleSizeAttenuation, particleSizeTransition, particleCoreRadius, particleCoreSharpness,
+    particleShellRadius, particleShellLightness, particleSnapshotOffset, particleHueOffset,
+    particleHueTransition, particleTrailLength, particleTrailAttenuation, particleTrailDiffusionScale,
+    particleTrailDiffusionTransition, particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
   } = store.state;
 
   useEffect(() => {
@@ -116,12 +116,15 @@ function useViewerOptionApplier(): void {
     viewer.scene.particleOptions.lightness = particleLightness;
     viewer.scene.particleOptions.sizeTransition = compileTransition(particleSizeTransition);
     viewer.scene.particles.mat.changeOptions(
+      particleDof,
+      particleDofFocus,
+      particleDofAperture,
       particleSizeAttenuation,
+      Math.exp(particleTrailDiffusionFineness - 5),
       particleCoreRadius,
       particleCoreSharpness,
       particleShellRadius,
-      particleShellLightness,
-      Math.exp(particleTrailDiffusionFineness - 5));
+      particleShellLightness);
     viewer.scene.particleOptions.snapshotOffset = particleSnapshotOffset;
     viewer.scene.particleOptions.hueOffset = particleHueOffset;
     viewer.scene.particleOptions.hueTransition = particleHueTransition;
@@ -132,11 +135,11 @@ function useViewerOptionApplier(): void {
     viewer.scene.particleOptions.trailDiffusionShakiness = Math.exp(particleTrailDiffusionShakiness - 5);
     viewer.scene.stateNeedsUpdate = true;
   }, [
-    particle, particleSaturation, particleLightness, particleSizeAttenuation, particleSizeTransition,
-    particleCoreRadius, particleCoreSharpness, particleShellRadius, particleShellLightness,
-    particleSnapshotOffset, particleHueOffset, particleHueTransition, particleTrailLength,
-    particleTrailAttenuation, particleTrailDiffusionScale, particleTrailDiffusionTransition,
-    particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
+    particle, particleSaturation, particleLightness, particleDof, particleDofFocus, particleDofAperture,
+    particleSizeAttenuation, particleSizeTransition, particleCoreRadius, particleCoreSharpness,
+    particleShellRadius, particleShellLightness, particleSnapshotOffset, particleHueOffset,
+    particleHueTransition, particleTrailLength, particleTrailAttenuation, particleTrailDiffusionScale,
+    particleTrailDiffusionTransition, particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
   ]);
 }
 

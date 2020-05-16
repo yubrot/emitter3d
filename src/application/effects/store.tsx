@@ -99,6 +99,9 @@ export type ParticleState = {
   particleHueTransition: number;
   particleSaturation: number;
   particleLightness: number;
+  particleDof: boolean;
+  particleDofFocus: number;
+  particleDofAperture: number;
   particleSizeAttenuation: boolean;
   particleSizeTransition: Transition;
   particleCoreRadius: number;
@@ -234,6 +237,9 @@ export const initialParticleState: ParticleState = {
   particleHueTransition: 0,
   particleSaturation: 0.8,
   particleLightness: 0.7,
+  particleDof: false,
+  particleDofFocus: 0.15,
+  particleDofAperture: 2,
   particleSizeAttenuation: true,
   particleSizeTransition: { init: 0, center: 0, exponent: 1 },
   particleCoreRadius: 1.7,
@@ -274,6 +280,7 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleHueTransition: -60,
     particleSaturation: 0.7,
     particleLightness: 0.6,
+    particleDof: false,
     particleSizeAttenuation: true,
     particleSizeTransition: { init: 0, center: 1, exponent: -1 },
     particleCoreRadius: 1.2,
@@ -298,9 +305,12 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleHueTransition: 0,
     particleSaturation: 0.9,
     particleLightness: 0.75,
+    particleDof: true,
+    particleDofFocus: 0.15,
+    particleDofAperture: 1,
     particleSizeAttenuation: true,
     particleSizeTransition: { init: 0, center: 1, exponent: 3 },
-    particleCoreRadius: 0.5,
+    particleCoreRadius: 0.4,
     particleCoreSharpness: 3,
     particleShellRadius: 6.6,
     particleShellLightness: 0.07,

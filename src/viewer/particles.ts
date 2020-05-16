@@ -33,10 +33,6 @@ export class Particles extends THREE.Points {
     this.frustumCulled = false;
   }
 
-  setSize(width: number, height: number) {
-    this.mat.setSize(width, height);
-  }
-
   beginUpdateState(): {
     put(position: THREE.Vector3, hsla: THREE.Vector4, diffusion: number, time: number, scale: number): void;
     complete(): void;
@@ -75,11 +71,18 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
   constructor() {
     super({
       uniforms: {
-        globalSize: { value: 1.0 },
+        size: { value: 1.0 },
         screenScale: { value: 1.0 },
+        bokehScale: { value: 3.0 },
+        nearClip: { value: 1 },
+        farClip: { value: 100 },
+        dof: { value: false },
+        dofFocus: { value: 0.3 },
+        dofAperture: { value: 0 },
         attenuation: { value: false },
         fineness: { value: 0.01 },
-        map: { value: null },
+        mapSolid: { value: null },
+        mapBokeh: { value: null },
       },
       vertexShader,
       fragmentShader,
@@ -90,52 +93,84 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
     });
   }
 
-  private corePart = 0.5;
+  private coreRadius = 0.5;
   private coreSharpness = 0;
+  private shellRadius = 0.5;
   private shellLightness = 0.5;
 
   mapNeedsUpdate = true;
 
-  setSize(width: number, height: number) {
+  setCameraClip(near: number, far: number): void {
+    this.uniforms.nearClip.value = near;
+    this.uniforms.farClip.value = far;
+  }
+
+  setSize(width: number, height: number): void {
     this.uniforms.screenScale.value = height * 0.5;
   }
 
   changeOptions(
+    dof: boolean,
+    dofFocus: number,
+    dofAperture: number,
     sizeAttenuation: boolean,
+    diffusionFineness: number,
     coreRadius: number,
     coreSharpness: number,
     shellRadius: number,
-    shellLightness: number,
-    diffusionFineness: number): void {
-    this.uniforms.globalSize.value = (coreRadius + shellRadius) * 2 * window.devicePixelRatio;
+    shellLightness: number): void {
+    this.uniforms.dof.value = dof;
+    this.uniforms.dofFocus.value = dofFocus;
+    this.uniforms.dofAperture.value = dofAperture;
     this.uniforms.attenuation.value = sizeAttenuation;
     this.uniforms.fineness.value = diffusionFineness;
-    const coreWidth = coreRadius / (coreRadius + shellRadius);
     this.mapNeedsUpdate =
       this.mapNeedsUpdate ||
-      this.corePart != coreWidth ||
+      this.coreRadius != coreRadius ||
       this.coreSharpness != coreSharpness ||
+      this.shellRadius != shellRadius ||
       this.shellLightness != shellLightness;
-    this.corePart = coreWidth;
+    this.coreRadius = coreRadius;
     this.coreSharpness = coreSharpness;
+    this.shellRadius = shellRadius;
     this.shellLightness = shellLightness;
   }
 
   updateMap(): void {
     if (!this.mapNeedsUpdate) return;
-    this.uniforms.map.value = new RadialTexture()
-      .easeInTo(1 - this.corePart, this.shellLightness)
+    this.mapNeedsUpdate = false;
+    const bokehScale = 2;
+    const size = Math.max(
+      this.coreRadius * bokehScale + this.shellRadius * 0.5,
+      this.coreRadius + this.shellRadius);
+    const x1 = 1 - (this.coreRadius + this.shellRadius) / size;
+    const x2 = 1 - this.coreRadius / size;
+    const x3 = 1 - this.coreRadius * bokehScale / size;
+    this.uniforms.size.value = size * 2 * devicePixelRatio;
+    this.uniforms.mapSolid.value = new RadialTexture()
+      .easeInTo(x1, 0)
+      .easeInTo(x2, this.shellLightness)
       .easeOutTo(1, 1, 2 ** Math.exp(this.coreSharpness))
       .render();
-    this.mapNeedsUpdate = false;
+    // FIXME: Compute the lightness which is exactly equivalent to mapSolid
+    this.uniforms.mapBokeh.value = new RadialTexture()
+      .easeInTo(x3, 1 / bokehScale / this.uniforms.bokehScale.value * this.shellLightness)
+      .easeOutTo(1, 1 / bokehScale / this.uniforms.bokehScale.value, 2 ** Math.exp(-3))
+      .render();
   }
 }
 
 const vertexShader = `
   precision highp float;
 
-  uniform float globalSize;
+  uniform float size;
   uniform float screenScale;
+  uniform float bokehScale;
+  uniform float nearClip;
+  uniform float farClip;
+  uniform bool dof;
+  uniform float dofFocus;
+  uniform float dofAperture;
   uniform bool attenuation;
   uniform float fineness;
   uniform mat4 modelViewMatrix;
@@ -148,35 +183,52 @@ const vertexShader = `
   attribute float scale;
 
   varying vec4 vHsla;
+  varying float vFocus;
 
   ${snoise4d}
 
   void main() {
-    vec3 pos = position;
+    vec4 pos = vec4(position, 1.0);
     pos.x += snoise(vec4(position.xyz * fineness + vec3(1, 0, 0), time)) * diffusion;
     pos.y += snoise(vec4(position.yzx * fineness + vec3(0, 1, 0), time)) * diffusion;
     pos.z += snoise(vec4(position.zxy * fineness + vec3(0, 0, 1), time)) * diffusion;
-    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-
     vHsla = vec4(hsla.x + pos.y * 0.001, hsla.yzw);
-    gl_PointSize = globalSize * scale * hsla.w;
-    if (attenuation) gl_PointSize *= screenScale / -mvPosition.z;
-    gl_Position = projectionMatrix * mvPosition;
+
+    pos = modelViewMatrix * pos;
+    gl_PointSize = size * scale * hsla.w;
+    if (attenuation) gl_PointSize *= screenScale / -pos.z;
+
+    gl_Position = projectionMatrix * pos;
+
+    if (dof) {
+      float xyd = length(gl_Position.xy / gl_Position.w);
+      float xyf = pow(xyd * 0.1 * (6. - dofAperture), 2.);
+      float zd = clamp((nearClip - pos.z) / (farClip - nearClip), 0., 1.);
+      float zf = 1. - exp(- pow(zd - dofFocus, 2.) / exp(dofAperture - 5.));
+      vFocus = clamp(1. - xyf - zf, 0., 1.);
+      gl_PointSize *= bokehScale - vFocus * (bokehScale - 1.);
+    } else {
+      vFocus = 1.;
+    }
   }
 `;
 
 const fragmentShader = `
   precision highp float;
 
-  uniform sampler2D map;
+  uniform sampler2D mapSolid;
+  uniform sampler2D mapBokeh;
 
   varying vec4 vHsla;
+  varying float vFocus;
 
   ${hsl2rgb}
 
   void main() {
     vec3 rgb = hsl2rgb(vHsla.xyz);
     vec2 uv = vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y);
-    gl_FragColor = vec4(rgb, vHsla.a) * texture2D(map, uv);
+    float t = pow(vFocus, 2.);
+    vec4 m = texture2D(mapSolid, uv) * t + texture2D(mapBokeh, uv) * (1. - t);
+    gl_FragColor = vec4(rgb, 1.) * m;
   }
 `;
