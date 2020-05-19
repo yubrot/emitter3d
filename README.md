@@ -9,10 +9,10 @@ Geometric fireworks simulator
 
 ## Screenshots
 
-![](./screenshots/c.jpg)
 ![](./screenshots/a.jpg)
-![](./screenshots/b.jpg)
+![](./screenshots/c.jpg)
 ![](./screenshots/d.jpg)
+![](./screenshots/b.jpg)
 
 ## Build
 
