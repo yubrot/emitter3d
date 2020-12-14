@@ -8,7 +8,9 @@ export interface Store {
 
 const Context = createContext((undefined as unknown) as Store);
 
-export const RunStore: FunctionalComponent<{ initialState: ApplicationState }> = props => {
+export const RunStore: FunctionalComponent<{
+  initialState: ApplicationState;
+}> = props => {
   const [state, setState] = useState(props.initialState);
   const update = useCallback(
     (updater: Updater<ApplicationState>) => {
@@ -36,7 +38,7 @@ export function initialApplicationState(): ApplicationState {
     ...initialRendererState,
     ...initialPrismState,
     ...initialParticleState,
-    ...presetStates['neon'],
+    ...presetStates['stardust'],
   };
 }
 
@@ -136,7 +138,7 @@ export function serializeState(state: ApplicationState): string {
     return false;
   }
 
-  const data = { ...state };
+  const data: any = { ...state };
 
   // Drop unnecessary props
   delete data.isPaused;
@@ -258,9 +260,9 @@ export const initialParticleState: ParticleState = {
   particleTrailDiffusionShakiness: 3,
 };
 
-export type PresetName = 'unified' | 'neon' | 'prism';
+export type PresetName = 'unified' | 'neon' | 'stardust';
 
-export const presetNames: PresetName[] = ['unified', 'neon', 'prism'];
+export const presetNames: PresetName[] = ['unified', 'neon', 'stardust'];
 
 export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
   unified: {
@@ -325,21 +327,33 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleTrailDiffusionFineness: 3,
     particleTrailDiffusionShakiness: 3,
   },
-  prism: {
-    stepsPerUpdate: 1,
-    antialias: true,
+  stardust: {
+    stepsPerUpdate: 0.5,
+    antialias: false,
     bloomEffect: true,
-    bloomStrength: 1,
+    bloomStrength: 0.8,
     bloomThreshold: 0,
     bloomRadius: 1,
-    prism: true,
-    prismHueTransition: 0,
-    prismSaturation: 0.9,
-    prismLightness: 0.7,
-    prismSnapshotOffset: 0,
-    prismTrailLength: 32,
-    prismTrailStep: 1,
-    prismTrailAttenuation: { init: 0, center: 1, exponent: -2 },
-    particle: false,
+    prism: false,
+    particle: true,
+    particleHueTransition: -160,
+    particleSaturation: 1,
+    particleLightness: 0.7,
+    particleDof: false,
+    particleDofFocus: 0.15,
+    particleDofAperture: 0,
+    particleSizeAttenuation: true,
+    particleSizeTransition: { init: 0, center: 0, exponent: 0.5 },
+    particleCoreRadius: 0.8,
+    particleCoreSharpness: 1,
+    particleShellRadius: 5,
+    particleShellLightness: 0.06,
+    particleSnapshotOffset: 0,
+    particleTrailLength: 120,
+    particleTrailAttenuation: { init: 1, center: 1, exponent: 3 },
+    particleTrailDiffusionScale: 10,
+    particleTrailDiffusionTransition: { init: 0, center: 0, exponent: 0.5 },
+    particleTrailDiffusionFineness: 3.5,
+    particleTrailDiffusionShakiness: 4,
   },
 };
