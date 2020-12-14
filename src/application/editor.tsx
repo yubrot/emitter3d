@@ -17,33 +17,49 @@ export const Editor: FunctionalComponent<{}> = props => {
   const update = store.update;
   const state = store.state;
   const {
-    editorNotification, editingItem, editingCode, explorer,
-    generatorStrength, generateAutomatically
+    editorNotification,
+    editingItem,
+    editingCode,
+    explorer,
+    generatorStrength,
+    generateAutomatically,
   } = store.state;
 
-  const itemNameChange = useCallback((editingItem: string) => {
-    update({
-      editingItem,
-      generateAutomatically: false,
-    });
-  }, [update]);
+  const itemNameChange = useCallback(
+    (editingItem: string) => {
+      update({
+        editingItem,
+        generateAutomatically: false,
+      });
+    },
+    [update]
+  );
 
-  const codeChange = useCallback((editingCode: string) => {
-    update({
-      editingCode,
-      generateAutomatically: false,
-      editorNotification: '...',
-      editorCompilation: ['required', 500],
-    });
-  }, [update]);
+  const codeChange = useCallback(
+    (editingCode: string) => {
+      update({
+        editingCode,
+        generateAutomatically: false,
+        editorNotification: '...',
+        editorCompilation: ['required', 500],
+      });
+    },
+    [update]
+  );
 
-  const generatorStrengthChange = useCallback((generatorStrength: number) => {
-    update({ generatorStrength });
-  }, [update]);
+  const generatorStrengthChange = useCallback(
+    (generatorStrength: number) => {
+      update({ generatorStrength });
+    },
+    [update]
+  );
 
-  const generateAutomaticallyChange = useCallback((generateAutomatically: boolean) => {
-    update({ generateAutomatically });
-  }, [update]);
+  const generateAutomaticallyChange = useCallback(
+    (generateAutomatically: boolean) => {
+      update({ generateAutomatically });
+    },
+    [update]
+  );
 
   const reset = useCallback(() => {
     simulator.reset();
@@ -59,13 +75,9 @@ export const Editor: FunctionalComponent<{}> = props => {
   return (
     <Window bottom="5px" left="5px">
       <div className={css(styles.items)}>
-        <TextField
-          value={editingItem}
-          onChange={itemNameChange}
-          style={{ flex: "1" }}
-        />
+        <TextField value={editingItem} onChange={itemNameChange} style={{ flex: '1' }} />
         <Button onClick={codeSave}>Save</Button>
-        <Button onClick={toggleShowExplorer}>{showExplorer ? "Open -" : "Open +"}</Button>
+        <Button onClick={toggleShowExplorer}>{showExplorer ? 'Open -' : 'Open +'}</Button>
       </div>
       <div className={css(styles.explorer, showExplorer && styles.explorerOpened)}>
         {explorer.map(storage => (
@@ -73,11 +85,17 @@ export const Editor: FunctionalComponent<{}> = props => {
             <ul className={css(styles.storage)}>
               {storage.items.map(item => (
                 <li className={css(styles.storageItem)}>
-                  <div className={css(styles.storageItemOpen)} onClick={() => codeLoad(storage.path, item)}>
+                  <div
+                    className={css(styles.storageItemOpen)}
+                    onClick={() => codeLoad(storage.path, item)}
+                  >
                     {item}
                   </div>
                   {storage.writable ? (
-                    <div className={css(styles.storageItemDelete)} onClick={() => codeDelete(storage.path, item)}>
+                    <div
+                      className={css(styles.storageItemDelete)}
+                      onClick={() => codeDelete(storage.path, item)}
+                    >
                       x
                     </div>
                   ) : null}
@@ -87,9 +105,7 @@ export const Editor: FunctionalComponent<{}> = props => {
           </Accordion>
         ))}
       </div>
-      <div className={css(styles.notification)}>
-        {editorNotification}
-      </div>
+      <div className={css(styles.notification)}>{editorNotification}</div>
       <TextField
         value={editingCode}
         onChange={codeChange}
@@ -101,14 +117,14 @@ export const Editor: FunctionalComponent<{}> = props => {
           range={[10, 1000, 1]}
           value={generatorStrength}
           onChange={generatorStrengthChange}
-          style={{ flex: "1" }}
+          style={{ flex: '1' }}
         >
           strength
         </Slider>
         <Toggle
           value={generateAutomatically}
           onChange={generateAutomaticallyChange}
-          style={{ flex: "1" }}
+          style={{ flex: '1' }}
         >
           auto-generate
         </Toggle>
@@ -165,7 +181,7 @@ const styles = StyleSheet.create({
     },
   },
   storageItemOpen: {
-    flex: "1",
+    flex: '1',
     margin: '-1px',
     padding: '2px 8px',
   },

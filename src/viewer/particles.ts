@@ -34,7 +34,13 @@ export class Particles extends THREE.Points {
   }
 
   beginUpdateState(): {
-    put(position: THREE.Vector3, hsla: THREE.Vector4, diffusion: number, time: number, scale: number): void;
+    put(
+      position: THREE.Vector3,
+      hsla: THREE.Vector4,
+      diffusion: number,
+      time: number,
+      scale: number
+    ): void;
     complete(): void;
   } {
     let count = 0;
@@ -118,7 +124,8 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
     coreRadius: number,
     coreSharpness: number,
     shellRadius: number,
-    shellLightness: number): void {
+    shellLightness: number
+  ): void {
     this.uniforms.dof.value = dof;
     this.uniforms.dofFocus.value = dofFocus;
     this.uniforms.dofAperture.value = dofAperture;
@@ -142,10 +149,11 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
     const bokehScale = 2;
     const size = Math.max(
       this.coreRadius * bokehScale + this.shellRadius * 0.5,
-      this.coreRadius + this.shellRadius);
+      this.coreRadius + this.shellRadius
+    );
     const x1 = 1 - (this.coreRadius + this.shellRadius) / size;
     const x2 = 1 - this.coreRadius / size;
-    const x3 = 1 - this.coreRadius * bokehScale / size;
+    const x3 = 1 - (this.coreRadius * bokehScale) / size;
     this.uniforms.size.value = size * 2 * devicePixelRatio;
     this.uniforms.mapSolid.value = new RadialTexture()
       .easeInTo(x1, 0)
@@ -154,7 +162,7 @@ export class ParticlesMaterial extends THREE.RawShaderMaterial {
       .render();
     // FIXME: Compute the lightness which is exactly equivalent to mapSolid
     this.uniforms.mapBokeh.value = new RadialTexture()
-      .easeInTo(x3, 1 / bokehScale / this.uniforms.bokehScale.value * this.shellLightness)
+      .easeInTo(x3, (1 / bokehScale / this.uniforms.bokehScale.value) * this.shellLightness)
       .easeOutTo(1, 1 / bokehScale / this.uniforms.bokehScale.value, 2 ** Math.exp(-3))
       .render();
   }

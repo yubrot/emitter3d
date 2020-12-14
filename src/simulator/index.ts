@@ -72,18 +72,19 @@ export class Simulator {
     return { code };
   }
 
-  compilePattern(program: string | Program, clear: boolean): { success: boolean, message: string } {
+  compilePattern(program: string | Program, clear: boolean): { success: boolean; message: string } {
     try {
       program = typeof program == 'string' ? parse(program) : program;
       this.pattern = compile(program);
       if (clear) this.field.clear();
       return { success: true, message: 'Successfully compiled.' };
-
     } catch (e) {
       const message =
-        (e instanceof ParseError) ? `Parse error: ${e.message}` :
-          (e instanceof CompileError) ? `Compile error: ${e.message}` :
-            `Unknown error: ${e.message}`;
+        e instanceof ParseError
+          ? `Parse error: ${e.message}`
+          : e instanceof CompileError
+          ? `Compile error: ${e.message}`
+          : `Unknown error: ${e.message}`;
       return { success: false, message };
     }
   }

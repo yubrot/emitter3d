@@ -22,12 +22,8 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider range={[45, 90, 1]} {...option('fieldOfView')}>
           field of view
         </Slider>
-        <Toggle {...option('antialias')}>
-          antialias
-        </Toggle>
-        <Toggle {...option('bloomEffect')}>
-          bloom effect
-        </Toggle>
+        <Toggle {...option('antialias')}>antialias</Toggle>
+        <Toggle {...option('bloomEffect')}>bloom effect</Toggle>
         <Slider disabled={!bloomEffect} range={[0, 3, 0.05]} {...option('bloomStrength')}>
           bloom strength
         </Slider>
@@ -39,9 +35,7 @@ export const Options: FunctionalComponent<{}> = props => {
         </Slider>
       </Accordion>
       <Accordion header="Prism">
-        <Toggle {...option('prism')}>
-          enabled
-        </Toggle>
+        <Toggle {...option('prism')}>enabled</Toggle>
         <Slider disabled={!prism} range={[-360, 360, 5]} {...option('prismHueTransition')}>
           hue transition
         </Slider>
@@ -54,17 +48,22 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!prism} range={[1, 120, 1]} {...option('prismTrailLength')}>
           trail length
         </Slider>
-        <Slider disabled={!prism || prismTrailLength == 1} range={[1, 4, 1]} {...option('prismTrailStep')}>
+        <Slider
+          disabled={!prism || prismTrailLength == 1}
+          range={[1, 4, 1]}
+          {...option('prismTrailStep')}
+        >
           trail step
         </Slider>
-        <TransitionGraph disabled={!prism || prismTrailLength == 1} {...option('prismTrailAttenuation')}>
+        <TransitionGraph
+          disabled={!prism || prismTrailLength == 1}
+          {...option('prismTrailAttenuation')}
+        >
           trail attenuation
         </TransitionGraph>
       </Accordion>
       <Accordion header="Particle">
-        <Toggle {...option('particle')}>
-          enabled
-        </Toggle>
+        <Toggle {...option('particle')}>enabled</Toggle>
         <Slider disabled={!particle} range={[-360, 360, 5]} {...option('particleHueTransition')}>
           hue transition
         </Slider>
@@ -77,10 +76,18 @@ export const Options: FunctionalComponent<{}> = props => {
         <Toggle disabled={!particle} {...option('particleDof')}>
           depth of field
         </Toggle>
-        <Slider disabled={!particle || !particleDof} range={[0, 1, 0.01]} {...option('particleDofFocus')}>
+        <Slider
+          disabled={!particle || !particleDof}
+          range={[0, 1, 0.01]}
+          {...option('particleDofFocus')}
+        >
           depth of field focus
         </Slider>
-        <Slider disabled={!particle || !particleDof} range={[0, 5, 0.1]} {...option('particleDofAperture')}>
+        <Slider
+          disabled={!particle || !particleDof}
+          range={[0, 5, 0.1]}
+          {...option('particleDofAperture')}
+        >
           depth of field aperture
         </Slider>
         <Toggle disabled={!particle} {...option('particleSizeAttenuation')}>
@@ -98,7 +105,11 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!particle} range={[0.1, 20, 0.1]} {...option('particleShellRadius')}>
           shell radius
         </Slider>
-        <Slider disabled={!particle} range={[0.02, 0.98, 0.01]} {...option('particleShellLightness')}>
+        <Slider
+          disabled={!particle}
+          range={[0.02, 0.98, 0.01]}
+          {...option('particleShellLightness')}
+        >
           shell lightness
         </Slider>
         <Slider disabled={!particle} range={[1, 120, 1]} {...option('particleTrailLength')}>
@@ -113,10 +124,18 @@ export const Options: FunctionalComponent<{}> = props => {
         <TransitionGraph disabled={!particle} {...option('particleTrailDiffusionTransition')}>
           trail diffusion transition
         </TransitionGraph>
-        <Slider disabled={!particle} range={[0, 5, 0.1]} {...option('particleTrailDiffusionFineness')}>
+        <Slider
+          disabled={!particle}
+          range={[0, 5, 0.1]}
+          {...option('particleTrailDiffusionFineness')}
+        >
           trail diffusion fineness
         </Slider>
-        <Slider disabled={!particle} range={[0, 5, 0.1]} {...option('particleTrailDiffusionShakiness')}>
+        <Slider
+          disabled={!particle}
+          range={[0, 5, 0.1]}
+          {...option('particleTrailDiffusionShakiness')}
+        >
           trail diffusion shakiness
         </Slider>
       </Accordion>
@@ -135,28 +154,20 @@ export const Options: FunctionalComponent<{}> = props => {
         </Slider>
       </Accordion>
       <Accordion header="System" initiallyOpened={true}>
-        <Toggle {...option('isPaused')}>
-          pause
-        </Toggle>
-        <Toggle {...option('showStats')}>
-          show stats
-        </Toggle>
+        <Toggle {...option('isPaused')}>pause</Toggle>
+        <Toggle {...option('showStats')}>show stats</Toggle>
         <Slider range={[10, 300, 10]} {...option('stepsPerSecond')}>
           steps per second
         </Slider>
         <Slider range={[0.2, 5, 0.1]} {...option('stepsPerUpdate')}>
           steps per update
         </Slider>
-        <Toggle {...option('cameraRevolve')}>
-          camera revolve
-        </Toggle>
+        <Toggle {...option('cameraRevolve')}>camera revolve</Toggle>
       </Accordion>
       <Accordion header="Presets" initiallyOpened={true}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           {presetNames.map(presetName => (
-            <Button onClick={() => applyPreset(presetName)}>
-              {presetName}
-            </Button>
+            <Button onClick={() => applyPreset(presetName)}>{presetName}</Button>
           ))}
         </div>
       </Accordion>

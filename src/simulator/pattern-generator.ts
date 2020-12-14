@@ -26,27 +26,40 @@ function pattern(spec: Spec): Code {
 
   if (spec.strength < 2) {
     code.putCode(move1(spec, flag));
-
   } else {
-    const iterations = (spec.strength < 64) ? 1 : randr(1, 1, 1, 1, 1, 1, 2);
+    const iterations = spec.strength < 64 ? 1 : randr(1, 1, 1, 1, 1, 1, 2);
 
     for (let i = 0; i < iterations; ++i) {
       const strength = spec.strength / iterations;
 
       if (strength < 8 || randf() < 0.7 || spec.generation.length == 0) {
-        const parallel = (randf() < 0.1 || strength < 8) ? 1 : randr(2, 3, 4, 5, 6, 8);
+        const parallel = randf() < 0.1 || strength < 8 ? 1 : randr(2, 3, 4, 5, 6, 8);
         const { code: layoutCode, r } = layout1(spec);
-        const p = strength / parallel < 2 ? 1 : randi(2, Math.max(2, Math.min(strength / parallel, r / 10 / parallel)), 1, 3 / (1 + spec.fineness));
-        const [count, times] = (6 <= p && randf() < 0.8) ? [1, p] : [p, 1];
+        const p =
+          strength / parallel < 2
+            ? 1
+            : randi(
+                2,
+                Math.max(2, Math.min(strength / parallel, r / 10 / parallel)),
+                1,
+                3 / (1 + spec.fineness)
+              );
+        const [count, times] = 6 <= p && randf() < 0.8 ? [1, p] : [p, 1];
         const duration = times == 1 ? 0 : randi(p * 2, p * 10);
-        const childPatternCount = (16 <= parallel * p && (parallel * p) % 2 == 0 && randf() < 0.5) ? 2 : 1;
+        const childPatternCount =
+          16 <= parallel * p && (parallel * p) % 2 == 0 && randf() < 0.5 ? 2 : 1;
         const childHues = array(childPatternCount, j => 60 + i * 40 + j * 40);
-        const childCodes = array(childPatternCount, j => pattern({
-          strength: strength / (parallel * p),
-          generation: [i + j, ...spec.generation],
-          directivity: r >= 360 ? 0 : spec.directivity + 1,
-          fineness: Math.max(0, spec.fineness + (strength * 0.2 < p * parallel && childPatternCount == 1 ? -1 : 2)),
-        }));
+        const childCodes = array(childPatternCount, j =>
+          pattern({
+            strength: strength / (parallel * p),
+            generation: [i + j, ...spec.generation],
+            directivity: r >= 360 ? 0 : spec.directivity + 1,
+            fineness: Math.max(
+              0,
+              spec.fineness + (strength * 0.2 < p * parallel && childPatternCount == 1 ? -1 : 2)
+            ),
+          })
+        );
         const child = new Code()
           .putCode(layoutCode)
           .put('hue+', Code.eachChoice(...childHues))
@@ -54,11 +67,7 @@ function pattern(spec: Spec): Code {
           .toAST();
 
         if (spec.generation.length != 0) code.putCode(move2(times > 1, flag));
-        code
-          .begin()
-          .put(duration, 'emit', count, times, parallel, child)
-          .end();
-
+        code.begin().put(duration, 'emit', count, times, parallel, child).end();
       } else {
         flag.rotate = true;
         const duration = randi(60, 80);
@@ -67,7 +76,10 @@ function pattern(spec: Spec): Code {
         const r = r1 + r2;
         const p = randi(
           Math.max(4, Math.min(strength, r / 45)),
-          Math.max(4, Math.min(strength, duration / 2, r / 10)), 1, 1 / (1 + spec.fineness));
+          Math.max(4, Math.min(strength, duration / 2, r / 10)),
+          1,
+          1 / (1 + spec.fineness)
+        );
         const childHue = 60 + i * 40;
         const childCode = pattern({
           strength: strength / p,
@@ -82,11 +94,7 @@ function pattern(spec: Spec): Code {
           .toAST();
 
         if (spec.generation.length != 0) code.putCode(move3(speed, flag));
-        code
-          .begin()
-          .put(duration, 'emit', 1, p, 1, child)
-          .join().putCode(rotationCode)
-          .end();
+        code.begin().put(duration, 'emit', 1, p, 1, child).join().putCode(rotationCode).end();
       }
     }
   }
@@ -125,7 +133,6 @@ function move1(spec: Spec, flag: Flag): Code {
       })
       .end();
     live -= duration + defer;
-
   } else if (p < 0.6) {
     flag.accelerate = true;
     const duration = randi(60, 80);
@@ -139,12 +146,14 @@ function move1(spec: Spec, flag: Flag): Code {
           code.join().putCode(rotation(duration, 6, 6, 6).code);
         }
         if (randf() < 0.3) {
-          code.join().put(duration / 2, 'nop').put(duration / 2, 'hue+', randr(2, -2) * duration);
+          code
+            .join()
+            .put(duration / 2, 'nop')
+            .put(duration / 2, 'hue+', randr(2, -2) * duration);
         }
       })
       .end();
     live -= duration;
-
   } else {
     code.put('speed', randf(0.8, 1.1));
     if (randf() < 0.3) {
@@ -154,10 +163,7 @@ function move1(spec: Spec, flag: Flag): Code {
     }
   }
 
-  return code
-    .put(live, 'close')
-    .put(120, 'nop')
-    .put(30, 'opacity', 0);
+  return code.put(live, 'close').put(120, 'nop').put(30, 'opacity', 0);
 }
 
 function move2(forceStop: boolean, flag: Flag): Code {
@@ -170,7 +176,6 @@ function move2(forceStop: boolean, flag: Flag): Code {
     } else {
       code.put('speed', randf(2.5, 3)).put(randi(10, 20), 'nop').put('speed', 0);
     }
-
   } else {
     code.put('speed', randf(0.9, 1.2)).put(randi(30, 60), 'nop');
   }
@@ -198,12 +203,18 @@ function move3(finalSpeed: number, flag: Flag): Code {
     .end();
 }
 
-function rotation(duration: number, x: number, y: number, z: number, min = 1): { code: Code, r: number } {
+function rotation(
+  duration: number,
+  x: number,
+  y: number,
+  z: number,
+  min = 1
+): { code: Code; r: number } {
   let xdeg, ydeg, zdeg;
   do {
-    xdeg = (randf() < 0.3) ? 0 : randi(0, 200, 1, x);
-    ydeg = (randf() < 0.3) ? 0 : randi(0, 200, 1, y);
-    zdeg = (randf() < 0.3) ? 0 : randi(0, 200, 1, z);
+    xdeg = randf() < 0.3 ? 0 : randi(0, 200, 1, x);
+    ydeg = randf() < 0.3 ? 0 : randi(0, 200, 1, y);
+    zdeg = randf() < 0.3 ? 0 : randi(0, 200, 1, z);
   } while (Math.max(xdeg, ydeg) < min);
 
   return {
@@ -212,13 +223,15 @@ function rotation(duration: number, x: number, y: number, z: number, min = 1): {
   };
 }
 
-function layout1(spec: Spec): { code: Code, r: number } {
+function layout1(spec: Spec): { code: Code; r: number } {
   const around = randf(0, 1, 1, 3 ** spec.directivity) < 0.3 || spec.generation.length == 0;
 
   const layoutCandidates =
-    spec.generation.length == 0 ? ['horizontal'] :
-      (spec.directivity > 1 || around) ? ['horizontal', 'split'] :
-        ['horizontal', 'vertical', 'split'];
+    spec.generation.length == 0
+      ? ['horizontal']
+      : spec.directivity > 1 || around
+      ? ['horizontal', 'split']
+      : ['horizontal', 'vertical', 'split'];
 
   const layoutType = randr(layoutCandidates);
   const sign = randf() < 0.5 ? 1 : -1;
@@ -257,7 +270,7 @@ function layout1(spec: Spec): { code: Code, r: number } {
   return { code, r };
 }
 
-function layout2(spec: Spec, many: boolean): { code: Code, speed: number, r: number } {
+function layout2(spec: Spec, many: boolean): { code: Code; speed: number; r: number } {
   const code = new Code();
   let speed = 0;
   let r = 0;
@@ -280,7 +293,8 @@ function layout2(spec: Spec, many: boolean): { code: Code, speed: number, r: num
         'rotate',
         Code.randomRange(Code.eachRange(-10, -60), Code.eachRange(10, 60)),
         Code.randomRange(Code.eachRange(-10, -60), Code.eachRange(10, 60)),
-        Code.randomAngle);
+        Code.randomAngle
+      );
       r = 360;
       break;
   }

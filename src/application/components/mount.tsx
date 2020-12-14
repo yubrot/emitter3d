@@ -17,11 +17,5 @@ export const Mount: FunctionalComponent<Props> = props => {
     return () => container.current!.removeChild(dom);
   }, []);
 
-  return (
-    <div
-      className={className || ''}
-      style={style || {}}
-      ref={container}
-    />
-  );
+  return <div className={className || ''} style={style || {}} ref={container} />;
 };

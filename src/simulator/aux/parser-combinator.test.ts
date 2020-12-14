@@ -57,7 +57,8 @@ test('choice', () => {
   const rule = p.choice(
     p.sequence(p.string('A'), p.string('A')),
     p.sequence(p.string('A'), p.string('B')),
-    p.sequence(p.string('B'), p.string('B')));
+    p.sequence(p.string('B'), p.string('B'))
+  );
   expect(parse(rule, 'AA')).toEqual([success, ['A', 'A'], '']);
   expect(parse(rule, 'AB')).toEqual([failure, '1:2']);
   expect(parse(rule, 'BA')).toEqual([failure, '1:2']);
@@ -71,7 +72,14 @@ test('many', () => {
   expect(parse(rule, 'AB')).toEqual([failure, '1:2']);
   expect(parse(rule, 'AAB')).toEqual([success, [['A', 'A']], 'B']);
   expect(parse(rule, 'AAAB')).toEqual([failure, '1:4']);
-  expect(parse(rule, 'AAAAB')).toEqual([success, [['A', 'A'], ['A', 'A']], 'B']);
+  expect(parse(rule, 'AAAAB')).toEqual([
+    success,
+    [
+      ['A', 'A'],
+      ['A', 'A'],
+    ],
+    'B',
+  ]);
 });
 
 test('some', () => {
@@ -80,7 +88,14 @@ test('some', () => {
   expect(parse(rule, 'AB')).toEqual([failure, '1:2']);
   expect(parse(rule, 'AAB')).toEqual([success, [['A', 'A']], 'B']);
   expect(parse(rule, 'AAAB')).toEqual([failure, '1:4']);
-  expect(parse(rule, 'AAAAB')).toEqual([success, [['A', 'A'], ['A', 'A']], 'B']);
+  expect(parse(rule, 'AAAAB')).toEqual([
+    success,
+    [
+      ['A', 'A'],
+      ['A', 'A'],
+    ],
+    'B',
+  ]);
 });
 
 test('map', () => {

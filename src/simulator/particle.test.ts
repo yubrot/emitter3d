@@ -49,7 +49,7 @@ test('core', () => {
 
   new Simulator(new behavior.NopBehavior())
     .lifespan(10)
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(2)
     .tap(s => expect(Array.from(s.particle.position)).toEqual([0, 0, 2]))
     .update(5)
@@ -67,14 +67,26 @@ test('core', () => {
 });
 
 test('set', () => {
-  new Simulator(new behavior.SetBehavior(5, p => p.speed, (p, v) => p.speed = v))
+  new Simulator(
+    new behavior.SetBehavior(
+      5,
+      p => p.speed,
+      (p, v) => (p.speed = v)
+    )
+  )
     .lifespan(10)
     .update(5)
     .tap(s => expect(s.particle.speed).toBeCloseTo(2.5))
     .update(5)
     .tap(s => expect(s.particle.speed).toEqual(5));
 
-  new Simulator(new behavior.SetBehavior(1, p => p.speed, (p, v) => p.speed = v))
+  new Simulator(
+    new behavior.SetBehavior(
+      1,
+      p => p.speed,
+      (p, v) => (p.speed = v)
+    )
+  )
     .lifespan(1)
     .easing(Easing.easeIn)
     .update(0.4)
@@ -84,19 +96,25 @@ test('set', () => {
     .update(0.4)
     .tap(s => expect(s.particle.speed).toEqual(1));
 
-  new Simulator(new behavior.SetBehavior(5, p => p.speed, (p, v) => p.speed = v))
+  new Simulator(
+    new behavior.SetBehavior(
+      5,
+      p => p.speed,
+      (p, v) => (p.speed = v)
+    )
+  )
     .lifespan(4)
-    .tap(s => s.particle.speed = 4)
+    .tap(s => (s.particle.speed = 4))
     .update(3)
     .tap(s => expect(s.particle.speed).toBeCloseTo(4.75))
     .update(1)
     .tap(s => expect(s.particle.speed).toEqual(5));
 
-  new Simulator(new behavior.SwitchBehavior(p => p.closed = true))
+  new Simulator(new behavior.SwitchBehavior(p => (p.closed = true)))
     .update(1)
     .tap(s => expect(s.particle.closed).toEqual(true));
 
-  new Simulator(new behavior.SwitchBehavior(p => p.closed = true))
+  new Simulator(new behavior.SwitchBehavior(p => (p.closed = true)))
     .lifespan(4)
     .update(1)
     .tap(s => expect(s.particle.closed).toEqual(false))
@@ -105,18 +123,18 @@ test('set', () => {
 });
 
 test('add', () => {
-  new Simulator(new behavior.AddBehavior(5, (p, v) => p.speed += v))
+  new Simulator(new behavior.AddBehavior(5, (p, v) => (p.speed += v)))
     .lifespan(5)
-    .tap(s => s.particle.speed = 3)
+    .tap(s => (s.particle.speed = 3))
     .update(3)
     .tap(s => expect(s.particle.speed).toBeCloseTo(6))
     .update(2)
     .tap(s => expect(s.particle.speed).toEqual(8));
 
-  new Simulator(new behavior.AddBehavior(1, (p, v) => p.speed += v))
+  new Simulator(new behavior.AddBehavior(1, (p, v) => (p.speed += v)))
     .lifespan(2)
     .easing(Easing.easeIn)
-    .tap(s => s.particle.speed = 3)
+    .tap(s => (s.particle.speed = 3))
     .update(0.8)
     .tap(s => expect(s.particle.speed).toBeCloseTo(3 + Easing.easeIn.at(0.4)))
     .update(0.4)
@@ -126,23 +144,23 @@ test('add', () => {
 });
 
 test('multiply', () => {
-  new Simulator(new behavior.MultiplyBehavior(3, (p, s) => p.speed *= s))
-    .tap(s => s.particle.speed = 5)
+  new Simulator(new behavior.MultiplyBehavior(3, (p, s) => (p.speed *= s)))
+    .tap(s => (s.particle.speed = 5))
     .update(1)
     .tap(s => expect(s.particle.speed).toBeCloseTo(15));
 
-  new Simulator(new behavior.MultiplyBehavior(4, (p, s) => p.speed *= s))
+  new Simulator(new behavior.MultiplyBehavior(4, (p, s) => (p.speed *= s)))
     .lifespan(10)
-    .tap(s => s.particle.speed = 3)
+    .tap(s => (s.particle.speed = 3))
     .update(5)
     .tap(s => expect(s.particle.speed).toBeCloseTo(6))
     .update(5)
     .tap(s => expect(s.particle.speed).toBeCloseTo(12));
 
-  new Simulator(new behavior.MultiplyBehavior(2, (p, s) => p.speed *= s))
+  new Simulator(new behavior.MultiplyBehavior(2, (p, s) => (p.speed *= s)))
     .lifespan(5)
     .easing(Easing.easeOut)
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(2)
     .tap(s => expect(s.particle.speed).toBeCloseTo(2 ** Easing.easeOut.at(0.4)))
     .update(1)
@@ -154,24 +172,24 @@ test('multiply', () => {
 test('translate', () => {
   new Simulator(new behavior.TranslateBehavior(2, 3, 4))
     .lifespan(5)
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(1, 5)
     .tap(s => expect(Array.from(s.particle.position).map(Math.round)).toEqual([2, 3, 9]));
 });
 
 test('rotate', () => {
   new Simulator(new behavior.RotateBehavior(90, 0, 0))
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(3)
     .tap(s => expect(Array.from(s.particle.position).map(Math.round)).toEqual([0, -3, 0]));
 
   new Simulator(new behavior.RotateBehavior(0, 90, 0))
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(3)
     .tap(s => expect(Array.from(s.particle.position).map(Math.round)).toEqual([3, 0, 0]));
 
   new Simulator(new behavior.RotateBehavior(0, 0, 90))
-    .tap(s => s.particle.speed = 1)
+    .tap(s => (s.particle.speed = 1))
     .update(3)
     .tap(s => expect(Array.from(s.particle.position).map(Math.round)).toEqual([0, 0, 3]));
 });
@@ -258,7 +276,7 @@ test('emit', () => {
 });
 
 function addSpeedBehavior(speed: number, lifespan: number): behavior.AddBehavior {
-  const b = new behavior.AddBehavior(speed, (p, v) => p.speed += v);
+  const b = new behavior.AddBehavior(speed, (p, v) => (p.speed += v));
   b.lifespan = lifespan;
   return b;
 }
@@ -280,7 +298,12 @@ test('continuous', () => {
     .update(1)
     .tap(s => expect(s.particle.speed).toBeCloseTo(9.5));
 
-  for (const [delta, count] of [[1, 40], [4, 10], [5, 8], [6, 7]]) {
+  for (const [delta, count] of [
+    [1, 40],
+    [4, 10],
+    [5, 8],
+    [6, 7],
+  ]) {
     new Simulator(new behavior.LoopBehavior(addSpeedBehavior(10, 10)))
       .lifespan(35)
       .update(delta, count)
@@ -290,22 +313,22 @@ test('continuous', () => {
       });
   }
 
-  new Simulator(new behavior.RepeatBehavior(addSpeedBehavior(1, 2), 3))
-    .update(10)
-    .tap(s => {
-      expect(s.particle.speed).toBeCloseTo(3);
-      expect(s.field).not.toContain(s.particle);
-    });
+  new Simulator(new behavior.RepeatBehavior(addSpeedBehavior(1, 2), 3)).update(10).tap(s => {
+    expect(s.particle.speed).toBeCloseTo(3);
+    expect(s.field).not.toContain(s.particle);
+  });
 
   new Simulator(new behavior.RepeatBehavior(addSpeedBehavior(1, 2), 3))
     .update(1, 10)
     .tap(s => expect(s.particle.speed).toBeCloseTo(3));
 
-  new Simulator(new behavior.SequentialBehavior([
-    addSpeedBehavior(1, 5),
-    addSpeedBehavior(10, 5),
-    addSpeedBehavior(100, 5),
-  ]))
+  new Simulator(
+    new behavior.SequentialBehavior([
+      addSpeedBehavior(1, 5),
+      addSpeedBehavior(10, 5),
+      addSpeedBehavior(100, 5),
+    ])
+  )
     .update(6)
     .tap(s => expect(s.particle.speed).toBeCloseTo(3))
     .update(8)
@@ -353,10 +376,9 @@ test('parallel', () => {
       expect(s.field).not.toContain(s.particle);
     });
 
-  new Simulator(new behavior.ParallelBehavior([
-    addSpeedBehavior(10, 10),
-    addSpeedBehavior(200, 20),
-  ]))
+  new Simulator(
+    new behavior.ParallelBehavior([addSpeedBehavior(10, 10), addSpeedBehavior(200, 20)])
+  )
     .update(5)
     .tap(s => expect(s.particle.speed).toBeCloseTo(55))
     .update(5)

@@ -2,11 +2,10 @@ import { Storage, NativeStorage, MapStorage } from './storage';
 export { Storage, NativeStorage, MapStorage };
 
 export class Explorer {
-  private mounts: { path: string, storage: Storage }[] = [];
+  private mounts: { path: string; storage: Storage }[] = [];
 
-  explore(): { path: string, writable: boolean }[] {
-    return this.mounts
-      .map(({ path, storage }) => ({ path, writable: storage.writable }));
+  explore(): { path: string; writable: boolean }[] {
+    return this.mounts.map(({ path, storage }) => ({ path, writable: storage.writable }));
   }
 
   private storage(path: string): Storage {

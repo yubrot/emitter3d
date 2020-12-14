@@ -12,18 +12,29 @@ export type Props = {
 };
 
 export const Slider: FunctionalComponent<Props> = props => {
-  const { range: [min, max, step], disabled, value, onChange, style, children } = props;
+  const {
+    range: [min, max, step],
+    disabled,
+    value,
+    onChange,
+    style,
+    children,
+  } = props;
 
   const sliderRef = useRef<HTMLDivElement>();
 
-  const [sliderHover, sliderActive] = useMouseDragEvent(sliderRef, (ev: MouseEvent) => {
-    if (disabled) return;
-    const { left, width } = sliderRef.current!.getBoundingClientRect();
-    const r = Math.min(1, Math.max(0, (ev.clientX - left) / width));
-    onChange(min + step * Math.round(r * (max - min) / step));
-  }, [min, max, step, disabled, onChange]);
+  const [sliderHover, sliderActive] = useMouseDragEvent(
+    sliderRef,
+    (ev: MouseEvent) => {
+      if (disabled) return;
+      const { left, width } = sliderRef.current!.getBoundingClientRect();
+      const r = Math.min(1, Math.max(0, (ev.clientX - left) / width));
+      onChange(min + step * Math.round((r * (max - min)) / step));
+    },
+    [min, max, step, disabled, onChange]
+  );
 
-  const width = useMemo(() => ((value - min) / (max - min) * 100) + '%', [value, min, max]);
+  const width = useMemo(() => ((value - min) / (max - min)) * 100 + '%', [value, min, max]);
   const number = useMemo(() => numberString(value, step), [value, step]);
 
   return (
@@ -42,9 +53,7 @@ export const Slider: FunctionalComponent<Props> = props => {
       />
       <div className={css(styles.sliderSurface)}>
         {children}
-        <div className={css(styles.sliderNumber)}>
-          {number}
-        </div>
+        <div className={css(styles.sliderNumber)}>{number}</div>
       </div>
     </div>
   );
@@ -52,20 +61,20 @@ export const Slider: FunctionalComponent<Props> = props => {
 
 export function numberString(value: number, step: number): string {
   let decimal = 0;
-  while (step < 1) decimal += 1, step *= 10;
-  let s = value < 0 ? "-" : "";
+  while (step < 1) (decimal += 1), (step *= 10);
+  let s = value < 0 ? '-' : '';
   let t = String(Math.round(Math.abs(value) * 10 ** decimal));
-  let u = "";
+  let u = '';
   for (; decimal > 0; --decimal) {
     if (t.length > 1) {
       u = t.substr(t.length - 1) + u;
       t = t.substr(0, t.length - 1);
     } else {
       u = t + u;
-      t = "0";
+      t = '0';
     }
   }
-  return s + t + (u == "" ? "" : "." + u);
+  return s + t + (u == '' ? '' : '.' + u);
 }
 
 const styles = StyleSheet.create({
@@ -115,5 +124,5 @@ const styles = StyleSheet.create({
   },
   sliderNumber: {
     margin: '0 4px 0 12px',
-  }
+  },
 });

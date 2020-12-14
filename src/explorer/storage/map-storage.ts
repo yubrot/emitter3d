@@ -1,10 +1,7 @@
 import { Storage } from './storage';
 
 export class MapStorage implements Storage {
-  constructor(
-    private payload: Map<string, string>,
-    readonly writable: boolean,
-  ) { }
+  constructor(private payload: Map<string, string>, readonly writable: boolean) {}
 
   async read(item: string): Promise<string> {
     const result = this.payload.get(item);

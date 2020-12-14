@@ -27,9 +27,12 @@ export class GeometryBuilder extends THREE.Object3D {
   private cache: Map<number, Point[]> = new Map();
 
   putPoint(position: THREE.Vector3, color: THREE.Color): Point {
-    const hash = [position.x, position.y, position.z, color.r, color.g, color.b].sort().reduce((a, b) => a + b, 0);
+    const hash = [position.x, position.y, position.z, color.r, color.g, color.b]
+      .sort()
+      .reduce((a, b) => a + b, 0);
     const cachedPoints = this.cache.get(hash);
-    const cachedPoint = cachedPoints && cachedPoints.find(p => p.position.equals(position) && p.color.equals(color));
+    const cachedPoint =
+      cachedPoints && cachedPoints.find(p => p.position.equals(position) && p.color.equals(color));
     if (cachedPoint) return cachedPoint;
 
     const index = this.points.length;

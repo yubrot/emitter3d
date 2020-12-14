@@ -23,10 +23,12 @@ function useExplorerInitialization(): void {
   useEffect(() => {
     (async () => {
       const storages = explorer.explore();
-      const state = await Promise.all(storages.map(async storage => {
-        const items = await explorer.items(storage.path);
-        return { ...storage, items };
-      }));
+      const state = await Promise.all(
+        storages.map(async storage => {
+          const items = await explorer.items(storage.path);
+          return { ...storage, items };
+        })
+      );
       update({ explorer: state });
     })();
   }, []);
@@ -41,10 +43,13 @@ function useCompileRequestHandler(): void {
 
   const { editingCode, editorCompilation } = store.state;
 
-  const commit = useCallback((code: string) => {
-    const { message } = simulator.compilePattern(code, true);
-    update({ editorNotification: message });
-  }, [update, simulator]);
+  const commit = useCallback(
+    (code: string) => {
+      const { message } = simulator.compilePattern(code, true);
+      update({ editorNotification: message });
+    },
+    [update, simulator]
+  );
 
   useEffect(() => {
     switch (editorCompilation[0]) {
@@ -68,7 +73,14 @@ function useViewerOptionApplier(): void {
   const store = useStore();
   const viewer = useViewer();
 
-  const { fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } = store.state;
+  const {
+    fieldOfView,
+    antialias,
+    bloomEffect,
+    bloomStrength,
+    bloomThreshold,
+    bloomRadius,
+  } = store.state;
 
   useEffect(() => {
     const updateMatrix = viewer.camera.fov != fieldOfView;
@@ -82,8 +94,15 @@ function useViewerOptionApplier(): void {
   }, [fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
 
   const {
-    prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
-    prismHueTransition, prismTrailLength, prismTrailStep, prismTrailAttenuation
+    prism,
+    prismSaturation,
+    prismLightness,
+    prismSnapshotOffset,
+    prismHueOffset,
+    prismHueTransition,
+    prismTrailLength,
+    prismTrailStep,
+    prismTrailAttenuation,
   } = store.state;
 
   useEffect(() => {
@@ -98,16 +117,39 @@ function useViewerOptionApplier(): void {
     viewer.scene.prismOptions.trailAttenuation = compileTransition(prismTrailAttenuation);
     viewer.scene.stateNeedsUpdate = true;
   }, [
-    prism, prismSaturation, prismLightness, prismSnapshotOffset, prismHueOffset,
-    prismHueTransition, prismTrailLength, prismTrailStep, prismTrailAttenuation
+    prism,
+    prismSaturation,
+    prismLightness,
+    prismSnapshotOffset,
+    prismHueOffset,
+    prismHueTransition,
+    prismTrailLength,
+    prismTrailStep,
+    prismTrailAttenuation,
   ]);
 
   const {
-    particle, particleSaturation, particleLightness, particleDof, particleDofFocus, particleDofAperture,
-    particleSizeAttenuation, particleSizeTransition, particleCoreRadius, particleCoreSharpness,
-    particleShellRadius, particleShellLightness, particleSnapshotOffset, particleHueOffset,
-    particleHueTransition, particleTrailLength, particleTrailAttenuation, particleTrailDiffusionScale,
-    particleTrailDiffusionTransition, particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
+    particle,
+    particleSaturation,
+    particleLightness,
+    particleDof,
+    particleDofFocus,
+    particleDofAperture,
+    particleSizeAttenuation,
+    particleSizeTransition,
+    particleCoreRadius,
+    particleCoreSharpness,
+    particleShellRadius,
+    particleShellLightness,
+    particleSnapshotOffset,
+    particleHueOffset,
+    particleHueTransition,
+    particleTrailLength,
+    particleTrailAttenuation,
+    particleTrailDiffusionScale,
+    particleTrailDiffusionTransition,
+    particleTrailDiffusionFineness,
+    particleTrailDiffusionShakiness,
   } = store.state;
 
   useEffect(() => {
@@ -124,22 +166,43 @@ function useViewerOptionApplier(): void {
       particleCoreRadius,
       particleCoreSharpness,
       particleShellRadius,
-      particleShellLightness);
+      particleShellLightness
+    );
     viewer.scene.particleOptions.snapshotOffset = particleSnapshotOffset;
     viewer.scene.particleOptions.hueOffset = particleHueOffset;
     viewer.scene.particleOptions.hueTransition = particleHueTransition;
     viewer.scene.particleOptions.trailLength = particleTrailLength;
     viewer.scene.particleOptions.trailAttenuation = compileTransition(particleTrailAttenuation);
     viewer.scene.particleOptions.trailDiffusionScale = particleTrailDiffusionScale;
-    viewer.scene.particleOptions.trailDiffusionTransition = compileTransition(particleTrailDiffusionTransition);
-    viewer.scene.particleOptions.trailDiffusionShakiness = Math.exp(particleTrailDiffusionShakiness - 5);
+    viewer.scene.particleOptions.trailDiffusionTransition = compileTransition(
+      particleTrailDiffusionTransition
+    );
+    viewer.scene.particleOptions.trailDiffusionShakiness = Math.exp(
+      particleTrailDiffusionShakiness - 5
+    );
     viewer.scene.stateNeedsUpdate = true;
   }, [
-    particle, particleSaturation, particleLightness, particleDof, particleDofFocus, particleDofAperture,
-    particleSizeAttenuation, particleSizeTransition, particleCoreRadius, particleCoreSharpness,
-    particleShellRadius, particleShellLightness, particleSnapshotOffset, particleHueOffset,
-    particleHueTransition, particleTrailLength, particleTrailAttenuation, particleTrailDiffusionScale,
-    particleTrailDiffusionTransition, particleTrailDiffusionFineness, particleTrailDiffusionShakiness,
+    particle,
+    particleSaturation,
+    particleLightness,
+    particleDof,
+    particleDofFocus,
+    particleDofAperture,
+    particleSizeAttenuation,
+    particleSizeTransition,
+    particleCoreRadius,
+    particleCoreSharpness,
+    particleShellRadius,
+    particleShellLightness,
+    particleSnapshotOffset,
+    particleHueOffset,
+    particleHueTransition,
+    particleTrailLength,
+    particleTrailAttenuation,
+    particleTrailDiffusionScale,
+    particleTrailDiffusionTransition,
+    particleTrailDiffusionFineness,
+    particleTrailDiffusionShakiness,
   ]);
 }
 
@@ -152,34 +215,46 @@ function useSystemUpdater(): (deltaTime: number) => void {
   const totalSteps = useRef(0);
 
   const {
-    stepsPerSecond, stepsPerUpdate,
-    isPaused, cameraRevolve, generateAutomatically
+    stepsPerSecond,
+    stepsPerUpdate,
+    isPaused,
+    cameraRevolve,
+    generateAutomatically,
   } = store.state;
 
-  return useCallback((deltaTime: number) => {
-    stats.begin();
-    if (cameraRevolve) viewer.camera.targetPosition.x += 0.05;
-    if (!isPaused) {
-      totalSteps.current += deltaTime * stepsPerSecond;
-      while (totalSteps.current > stepsPerUpdate) {
-        simulator.update(stepsPerUpdate);
-        viewer.scene.history.putSnapshot(simulator.particles, copyParticle);
-        totalSteps.current -= stepsPerUpdate;
-      }
-      viewer.scene.stateNeedsUpdate = true;
+  return useCallback(
+    (deltaTime: number) => {
+      stats.begin();
+      if (cameraRevolve) viewer.camera.targetPosition.x += 0.05;
+      if (!isPaused) {
+        totalSteps.current += deltaTime * stepsPerSecond;
+        while (totalSteps.current > stepsPerUpdate) {
+          simulator.update(stepsPerUpdate);
+          viewer.scene.history.putSnapshot(simulator.particles, copyParticle);
+          totalSteps.current -= stepsPerUpdate;
+        }
+        viewer.scene.stateNeedsUpdate = true;
 
-      if (simulator.closed) {
-        if (generateAutomatically) codeGenerate();
-        simulator.emitRootParticle();
+        if (simulator.closed) {
+          if (generateAutomatically) codeGenerate();
+          simulator.emitRootParticle();
+        }
       }
-    }
-    viewer.update();
-    stats.end();
-  }, [
-    simulator, viewer, stats, codeGenerate,
-    stepsPerSecond, stepsPerUpdate,
-    isPaused, cameraRevolve, generateAutomatically
-  ]);
+      viewer.update();
+      stats.end();
+    },
+    [
+      simulator,
+      viewer,
+      stats,
+      codeGenerate,
+      stepsPerSecond,
+      stepsPerUpdate,
+      isPaused,
+      cameraRevolve,
+      generateAutomatically,
+    ]
+  );
 }
 
 export function useCodeSave(): () => void {
@@ -197,9 +272,7 @@ export function useCodeSave(): () => void {
     update(state => ({
       ...state,
       explorer: state.explorer.map(storage =>
-        (storage.path == firstWritableStorage.path)
-          ? { ...storage, items }
-          : storage
+        storage.path == firstWritableStorage.path ? { ...storage, items } : storage
       ),
     }));
   }, [update, editingItem, editingCode, explorer]);
@@ -211,17 +284,20 @@ export function useCodeDelete(): (path: string, item: string) => void {
 
   const update = store.update;
 
-  return useCallback(async (path: string, item: string) => {
-    await explorer.delete(path, item);
-    update(state => ({
-      ...state,
-      explorer: state.explorer.map(storage =>
-        (storage.path == path)
-          ? { ...storage, items: storage.items.filter(i => i != item) }
-          : storage
-      )
-    }));
-  }, [update, explorer]);
+  return useCallback(
+    async (path: string, item: string) => {
+      await explorer.delete(path, item);
+      update(state => ({
+        ...state,
+        explorer: state.explorer.map(storage =>
+          storage.path == path
+            ? { ...storage, items: storage.items.filter(i => i != item) }
+            : storage
+        ),
+      }));
+    },
+    [update, explorer]
+  );
 }
 
 export function useCodeLoad(): (path: string, item: string) => void {
@@ -230,15 +306,18 @@ export function useCodeLoad(): (path: string, item: string) => void {
 
   const update = store.update;
 
-  return useCallback(async (path: string, item: string) => {
-    const code = await explorer.read(path, item);
-    update({
-      editingItem: item,
-      editingCode: code,
-      editorCompilation: ['required', 0],
-      generateAutomatically: false,
-    });
-  }, [update, explorer]);
+  return useCallback(
+    async (path: string, item: string) => {
+      const code = await explorer.read(path, item);
+      update({
+        editingItem: item,
+        editingCode: code,
+        editorCompilation: ['required', 0],
+        generateAutomatically: false,
+      });
+    },
+    [update, explorer]
+  );
 }
 
 export function useCodeGenerate(clear: boolean): () => void {
@@ -252,16 +331,14 @@ export function useCodeGenerate(clear: boolean): () => void {
   return useCallback(async () => {
     const { code } = simulator.generatePattern(generatorStrength, clear);
     const generation = generatorGeneration + 1;
-    const item = `Generation ${generation}`
+    const item = `Generation ${generation}`;
     update(state => ({
       ...state,
       editingItem: item,
       editingCode: code,
       editorCompilation: ['cancelRequired'],
       explorer: state.explorer.map(storage =>
-        (storage.path == 'history')
-          ? { ...storage, items: storage.items.concat([item]) }
-          : storage
+        storage.path == 'history' ? { ...storage, items: storage.items.concat([item]) } : storage
       ),
       generatorGeneration: generation,
     }));

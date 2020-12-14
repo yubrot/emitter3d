@@ -1,4 +1,4 @@
-export type Input = { line: number, col: number, loc: number, head: string };
+export type Input = { line: number; col: number; loc: number; head: string };
 
 export function input(head: string): Input {
   return { line: 1, col: 1, loc: 0, head };

@@ -86,8 +86,14 @@ export class Scene extends THREE.Scene {
 
     if (this.prisms.visible) {
       const {
-        trailLength, trailStep, trailAttenuation,
-        snapshotOffset, hueOffset, hueTransition, saturation, lightness
+        trailLength,
+        trailStep,
+        trailAttenuation,
+        snapshotOffset,
+        hueOffset,
+        hueTransition,
+        saturation,
+        lightness,
       } = this.prismOptions;
 
       const prisms = this.prisms.beginUpdateState();
@@ -99,7 +105,7 @@ export class Scene extends THREE.Scene {
           rotation
             .copy(dot.rotation)
             .multiply(q.setFromEuler(e.set(0, 0, Math.PI * 0.02 * dot.lifeTime)));
-          const hue = (dot.hue + hueOffset + hueTransition * i / trailLength) / 360;
+          const hue = (dot.hue + hueOffset + (hueTransition * i) / trailLength) / 360;
           hsla.set(hue, saturation, lightness * l, dot.opacity);
           prisms.put(dot.position, rotation, hsla);
         }
@@ -109,8 +115,16 @@ export class Scene extends THREE.Scene {
 
     if (this.particles.visible) {
       const {
-        saturation, lightness, sizeTransition, snapshotOffset, hueOffset, hueTransition,
-        trailLength, trailAttenuation, trailDiffusionScale, trailDiffusionTransition,
+        saturation,
+        lightness,
+        sizeTransition,
+        snapshotOffset,
+        hueOffset,
+        hueTransition,
+        trailLength,
+        trailAttenuation,
+        trailDiffusionScale,
+        trailDiffusionTransition,
         trailDiffusionShakiness,
       } = this.particleOptions;
 
@@ -122,9 +136,15 @@ export class Scene extends THREE.Scene {
         const s = sizeTransition(t);
         for (const dot of this.history.snapshot(i + snapshotOffset)) {
           if (dot.opacity == 0) continue;
-          const hue = (dot.hue + hueOffset + hueTransition * i / trailLength) / 360;
+          const hue = (dot.hue + hueOffset + (hueTransition * i) / trailLength) / 360;
           hsla.set(hue, saturation, lightness * l, dot.opacity);
-          particles.put(dot.position, hsla, f, dot.lifeTime * trailDiffusionShakiness + dot.seed * 100, s);
+          particles.put(
+            dot.position,
+            hsla,
+            f,
+            dot.lifeTime * trailDiffusionShakiness + dot.seed * 100,
+            s
+          );
         }
       }
       particles.complete();

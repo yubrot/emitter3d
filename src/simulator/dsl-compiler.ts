@@ -95,7 +95,7 @@ export abstract class Unit {
 }
 
 class UnitConstructor extends Unit {
-  constructor(private c: { new(args: dsl.AST[]): Unit }) {
+  constructor(private c: { new (args: dsl.AST[]): Unit }) {
     super();
   }
 
@@ -117,7 +117,9 @@ abstract class ConstructedUnit extends Unit {
 
   protected takeArgs(env: Compiler, length: number): TakeArgs {
     if (this.args.length != length) {
-      throw new CompileError(`${this.constructor.name} takes ${length} arguments but got ${this.args.length}`);
+      throw new CompileError(
+        `${this.constructor.name} takes ${length} arguments but got ${this.args.length}`
+      );
     }
     let i = 0;
     return {
@@ -128,7 +130,7 @@ abstract class ConstructedUnit extends Unit {
   }
 }
 
-class NilUnit extends Unit { }
+class NilUnit extends Unit {}
 
 class NumberUnit extends Unit {
   constructor(private value: number) {
@@ -204,63 +206,78 @@ class NopUnit extends Unit {
 
 class CloseUnit extends Unit {
   behavior(env: Compiler): Gen<Behavior> {
-    return _ => new behavior.SwitchBehavior(p => p.closed = true);
+    return _ => new behavior.SwitchBehavior(p => (p.closed = true));
   }
 }
 
 class SetSpeedUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const speedGen = this.takeArgs(env, 1).number();
-    return index => new behavior.SetBehavior(speedGen(index), p => p.speed, (p, v) => p.speed = v);
+    return index =>
+      new behavior.SetBehavior(
+        speedGen(index),
+        p => p.speed,
+        (p, v) => (p.speed = v)
+      );
   }
 }
 
 class AddSpeedUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const speedGen = this.takeArgs(env, 1).number();
-    return index => new behavior.AddBehavior(speedGen(index), (p, v) => p.speed += v);
+    return index => new behavior.AddBehavior(speedGen(index), (p, v) => (p.speed += v));
   }
 }
 
 class MultiplySpeedUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const speedGen = this.takeArgs(env, 1).number();
-    return index => new behavior.MultiplyBehavior(speedGen(index), (p, s) => p.speed *= s);
+    return index => new behavior.MultiplyBehavior(speedGen(index), (p, s) => (p.speed *= s));
   }
 }
 
 class SetOpacityUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const opacityGen = this.takeArgs(env, 1).number();
-    return index => new behavior.SetBehavior(opacityGen(index), p => p.opacity, (p, v) => p.opacity = v);
+    return index =>
+      new behavior.SetBehavior(
+        opacityGen(index),
+        p => p.opacity,
+        (p, v) => (p.opacity = v)
+      );
   }
 }
 
 class AddOpacityUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const opacityGen = this.takeArgs(env, 1).number();
-    return index => new behavior.AddBehavior(opacityGen(index), (p, v) => p.opacity += v);
+    return index => new behavior.AddBehavior(opacityGen(index), (p, v) => (p.opacity += v));
   }
 }
 
 class MultiplyOpacityUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const opacityGen = this.takeArgs(env, 1).number();
-    return index => new behavior.MultiplyBehavior(opacityGen(index), (p, s) => p.opacity *= s);
+    return index => new behavior.MultiplyBehavior(opacityGen(index), (p, s) => (p.opacity *= s));
   }
 }
 
 class SetHueUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const hueGen = this.takeArgs(env, 1).number();
-    return index => new behavior.SetBehavior(hueGen(index), p => p.hue, (p, v) => p.hue = v);
+    return index =>
+      new behavior.SetBehavior(
+        hueGen(index),
+        p => p.hue,
+        (p, v) => (p.hue = v)
+      );
   }
 }
 
 class AddHueUnit extends ConstructedUnit {
   behavior(env: Compiler): Gen<Behavior> {
     const hueGen = this.takeArgs(env, 1).number();
-    return index => new behavior.AddBehavior(hueGen(index), (p, v) => p.hue += v);
+    return index => new behavior.AddBehavior(hueGen(index), (p, v) => (p.hue += v));
   }
 }
 
@@ -328,7 +345,9 @@ class BlockUnit extends ConstructedUnit {
     });
 
     return index => {
-      const behaviors = behaviorGens.map(gens => new behavior.SequentialBehavior(gens.map(gen => gen(index))));
+      const behaviors = behaviorGens.map(
+        gens => new behavior.SequentialBehavior(gens.map(gen => gen(index)))
+      );
       return new behavior.ParallelBehavior(behaviors);
     };
   }
@@ -411,13 +430,13 @@ class EachChoiceUnit extends ChoiceUnit {
 
 class EachRangeUnit extends RangeUnit {
   rangeGen(): Gen<number> {
-    return ([a, b]) => (b <= 1) ? 0.5 : a / (b - 1);
+    return ([a, b]) => (b <= 1 ? 0.5 : a / (b - 1));
   }
 }
 
 class EachAngleUnit extends Unit {
   number(env: Compiler): Gen<number> {
-    return ([a, b]) => 360 * a / b + (b == 2 ? 90 : 0);
+    return ([a, b]) => (360 * a) / b + (b == 2 ? 90 : 0);
   }
 }
 

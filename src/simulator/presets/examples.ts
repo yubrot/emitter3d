@@ -1,5 +1,4 @@
-export const text =
-  `
+export const text = `
 --- sphere
 hue <>
 rotate <> <> <>

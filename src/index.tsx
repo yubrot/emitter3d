@@ -35,7 +35,8 @@ function emitter3d(container: HTMLElement): void {
       explorer={explorer}
       stats={stats}
     />,
-    container);
+    container
+  );
 }
 
 export = emitter3d;

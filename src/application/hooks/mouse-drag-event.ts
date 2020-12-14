@@ -1,6 +1,10 @@
 import { PropRef, useCallback, useEffect, useState } from 'preact/hooks';
 
-export function useMouseDragEvent(containerRef: PropRef<HTMLElement>, handler: (ev: MouseEvent) => void, inputs: ReadonlyArray<unknown>): [boolean, boolean] {
+export function useMouseDragEvent(
+  containerRef: PropRef<HTMLElement>,
+  handler: (ev: MouseEvent) => void,
+  inputs: ReadonlyArray<unknown>
+): [boolean, boolean] {
   const callback = useCallback(handler, inputs);
   const [isActive, setIsActive] = useState(false);
   const [isHover, setIsHover] = useState(false);

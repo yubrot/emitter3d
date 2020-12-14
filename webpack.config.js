@@ -5,18 +5,16 @@ module.exports = {
     path: __dirname + '/dist',
     publicPath: '/emitter3d',
     filename: 'emitter3d.js',
-    library: 'emitter3d'
+    library: 'emitter3d',
   },
   module: {
-    rules: [
-      { test: /\.tsx?$/, loader: 'ts-loader' }
-    ]
+    rules: [{ test: /\.tsx?$/, loader: 'ts-loader' }],
   },
   resolve: {
-    extensions: ['*', '.js', '.ts', '.tsx']
+    extensions: ['*', '.js', '.ts', '.tsx'],
   },
   devServer: {
     contentBase: __dirname + '/dist',
-    contentBasePublicPath: '/emitter3d'
+    contentBasePublicPath: '/emitter3d',
   },
 };

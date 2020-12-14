@@ -3,10 +3,10 @@ import * as THREE from 'three';
 export class Renderer {
   private webGL: THREE.WebGLRenderer;
   private passes: {
-    render: THREE.RenderPass,
-    bloom: THREE.UnrealBloomPass,
-    copy: THREE.ShaderPass,
-    SMAA: THREE.SMAAPass,
+    render: THREE.RenderPass;
+    bloom: THREE.UnrealBloomPass;
+    copy: THREE.ShaderPass;
+    SMAA: THREE.SMAAPass;
   };
   private composer: THREE.EffectComposer;
 

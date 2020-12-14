@@ -16,26 +16,23 @@ export const Main: FunctionalComponent<{}> = props => {
   const update = store.update;
   const { showStats } = store.state;
 
-  const togglePauseAndCameraRevolve = useCallback((ev: MouseEvent) => {
-    ev.preventDefault();
-    update(state => ({
-      isPaused: !state.isPaused,
-      cameraRevolve: !state.cameraRevolve,
-    }));
-  }, [update]);
+  const togglePauseAndCameraRevolve = useCallback(
+    (ev: MouseEvent) => {
+      ev.preventDefault();
+      update(state => ({
+        isPaused: !state.isPaused,
+        cameraRevolve: !state.cameraRevolve,
+      }));
+    },
+    [update]
+  );
 
   useSystem();
 
   return (
-    <div
-      className={css(styles.container)}
-      onContextMenu={togglePauseAndCameraRevolve}
-    >
+    <div className={css(styles.container)} onContextMenu={togglePauseAndCameraRevolve}>
       <Screen />
-      <Mount
-        className={css(styles.stats, showStats && styles.statsShow)}
-        dom={stats.dom}
-      />
+      <Mount className={css(styles.stats, showStats && styles.statsShow)} dom={stats.dom} />
       <Options />
       <Editor />
     </div>

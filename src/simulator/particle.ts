@@ -87,10 +87,10 @@ export class Field implements Iterable<Particle> {
   update(deltaTime: number): void {
     if (deltaTime <= 0) return;
 
-    for (let i = 0; i < this.count;) {
+    for (let i = 0; i < this.count; ) {
       const particle = this.payload[i];
       const start = particle.lifeTime;
-      const end = particle.lifeTime = start + deltaTime;
+      const end = (particle.lifeTime = start + deltaTime);
       const dead = particle.behavior.update(this, particle, start, end) >= 0;
       particle.translate(0, 0, particle.speed * deltaTime);
 

@@ -6,22 +6,21 @@ export interface Store {
   update(updater: Updater<ApplicationState>): void;
 }
 
-const Context = createContext(undefined as unknown as Store);
+const Context = createContext((undefined as unknown) as Store);
 
 export const RunStore: FunctionalComponent<{ initialState: ApplicationState }> = props => {
   const [state, setState] = useState(props.initialState);
-  const update = useCallback((updater: Updater<ApplicationState>) => {
-    setState(s => ({
-      ...s,
-      ...updater instanceof Function ? updater(s) : updater
-    }));
-  }, [setState]);
-
-  return (
-    <Context.Provider value={{ state, update }}>
-      {props.children}
-    </Context.Provider>
+  const update = useCallback(
+    (updater: Updater<ApplicationState>) => {
+      setState(s => ({
+        ...s,
+        ...(updater instanceof Function ? updater(s) : updater),
+      }));
+    },
+    [setState]
   );
+
+  return <Context.Provider value={{ state, update }}>{props.children}</Context.Provider>;
 };
 
 export const useStore: () => Store = () => useContext(Context);
@@ -174,7 +173,11 @@ export function deserializeState(data: string): Partial<ApplicationState> {
   return state;
 }
 
-export function compileTransition({ init, center: l, exponent }: Transition): (x: number) => number {
+export function compileTransition({
+  init,
+  center: l,
+  exponent,
+}: Transition): (x: number) => number {
   const tail = 1 - init;
   const r = 1 - l;
   const p = Math.exp(exponent);
@@ -183,12 +186,12 @@ export function compileTransition({ init, center: l, exponent }: Transition): (x
   const initx = init + x1;
   return n =>
     n < init
-      ? 1 - (1 - (n / init)) ** p
+      ? 1 - (1 - n / init) ** p
       : n < initx
-        ? l * (1 - ((n - init) / x1) ** p) + r
-        : n < 1
-          ? r * ((1 - (n - initx) / x2) ** p)
-          : 0;
+      ? l * (1 - ((n - init) / x1) ** p) + r
+      : n < 1
+      ? r * (1 - (n - initx) / x2) ** p
+      : 0;
 }
 
 export const initialCoreState: CoreState = {

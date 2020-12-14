@@ -4,7 +4,7 @@ import { Storage as IStorage } from './storage';
 export class NativeStorage implements IStorage {
   readonly writable = true;
 
-  constructor(private storage: Storage, private prefix: string = '') { }
+  constructor(private storage: Storage, private prefix: string = '') {}
 
   async read(item: string): Promise<string> {
     const result = this.storage.getItem(this.prefix + item);

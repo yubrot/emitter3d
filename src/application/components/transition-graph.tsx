@@ -14,18 +14,37 @@ export const TransitionGraph: FunctionalComponent<Props> = props => {
   const { disabled, value, onChange, children } = props;
   const { init, center, exponent } = value;
 
-  const initChange = useCallback((init: number) => onChange({ init, center, exponent }), [center, exponent, onChange]);
-  const centerChange = useCallback((center: number) => onChange({ init, center, exponent }), [init, exponent, onChange]);
-  const exponentChange = useCallback((exponent: number) => onChange({ init, center, exponent }), [init, center, onChange]);
+  const initChange = useCallback((init: number) => onChange({ init, center, exponent }), [
+    center,
+    exponent,
+    onChange,
+  ]);
+  const centerChange = useCallback((center: number) => onChange({ init, center, exponent }), [
+    init,
+    exponent,
+    onChange,
+  ]);
+  const exponentChange = useCallback((exponent: number) => onChange({ init, center, exponent }), [
+    init,
+    center,
+    onChange,
+  ]);
 
   const f = compileTransition(value);
-  const command = 'M 0 100 ' + Array(101)
-    .fill(0)
-    .map((_, i) => `L ${i} ${100 - Math.floor(f(i / 100) * 100)}`)
-    .join(' ');
+  const command =
+    'M 0 100 ' +
+    Array(101)
+      .fill(0)
+      .map((_, i) => `L ${i} ${100 - Math.floor(f(i / 100) * 100)}`)
+      .join(' ');
 
   return (
-    <div className={css(styles.container, disabled ? styles.containerDisabled : styles.containerEnabled)}>
+    <div
+      className={css(
+        styles.container,
+        disabled ? styles.containerDisabled : styles.containerEnabled
+      )}
+    >
       <div className={css(styles.header)}>{children}</div>
       <div className={css(styles.body)}>
         <div className={css(styles.parameters)}>
@@ -35,11 +54,21 @@ export const TransitionGraph: FunctionalComponent<Props> = props => {
           <Slider disabled={disabled} range={[0, 1, 0.02]} value={center} onChange={centerChange}>
             center
           </Slider>
-          <Slider disabled={disabled} range={[-3, 3, 0.1]} value={exponent} onChange={exponentChange}>
+          <Slider
+            disabled={disabled}
+            range={[-3, 3, 0.1]}
+            value={exponent}
+            onChange={exponentChange}
+          >
             exponent
           </Slider>
         </div>
-        <svg width="1" height="1" viewBox="0 0 100 100" className={css(styles.preview, !disabled && styles.previewEnabled)}>
+        <svg
+          width="1"
+          height="1"
+          viewBox="0 0 100 100"
+          className={css(styles.preview, !disabled && styles.previewEnabled)}
+        >
           <path d={command} />
         </svg>
       </div>
@@ -84,5 +113,5 @@ const styles = StyleSheet.create({
   previewEnabled: {
     stroke: 'rgba(255, 255, 255, 0.4)',
     fill: 'rgba(255, 255, 255, 0.1)',
-  }
+  },
 });

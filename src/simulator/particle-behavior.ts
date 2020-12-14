@@ -1,12 +1,12 @@
 import { Particle, Behavior, Field } from './particle';
 
-export class NopBehavior extends Behavior { }
+export class NopBehavior extends Behavior {}
 
 export class SetBehavior extends Behavior {
   constructor(
     readonly targetValue: number,
     readonly getValue: (p: Particle) => number,
-    readonly setValue: (p: Particle, value: number) => void,
+    readonly setValue: (p: Particle, value: number) => void
   ) {
     super();
   }
@@ -22,10 +22,7 @@ export class SetBehavior extends Behavior {
 }
 
 export class AddBehavior extends Behavior {
-  constructor(
-    readonly value: number,
-    readonly addValue: (p: Particle, value: number) => void,
-  ) {
+  constructor(readonly value: number, readonly addValue: (p: Particle, value: number) => void) {
     super();
   }
 
@@ -39,7 +36,7 @@ export class AddBehavior extends Behavior {
 export class MultiplyBehavior extends Behavior {
   constructor(
     readonly scale: number,
-    readonly multiplyScale: (p: Particle, scale: number) => void,
+    readonly multiplyScale: (p: Particle, scale: number) => void
   ) {
     super();
   }
@@ -96,11 +93,11 @@ export class EmitBehavior extends Behavior {
   ) {
     super();
 
-    this.indices =
-      [...Array(Math.floor(times))].map((_, t) =>
-        [...Array(Math.floor(count))].map((_, n) =>
-          [...Array(Math.floor(parallel))].map((_, p) =>
-            n + count * t + times * count * p)));
+    this.indices = [...Array(Math.floor(times))].map((_, t) =>
+      [...Array(Math.floor(count))].map((_, n) =>
+        [...Array(Math.floor(parallel))].map((_, p) => n + count * t + times * count * p)
+      )
+    );
   }
 
   readonly indices: number[][][];
@@ -155,7 +152,7 @@ abstract class ContinuousBehavior extends Behavior {
       this.current = this.getNext(false);
     }
 
-    return this.current ? super.update(field, particle, start, end) : (end - start);
+    return this.current ? super.update(field, particle, start, end) : end - start;
   }
 }
 
@@ -191,12 +188,12 @@ export class SequentialBehavior extends ContinuousBehavior {
 
   getNext(first: boolean): Behavior | null {
     this.index = first ? 0 : this.index + 1;
-    return (this.index < this.behaviors.length) ? this.behaviors[this.index] : null;
+    return this.index < this.behaviors.length ? this.behaviors[this.index] : null;
   }
 }
 
 export class ParallelBehavior extends Behavior {
-  readonly jobs: { behavior: Behavior, remainingTime: number }[];
+  readonly jobs: { behavior: Behavior; remainingTime: number }[];
 
   constructor(behaviors: Behavior[]) {
     super();
@@ -211,6 +208,7 @@ export class ParallelBehavior extends Behavior {
 
     return this.jobs.reduce(
       (a, b) => Math.min(a, b.remainingTime),
-      super.update(field, particle, start, end));
+      super.update(field, particle, start, end)
+    );
   }
 }

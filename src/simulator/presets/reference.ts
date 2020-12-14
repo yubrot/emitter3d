@@ -1,5 +1,4 @@
-export const text =
-  `
+export const text = `
 --- nop
 speed 1
 

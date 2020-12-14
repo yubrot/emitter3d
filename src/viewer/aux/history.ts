@@ -1,7 +1,7 @@
 export class History<A> {
   // payload[head], payload[head-1], payload[head-2], ..
   private head: number;
-  private payload: { array: A[], length: number }[];
+  private payload: { array: A[]; length: number }[];
 
   get capacity(): number {
     return this.payload.length;

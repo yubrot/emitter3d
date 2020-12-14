@@ -37,7 +37,9 @@ function ast(v: any): dsl.AST {
 describe('core', () => {
   expect(dsl.AST.fromPlain('foo')).toEqual(new dsl.Symbol('foo'));
   expect(dsl.AST.fromPlain(123)).toEqual(new dsl.Number(123));
-  expect(dsl.AST.fromPlain(['foo', [new dsl.Number(12), 34]])).toEqual(new dsl.List([new dsl.Symbol('foo'), new dsl.List([new dsl.Number(12), new dsl.Number(34)])]));
+  expect(dsl.AST.fromPlain(['foo', [new dsl.Number(12), 34]])).toEqual(
+    new dsl.List([new dsl.Symbol('foo'), new dsl.List([new dsl.Number(12), new dsl.Number(34)])])
+  );
   expect(ast('foo').toPlain()).toEqual('foo');
   expect(ast(123).toPlain()).toEqual(123);
   expect(ast([12, ['bar', 'baz']]).toPlain()).toEqual([12, ['bar', 'baz']]);
@@ -52,7 +54,7 @@ describe('parser', () => {
   });
 
   test('num', () => {
-    expect(parse(dslParser.num, '123.4e+3')).toEqual([success, ast(123.4e+3)]);
+    expect(parse(dslParser.num, '123.4e+3')).toEqual([success, ast(123.4e3)]);
     expect(parse(dslParser.num, 'foo')).toEqual([failure, '1:1']);
   });
 
@@ -77,23 +79,37 @@ describe('parser', () => {
     expect(parse(dslParser.each, '[]')).toEqual([success, dsl.Symbol.eachAngle]);
     expect(parse(dslParser.each, '[1]')).toEqual([success, ast([dsl.Symbol.eachChoice, 1])]);
     expect(parse(dslParser.each, '[1 2]')).toEqual([success, ast([dsl.Symbol.eachChoice, 1, 2])]);
-    expect(parse(dslParser.each, '[1 2 3]')).toEqual([success, ast([dsl.Symbol.eachChoice, 1, 2, 3])]);
+    expect(parse(dslParser.each, '[1 2 3]')).toEqual([
+      success,
+      ast([dsl.Symbol.eachChoice, 1, 2, 3]),
+    ]);
     expect(parse(dslParser.each, '[1..3]')).toEqual([success, ast([dsl.Symbol.eachRange, 1, 3])]);
   });
 
   test('random', () => {
     expect(parse(dslParser.random, '<>')).toEqual([success, dsl.Symbol.randomAngle]);
     expect(parse(dslParser.random, '<1>')).toEqual([success, ast([dsl.Symbol.randomChoice, 1])]);
-    expect(parse(dslParser.random, '<1 2>')).toEqual([success, ast([dsl.Symbol.randomChoice, 1, 2])]);
-    expect(parse(dslParser.random, '<1 2 3>')).toEqual([success, ast([dsl.Symbol.randomChoice, 1, 2, 3])]);
-    expect(parse(dslParser.random, '<1..3>')).toEqual([success, ast([dsl.Symbol.randomRange, 1, 3])]);
+    expect(parse(dslParser.random, '<1 2>')).toEqual([
+      success,
+      ast([dsl.Symbol.randomChoice, 1, 2]),
+    ]);
+    expect(parse(dslParser.random, '<1 2 3>')).toEqual([
+      success,
+      ast([dsl.Symbol.randomChoice, 1, 2, 3]),
+    ]);
+    expect(parse(dslParser.random, '<1..3>')).toEqual([
+      success,
+      ast([dsl.Symbol.randomRange, 1, 3]),
+    ]);
   });
 
   test('program', () => {
     expect(parse(dslParser.program, '')).toEqual([success, []]);
     expect(parse(dslParser.program, 'foo')).toEqual([success, [ast('foo')]]);
     expect(parse(dslParser.program, 'foo bar')).toEqual([success, [ast(['foo', 'bar'])]]);
-    expect(parse(dslParser.program, 'foo bar // comment\n bar /* comment \n comment */ baz \n hoge')).toEqual([success, [ast(['foo', 'bar']), ast(['bar', 'baz']), ast('hoge')]]);
+    expect(
+      parse(dslParser.program, 'foo bar // comment\n bar /* comment \n comment */ baz \n hoge')
+    ).toEqual([success, [ast(['foo', 'bar']), ast(['bar', 'baz']), ast('hoge')]]);
     expect(parse(dslParser.program, 'x; y z')).toEqual([success, [ast('x'), ast(['y', 'z'])]]);
   });
 
@@ -101,10 +117,22 @@ describe('parser', () => {
     expect(parse(dslParser.block, '{}')).toEqual([success, ast([dsl.Symbol.block, []])]);
     expect(parse(dslParser.block, '{|}')).toEqual([success, ast([dsl.Symbol.block, [], []])]);
     expect(parse(dslParser.block, '{ foo }')).toEqual([success, ast([dsl.Symbol.block, ['foo']])]);
-    expect(parse(dslParser.block, '{ foo ; bar | baz }')).toEqual([success, ast([dsl.Symbol.block, ['foo', 'bar'], ['baz']])]);
-    expect(parse(dslParser.block, '{ foo bar }')).toEqual([success, ast([dsl.Symbol.block, [['foo', 'bar']]])]);
-    expect(parse(dslParser.block, '{ (foo) }')).toEqual([success, ast([dsl.Symbol.block, [['foo']]])]);
-    expect(parse(dslParser.block, '{ (foo bar) }')).toEqual([success, ast([dsl.Symbol.block, [['foo', 'bar']]])]);
+    expect(parse(dslParser.block, '{ foo ; bar | baz }')).toEqual([
+      success,
+      ast([dsl.Symbol.block, ['foo', 'bar'], ['baz']]),
+    ]);
+    expect(parse(dslParser.block, '{ foo bar }')).toEqual([
+      success,
+      ast([dsl.Symbol.block, [['foo', 'bar']]]),
+    ]);
+    expect(parse(dslParser.block, '{ (foo) }')).toEqual([
+      success,
+      ast([dsl.Symbol.block, [['foo']]]),
+    ]);
+    expect(parse(dslParser.block, '{ (foo bar) }')).toEqual([
+      success,
+      ast([dsl.Symbol.block, [['foo', 'bar']]]),
+    ]);
   });
 });
 
@@ -208,35 +236,82 @@ describe('builder', () => {
   test('serial', () => {
     expect(new Code().toProgram()).toEqual([]);
     expect(new Code().put('foo', 'bar').toProgram()).toEqual([ast(['foo', 'bar'])]);
-    expect(new Code().put('foo', 'bar').put('baz').toProgram()).toEqual([ast(['foo', 'bar']), ast('baz')]);
-    expect(new Code().put('foo', 'bar').put('baz').put('hoge', 'fuga').toProgram()).toEqual([ast(['foo', 'bar']), ast('baz'), ast(['hoge', 'fuga'])]);
+    expect(new Code().put('foo', 'bar').put('baz').toProgram()).toEqual([
+      ast(['foo', 'bar']),
+      ast('baz'),
+    ]);
+    expect(new Code().put('foo', 'bar').put('baz').put('hoge', 'fuga').toProgram()).toEqual([
+      ast(['foo', 'bar']),
+      ast('baz'),
+      ast(['hoge', 'fuga']),
+    ]);
     expect(new Code().toAST()).toEqual(ast([dsl.Symbol.block, []]));
     expect(new Code().put('foo', 'bar').toAST()).toEqual(ast(['foo', 'bar']));
-    expect(new Code().put('foo', 'bar').put('baz').toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar'], 'baz']]));
-    expect(new Code().put('foo', 'bar').putCode(new Code().put('baz').put('hoge', 'fuga')).toProgram()).toEqual([ast(['foo', 'bar']), ast('baz'), ast(['hoge', 'fuga'])]);
+    expect(new Code().put('foo', 'bar').put('baz').toAST()).toEqual(
+      ast([dsl.Symbol.block, [['foo', 'bar'], 'baz']])
+    );
+    expect(
+      new Code().put('foo', 'bar').putCode(new Code().put('baz').put('hoge', 'fuga')).toProgram()
+    ).toEqual([ast(['foo', 'bar']), ast('baz'), ast(['hoge', 'fuga'])]);
   });
 
   test('parallel', () => {
     expect(new Code().join().toProgram()).toEqual([]);
     expect(new Code().join().put('foo', 'bar').toAST()).toEqual(ast(['foo', 'bar']));
-    expect(new Code().join().put('foo', 'bar').put('baz').toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar'], 'baz']]));
-    expect(new Code().put('foo', 'bar').join().put('baz').toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], ['baz']]));
-    expect(new Code().put('a').put('b').join().put('c').put('d').join().put('e').toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd'], ['e']]));
-    expect(new Code().put('foo', 'bar').join().putCode(new Code().put('hoge').put('fuga')).toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], ['hoge', 'fuga']]));
+    expect(new Code().join().put('foo', 'bar').put('baz').toAST()).toEqual(
+      ast([dsl.Symbol.block, [['foo', 'bar'], 'baz']])
+    );
+    expect(new Code().put('foo', 'bar').join().put('baz').toAST()).toEqual(
+      ast([dsl.Symbol.block, [['foo', 'bar']], ['baz']])
+    );
+    expect(new Code().put('a').put('b').join().put('c').put('d').join().put('e').toAST()).toEqual(
+      ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd'], ['e']])
+    );
+    expect(
+      new Code().put('foo', 'bar').join().putCode(new Code().put('hoge').put('fuga')).toAST()
+    ).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], ['hoge', 'fuga']]));
     // expect(new Code().put('foo', 'bar').join().putCode(new Code().put('hoge').join().put('fuga')).toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], ['hoge'], ['fuga']]));
-    expect(new Code().put('foo', 'bar').join().putCode(new Code().put('hoge').join().put('fuga')).toAST()).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], [[dsl.Symbol.block, ['hoge'], ['fuga']]]]));
-    expect(new Code().put('a').join().put('b').putCode(new Code().put('c')).toAST()).toEqual(ast([dsl.Symbol.block, ['a'], ['b', 'c']]));
-    expect(new Code().put('a').join().put('b').putCode(new Code().put('c').join().put('d')).toAST()).toEqual(ast([dsl.Symbol.block, ['a'], ['b', [dsl.Symbol.block, ['c'], ['d']]]]));
+    expect(
+      new Code().put('foo', 'bar').join().putCode(new Code().put('hoge').join().put('fuga')).toAST()
+    ).toEqual(ast([dsl.Symbol.block, [['foo', 'bar']], [[dsl.Symbol.block, ['hoge'], ['fuga']]]]));
+    expect(new Code().put('a').join().put('b').putCode(new Code().put('c')).toAST()).toEqual(
+      ast([dsl.Symbol.block, ['a'], ['b', 'c']])
+    );
+    expect(
+      new Code().put('a').join().put('b').putCode(new Code().put('c').join().put('d')).toAST()
+    ).toEqual(ast([dsl.Symbol.block, ['a'], ['b', [dsl.Symbol.block, ['c'], ['d']]]]));
   });
 
   test('nested', () => {
-    expect(new Code().put('a').put('b').join().begin().put('c').put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd']]));
+    expect(new Code().put('a').put('b').join().begin().put('c').put('d').end().toAST()).toEqual(
+      ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd']])
+    );
     // expect(new Code().put('a').put('b').join().begin().put('c').join().put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c'], ['d']]));
-    expect(new Code().put('a').put('b').join().begin().put('c').join().put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], [[dsl.Symbol.block, ['c'], ['d']]]]));
-    expect(new Code().put('a').put('b').join().put('c').begin().put('d').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd']]));
-    expect(new Code().put('a').put('b').join().put('c').begin().put('d').join().put('e').end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', [dsl.Symbol.block, ['d'], ['e']]]]));
-    expect(() => new Code().put('a').begin().put('b').begin().put('c').join().put('d').end().toAST()).toThrow(Error);
-    expect(new Code().put('a').begin().put('b').begin().put('c').join().putCode(new Code().put('d').put('e')).end().end().toAST()).toEqual(ast([dsl.Symbol.block, ['a', 'b', [dsl.Symbol.block, ['c'], ['d', 'e']]]]));
+    expect(
+      new Code().put('a').put('b').join().begin().put('c').join().put('d').end().toAST()
+    ).toEqual(ast([dsl.Symbol.block, ['a', 'b'], [[dsl.Symbol.block, ['c'], ['d']]]]));
+    expect(new Code().put('a').put('b').join().put('c').begin().put('d').end().toAST()).toEqual(
+      ast([dsl.Symbol.block, ['a', 'b'], ['c', 'd']])
+    );
+    expect(
+      new Code().put('a').put('b').join().put('c').begin().put('d').join().put('e').end().toAST()
+    ).toEqual(ast([dsl.Symbol.block, ['a', 'b'], ['c', [dsl.Symbol.block, ['d'], ['e']]]]));
+    expect(() =>
+      new Code().put('a').begin().put('b').begin().put('c').join().put('d').end().toAST()
+    ).toThrow(Error);
+    expect(
+      new Code()
+        .put('a')
+        .begin()
+        .put('b')
+        .begin()
+        .put('c')
+        .join()
+        .putCode(new Code().put('d').put('e'))
+        .end()
+        .end()
+        .toAST()
+    ).toEqual(ast([dsl.Symbol.block, ['a', 'b', [dsl.Symbol.block, ['c'], ['d', 'e']]]]));
   });
 
   test('util', () => {
@@ -248,11 +323,65 @@ describe('builder', () => {
     expect(ast(Code.randomAngle)).toEqual(ast(dsl.Symbol.randomAngle));
     expect(new Code().putEachChoice(new Code().put('a')).toAST()).toEqual(ast('a'));
     expect(new Code().putRandomChoice(new Code().put('a')).toAST()).toEqual(ast('a'));
-    expect(new Code().putEachChoice(new Code().put('a'), new Code().put('b')).toAST()).toEqual(ast([dsl.Symbol.eachChoice, 'a', 'b']));
-    expect(new Code().putRandomChoice(new Code().put('a'), new Code().put('b')).toAST()).toEqual(ast([dsl.Symbol.randomChoice, 'a', 'b']));
-    expect(new Code().putEachChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d')).toAST()).toEqual(ast([dsl.Symbol.eachChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]]));
-    expect(new Code().putRandomChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d')).toAST()).toEqual(ast([dsl.Symbol.randomChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]]));
-    expect(new Code().put('x').putEachChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d')).put('y').toAST()).toEqual(ast([dsl.Symbol.block, ['x', [dsl.Symbol.eachChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]], 'y']]));
-    expect(new Code().put('x').putRandomChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d')).put('y').toAST()).toEqual(ast([dsl.Symbol.block, ['x', [dsl.Symbol.randomChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]], 'y']]));
+    expect(new Code().putEachChoice(new Code().put('a'), new Code().put('b')).toAST()).toEqual(
+      ast([dsl.Symbol.eachChoice, 'a', 'b'])
+    );
+    expect(new Code().putRandomChoice(new Code().put('a'), new Code().put('b')).toAST()).toEqual(
+      ast([dsl.Symbol.randomChoice, 'a', 'b'])
+    );
+    expect(
+      new Code()
+        .putEachChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d'))
+        .toAST()
+    ).toEqual(
+      ast([dsl.Symbol.eachChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]])
+    );
+    expect(
+      new Code()
+        .putRandomChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d'))
+        .toAST()
+    ).toEqual(
+      ast([
+        dsl.Symbol.randomChoice,
+        [dsl.Symbol.block, ['a', 'b']],
+        [dsl.Symbol.block, ['c'], ['d']],
+      ])
+    );
+    expect(
+      new Code()
+        .put('x')
+        .putEachChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d'))
+        .put('y')
+        .toAST()
+    ).toEqual(
+      ast([
+        dsl.Symbol.block,
+        [
+          'x',
+          [dsl.Symbol.eachChoice, [dsl.Symbol.block, ['a', 'b']], [dsl.Symbol.block, ['c'], ['d']]],
+          'y',
+        ],
+      ])
+    );
+    expect(
+      new Code()
+        .put('x')
+        .putRandomChoice(new Code().put('a').put('b'), new Code().put('c').join().put('d'))
+        .put('y')
+        .toAST()
+    ).toEqual(
+      ast([
+        dsl.Symbol.block,
+        [
+          'x',
+          [
+            dsl.Symbol.randomChoice,
+            [dsl.Symbol.block, ['a', 'b']],
+            [dsl.Symbol.block, ['c'], ['d']],
+          ],
+          'y',
+        ],
+      ])
+    );
   });
 });

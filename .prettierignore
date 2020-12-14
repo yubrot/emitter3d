@@ -1,13 +1,6 @@
+.github/
 node_modules
 coverage
-.next
 out
 build
-.vercel
-src/client/hooks/infrastructure/graphql-sdk.ts
-src/server/graphql/types.ts
-
-next.config.js
-postcss.config.js
-tailwind.config.js
-.eslintrc.js
+src/viewer/three-plugins

@@ -9,27 +9,60 @@ const functions = [
 
 for (const { name, easing } of functions) {
   test(name, () => {
-    for (const [a, r] of [[-1, 0], [0, 0], [1, 1], [2, 1]]) {
+    for (const [a, r] of [
+      [-1, 0],
+      [0, 0],
+      [1, 1],
+      [2, 1],
+    ]) {
       expect(easing.at(a)).toEqual(r);
     }
 
-    for (const [a, r] of [[-1, 0], [0, 0], [5, 1], [6, 1]]) {
+    for (const [a, r] of [
+      [-1, 0],
+      [0, 0],
+      [5, 1],
+      [6, 1],
+    ]) {
       expect(easing.at(a, 5)).toEqual(r);
     }
 
-    for (const [a, r] of [[-1, 0], [0, 0], [0.01, 1], [1, 1]]) {
+    for (const [a, r] of [
+      [-1, 0],
+      [0, 0],
+      [0.01, 1],
+      [1, 1],
+    ]) {
       expect(easing.at(a, 0)).toEqual(r);
     }
 
-    for (const [a, b, r] of [[-1, 0, 0], [0, 1, 1], [1, 2, 0]]) {
+    for (const [a, b, r] of [
+      [-1, 0, 0],
+      [0, 1, 1],
+      [1, 2, 0],
+    ]) {
       expect(easing.delta(a, b)).toEqual(r);
     }
 
-    for (const [a, b, r] of [[-1, 0, 0], [0, 0.01, 1], [0.01, 1, 0], [-1, -1, 0], [0, 0, 0], [1, 1, 0]]) {
+    for (const [a, b, r] of [
+      [-1, 0, 0],
+      [0, 0.01, 1],
+      [0.01, 1, 0],
+      [-1, -1, 0],
+      [0, 0, 0],
+      [1, 1, 0],
+    ]) {
       expect(easing.delta(a, b, 0)).toEqual(r);
     }
 
-    for (const [a, b, r] of [[-1, 0, 0], [0, 5, 1], [5, 6, 0], [0, 0, 0], [3, 3, 0], [5, 5, 0]]) {
+    for (const [a, b, r] of [
+      [-1, 0, 0],
+      [0, 5, 1],
+      [5, 6, 0],
+      [0, 0, 0],
+      [3, 3, 0],
+      [5, 5, 0],
+    ]) {
       expect(easing.delta(a, b, 5)).toEqual(r);
     }
   });

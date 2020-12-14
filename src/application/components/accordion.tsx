@@ -15,15 +15,10 @@ export const Accordion: FunctionalComponent<Props> = props => {
 
   return (
     <div>
-      <div
-        className={css(styles.header, isOpened && styles.headerOpened)}
-        onClick={handleToggle}
-      >
+      <div className={css(styles.header, isOpened && styles.headerOpened)} onClick={handleToggle}>
         {header}
       </div>
-      <div className={css(styles.content, isOpened && styles.contentOpened)}>
-        {children}
-      </div>
+      <div className={css(styles.content, isOpened && styles.contentOpened)}>{children}</div>
     </div>
   );
 };

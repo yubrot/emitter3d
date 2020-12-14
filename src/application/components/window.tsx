@@ -33,9 +33,7 @@ export const Window: FunctionalComponent<Props> = props => {
         right: right || 'auto',
       }}
     >
-      <Button onClick={handleToggle}>
-        {isOpened ? '-' : '+'}
-      </Button>
+      <Button onClick={handleToggle}>{isOpened ? '-' : '+'}</Button>
       <div
         className={css(styles.content, isOpened && styles.contentOpened)}
         style={{ width: width || 'auto', height: height || 'auto' }}
