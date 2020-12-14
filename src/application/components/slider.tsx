@@ -1,7 +1,7 @@
 import { h, FunctionalComponent } from 'preact';
 import { useRef, useMemo } from 'preact/hooks';
 import { StyleSheet, css } from 'aphrodite';
-import { useMouseDragEvent } from '../hooks';
+import { useMouseDragEvent, useMouseWheelEvent } from '../hooks';
 
 export type Props = {
   range: [number, number, number];
@@ -21,17 +21,27 @@ export const Slider: FunctionalComponent<Props> = props => {
     children,
   } = props;
 
-  const sliderRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>();
 
   const [sliderHover, sliderActive] = useMouseDragEvent(
-    sliderRef,
+    containerRef,
     (ev: MouseEvent) => {
       if (disabled) return;
-      const { left, width } = sliderRef.current!.getBoundingClientRect();
+      const { left, width } = containerRef.current!.getBoundingClientRect();
       const r = Math.min(1, Math.max(0, (ev.clientX - left) / width));
       onChange(min + step * Math.round((r * (max - min)) / step));
     },
     [min, max, step, disabled, onChange]
+  );
+
+  useMouseWheelEvent(
+    containerRef,
+    (ev: WheelEvent) => {
+      ev.preventDefault();
+      if (disabled) return;
+      onChange(Math.min(max, Math.max(min, value + (ev.deltaY > 0 ? -step : step))));
+    },
+    [value, min, max, step, disabled, onChange]
   );
 
   const width = useMemo(() => ((value - min) / (max - min)) * 100 + '%', [value, min, max]);
@@ -41,7 +51,7 @@ export const Slider: FunctionalComponent<Props> = props => {
     <div
       className={css(styles.slider, disabled ? styles.sliderDisabled : styles.sliderEnabled)}
       style={style}
-      ref={sliderRef}
+      ref={containerRef}
     >
       <div
         className={css(
