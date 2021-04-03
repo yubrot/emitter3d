@@ -27,7 +27,7 @@ export class Prisms extends THREE.Mesh {
         ++count;
       },
       complete: () => {
-        geometry.maxInstancedCount = count;
+        geometry.instanceCount = count;
         positions.needsUpdate = true;
         rotations.needsUpdate = true;
         hslas.needsUpdate = true;
@@ -43,7 +43,7 @@ export class Prisms extends THREE.Mesh {
     }
 
     const geometry = new THREE.InstancedBufferGeometry();
-    geometry.maxInstancedCount = 0;
+    geometry.instanceCount = 0;
 
     geometry.setAttribute('objectPosition', objectGeometry.position);
     geometry.setAttribute('objectColor', objectGeometry.color);

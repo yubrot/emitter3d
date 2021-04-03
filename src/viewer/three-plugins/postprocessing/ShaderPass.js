@@ -1,14 +1,10 @@
 var THREE = require('three');
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 THREE.ShaderPass = function ( shader, textureID ) {
 
 	THREE.Pass.call( this );
 
-	this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
+	this.textureID = ( textureID !== undefined ) ? textureID : 'tDiffuse';
 
 	if ( shader instanceof THREE.ShaderMaterial ) {
 

@@ -60,12 +60,12 @@ export class Scene extends THREE.Scene {
   constructor(camera: Camera) {
     super();
     this.fog = new THREE.FogExp2(0x000000, 0.0003);
-    this.history = new History(allocateDot, 180);
+    this.history = new History(allocateDot, 300);
 
-    this.particles = new Particles(40000);
+    this.particles = new Particles(80000);
     this.add(this.particles);
 
-    this.prisms = new Prisms(40000);
+    this.prisms = new Prisms(80000);
     this.add(this.prisms);
 
     this.particles.mat.setCameraClip(camera.near, camera.far);

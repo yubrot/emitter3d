@@ -45,7 +45,7 @@ export const Options: FunctionalComponent<{}> = props => {
         <Slider disabled={!prism} range={[0, 1, 0.02]} {...option('prismLightness')}>
           lightness
         </Slider>
-        <Slider disabled={!prism} range={[1, 120, 1]} {...option('prismTrailLength')}>
+        <Slider disabled={!prism} range={[1, 240, 1]} {...option('prismTrailLength')}>
           trail length
         </Slider>
         <Slider
@@ -112,7 +112,7 @@ export const Options: FunctionalComponent<{}> = props => {
         >
           shell lightness
         </Slider>
-        <Slider disabled={!particle} range={[1, 120, 1]} {...option('particleTrailLength')}>
+        <Slider disabled={!particle} range={[1, 240, 1]} {...option('particleTrailLength')}>
           trail length
         </Slider>
         <TransitionGraph disabled={!particle} {...option('particleTrailAttenuation')}>
