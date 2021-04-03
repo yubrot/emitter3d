@@ -23,7 +23,7 @@
     "gl-matrix": "^3.3.0",
     "preact": "^10.5.7",
     "stats.js": "^0.17.0",
-    "three": "^0.116.1"
+    "three": "^0.127.0"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.4.5",

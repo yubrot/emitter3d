@@ -328,7 +328,7 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleTrailDiffusionShakiness: 3,
   },
   stardust: {
-    stepsPerUpdate: 0.5,
+    stepsPerUpdate: 0.6,
     antialias: false,
     bloomEffect: true,
     bloomStrength: 0.8,
@@ -351,9 +351,9 @@ export const presetStates: { [P in PresetName]: Partial<ApplicationState> } = {
     particleSnapshotOffset: 0,
     particleTrailLength: 120,
     particleTrailAttenuation: { init: 1, center: 1, exponent: 3 },
-    particleTrailDiffusionScale: 10,
-    particleTrailDiffusionTransition: { init: 0, center: 0, exponent: 0.5 },
-    particleTrailDiffusionFineness: 3.5,
-    particleTrailDiffusionShakiness: 4,
+    particleTrailDiffusionScale: 100,
+    particleTrailDiffusionTransition: { init: 0, center: 0, exponent: -3 },
+    particleTrailDiffusionFineness: 0.5,
+    particleTrailDiffusionShakiness: 3.5,
   },
 };
