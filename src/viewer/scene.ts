@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { History } from './aux/history';
 import { Particles } from './particles';
 import { Prisms } from './prisms';
+import { Grid } from './grid';
 import { Camera } from './camera';
 
 export type Dot = {
@@ -29,6 +30,7 @@ export class Scene extends THREE.Scene {
   readonly history: History<Dot>;
   readonly prisms: Prisms;
   readonly particles: Particles;
+  readonly grid: Grid;
 
   readonly prismOptions = {
     saturation: 0.5,
@@ -67,6 +69,9 @@ export class Scene extends THREE.Scene {
 
     this.prisms = new Prisms(80000);
     this.add(this.prisms);
+
+    this.grid = new Grid();
+    this.add(this.grid);
 
     this.particles.mat.setCameraClip(camera.near, camera.far);
   }

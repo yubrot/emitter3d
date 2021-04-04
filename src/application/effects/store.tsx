@@ -45,6 +45,7 @@ export function initialApplicationState(): ApplicationState {
 export type CoreState = {
   isPaused: boolean;
   showStats: boolean;
+  showGrid: boolean;
   stepsPerSecond: number;
   stepsPerUpdate: number;
   cameraRevolve: boolean;
@@ -143,6 +144,7 @@ export function serializeState(state: ApplicationState): string {
   // Drop unnecessary props
   delete data.isPaused;
   delete data.showStats;
+  delete data.showGrid;
   delete data.cameraRevolve;
   delete data.editorNotification;
   delete data.editorCompilation;
@@ -199,6 +201,7 @@ export function compileTransition({
 export const initialCoreState: CoreState = {
   isPaused: false,
   showStats: false,
+  showGrid: true,
   stepsPerSecond: 90,
   stepsPerUpdate: 1,
   cameraRevolve: true,

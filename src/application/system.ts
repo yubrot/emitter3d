@@ -93,6 +93,12 @@ function useViewerOptionApplier(): void {
     viewer.renderer.bloomRadius = bloomRadius;
   }, [fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius]);
 
+  const { showGrid } = store.state;
+
+  useEffect(() => {
+    viewer.scene.grid.visible = showGrid;
+  }, [showGrid]);
+
   const {
     prism,
     prismSaturation,

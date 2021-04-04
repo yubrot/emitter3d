@@ -156,6 +156,7 @@ export const Options: FunctionalComponent<{}> = props => {
       <Accordion header="System" initiallyOpened={true}>
         <Toggle {...option('isPaused')}>pause</Toggle>
         <Toggle {...option('showStats')}>show stats</Toggle>
+        <Toggle {...option('showGrid')}>show grid</Toggle>
         <Slider range={[10, 300, 10]} {...option('stepsPerSecond')}>
           steps per second
         </Slider>
