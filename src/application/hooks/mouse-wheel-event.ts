@@ -1,7 +1,8 @@
-import { PropRef, useCallback, useEffect } from 'preact/hooks';
+import { RefObject } from 'preact';
+import { useCallback, useEffect } from 'preact/hooks';
 
 export function useMouseWheelEvent(
-  containerRef: PropRef<HTMLElement>,
+  containerRef: RefObject<HTMLElement>,
   handler: (ev: WheelEvent) => void,
   inputs: ReadonlyArray<unknown>
 ): void {

@@ -1,7 +1,8 @@
-import { PropRef, useCallback, useEffect, useState } from 'preact/hooks';
+import { RefObject } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 export function useMouseDragEvent(
-  containerRef: PropRef<HTMLElement>,
+  containerRef: RefObject<HTMLElement>,
   handler: (ev: MouseEvent) => void,
   inputs: ReadonlyArray<unknown>
 ): [boolean, boolean] {

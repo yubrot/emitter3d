@@ -21,7 +21,7 @@ export const Slider: FunctionalComponent<Props> = props => {
     children,
   } = props;
 
-  const containerRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [sliderHover, sliderActive] = useMouseDragEvent(
     containerRef,

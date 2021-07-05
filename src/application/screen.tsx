@@ -6,7 +6,7 @@ import { useViewer } from './effects/viewer';
 
 export const Screen: FunctionalComponent<{}> = props => {
   const viewer = useViewer();
-  const container = useRef<HTMLDivElement>();
+  const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return viewer.setTrackpoint(container.current!);
