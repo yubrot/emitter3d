@@ -5,14 +5,14 @@
 Geometric fireworks simulator
 
 - [Live Demo](https://yubrot.github.io/emitter3d/)
-- [How this works (Japanese)](https://scrapbox.io/yubrot/emitter3d)
+- [How this works (Japanese)](https://yubrot.github.io/2021/07/emitter3d/)
 
 ## Screenshots
 
-![](./screenshots/a.jpg)
-![](./screenshots/c.jpg)
-![](./screenshots/d.jpg)
-![](./screenshots/b.jpg)
+![](./screenshots/1.jpg)
+![](./screenshots/2.jpg)
+![](./screenshots/3.jpg)
+![](./screenshots/4.jpg)
 
 ## Build
 
