@@ -1,3 +1,5 @@
+const isProduction = process.env.NODE_ENV == 'production';
+
 module.exports = {
   mode: 'production',
   entry: __dirname + '/src/index.tsx',
@@ -13,8 +15,17 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.ts', '.tsx'],
   },
+  devtool: isProduction ? false : 'source-map',
   devServer: {
-    contentBase: __dirname + '/dist',
-    contentBasePublicPath: '/emitter3d',
+    client: {
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
+    static: {
+      directory: __dirname + '/dist',
+      publicPath: '/emitter3d',
+    },
   },
 };
