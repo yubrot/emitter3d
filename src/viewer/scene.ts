@@ -61,7 +61,7 @@ export class Scene extends THREE.Scene {
 
   constructor(camera: Camera) {
     super();
-    this.fog = new THREE.FogExp2(0x000000, 0.0003);
+    this.fog = new THREE.FogExp2(0x000000, 0.003);
     this.history = new History(allocateDot, 300);
 
     this.particles = new Particles(80000);
@@ -158,5 +158,9 @@ export class Scene extends THREE.Scene {
 
   setSize(width: number, height: number): void {
     this.particles.mat.setSize(width, height);
+  }
+
+  setYOffset(offset: number): void {
+    this.grid.position.set(0, offset, 0);
   }
 }

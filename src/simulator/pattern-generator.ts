@@ -233,7 +233,6 @@ function layout1(spec: Spec): { code: Code; r: number } {
       ? ['horizontal', 'split']
       : ['horizontal', 'vertical', 'split'];
 
-  const layoutType = randr(layoutCandidates);
   const sign = randf() < 0.5 ? 1 : -1;
   const code = new Code();
   let r = 0;

@@ -3,13 +3,14 @@ import * as THREE from 'three';
 export type CameraPosition = {
   x: number;
   y: number;
+  o: number;
   d: number;
 };
 
 export class Camera extends THREE.PerspectiveCamera {
   targetPosition: CameraPosition;
   currentPosition: CameraPosition;
-  delayFactor = 0.75;
+  delayFactor = 0.95;
 
   constructor(
     fov: number,
@@ -35,6 +36,8 @@ export class Camera extends THREE.PerspectiveCamera {
       this.currentPosition.x * this.delayFactor + this.targetPosition.x * (1 - this.delayFactor);
     this.currentPosition.y =
       this.currentPosition.y * this.delayFactor + this.targetPosition.y * (1 - this.delayFactor);
+    this.currentPosition.o =
+      this.currentPosition.o * this.delayFactor + this.targetPosition.o * (1 - this.delayFactor);
     this.currentPosition.d =
       this.currentPosition.d * this.delayFactor + this.targetPosition.d * (1 - this.delayFactor);
 
@@ -44,10 +47,10 @@ export class Camera extends THREE.PerspectiveCamera {
 
     this.position.set(
       this.currentPosition.d * Math.sin(phi) * Math.cos(theta),
-      this.currentPosition.d * Math.cos(phi),
+      this.currentPosition.d * Math.cos(phi) + this.currentPosition.o,
       this.currentPosition.d * Math.sin(phi) * Math.sin(theta)
     );
-    this.lookAt(new THREE.Vector3(0, 0, 0));
+    this.lookAt(new THREE.Vector3(0, this.currentPosition.o, 0));
   }
 }
 

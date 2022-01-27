@@ -71,7 +71,10 @@ export const Slider: FunctionalComponent<Props> = props => {
 
 export function numberString(value: number, step: number): string {
   let decimal = 0;
-  while (step < 1) (decimal += 1), (step *= 10);
+  while (step < 1) {
+    decimal += 1;
+    step *= 10;
+  }
   let s = value < 0 ? '-' : '';
   let t = String(Math.round(Math.abs(value) * 10 ** decimal));
   let u = '';

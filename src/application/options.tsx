@@ -164,6 +164,7 @@ export const Options: FunctionalComponent<{}> = props => {
           steps per update
         </Slider>
         <Toggle {...option('cameraRevolve')}>camera revolve</Toggle>
+        <Toggle {...option('floorTransition')}>floor transition</Toggle>
       </Accordion>
       <Accordion header="Presets" initiallyOpened={true}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>

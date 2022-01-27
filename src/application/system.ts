@@ -73,14 +73,8 @@ function useViewerOptionApplier(): void {
   const store = useStore();
   const viewer = useViewer();
 
-  const {
-    fieldOfView,
-    antialias,
-    bloomEffect,
-    bloomStrength,
-    bloomThreshold,
-    bloomRadius,
-  } = store.state;
+  const { fieldOfView, antialias, bloomEffect, bloomStrength, bloomThreshold, bloomRadius } =
+    store.state;
 
   useEffect(() => {
     const updateMatrix = viewer.camera.fov != fieldOfView;
@@ -219,12 +213,14 @@ function useSystemUpdater(): (deltaTime: number) => void {
   const stats = useStats();
   const codeGenerate = useCodeGenerate(false);
   const totalSteps = useRef(0);
+  const floorOffset = useRef(0);
 
   const {
     stepsPerSecond,
     stepsPerUpdate,
     isPaused,
     cameraRevolve,
+    floorTransition,
     generateAutomatically,
   } = store.state;
 
@@ -242,8 +238,13 @@ function useSystemUpdater(): (deltaTime: number) => void {
         viewer.scene.stateNeedsUpdate = true;
 
         if (simulator.closed) {
+          if (floorTransition) {
+            floorOffset.current -= 100;
+            viewer.camera.targetPosition.o = floorOffset.current;
+            viewer.scene.setYOffset(floorOffset.current);
+          }
           if (generateAutomatically) codeGenerate();
-          simulator.emitRootParticle();
+          simulator.emitRootParticle(0, floorOffset.current, 0);
         }
       }
       viewer.update();
@@ -258,6 +259,7 @@ function useSystemUpdater(): (deltaTime: number) => void {
       stepsPerUpdate,
       isPaused,
       cameraRevolve,
+      floorTransition,
       generateAutomatically,
     ]
   );

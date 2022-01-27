@@ -6,7 +6,7 @@ export interface Store {
   update(updater: Updater<ApplicationState>): void;
 }
 
-const Context = createContext((undefined as unknown) as Store);
+const Context = createContext(undefined as unknown as Store);
 
 export const RunStore: FunctionalComponent<{
   initialState: ApplicationState;
@@ -49,6 +49,7 @@ export type CoreState = {
   stepsPerSecond: number;
   stepsPerUpdate: number;
   cameraRevolve: boolean;
+  floorTransition: boolean;
 };
 
 export type EditorState = {
@@ -146,6 +147,7 @@ export function serializeState(state: ApplicationState): string {
   delete data.showStats;
   delete data.showGrid;
   delete data.cameraRevolve;
+  delete data.floorTransition;
   delete data.editorNotification;
   delete data.editorCompilation;
   delete data.generatorGeneration;
@@ -205,6 +207,7 @@ export const initialCoreState: CoreState = {
   stepsPerSecond: 90,
   stepsPerUpdate: 1,
   cameraRevolve: true,
+  floorTransition: false,
 };
 
 export const initialEditorState: EditorState = {

@@ -59,9 +59,11 @@ export class Simulator {
     this.field.update(deltaTime);
   }
 
-  emitRootParticle(): void {
+  emitRootParticle(x: number, y: number, z: number): void {
     const behavior = this.pattern([0, 1]);
-    this.field.add(new Particle(behavior));
+    const particle = new Particle(behavior);
+    particle.translate(x, y, z);
+    this.field.add(particle);
   }
 
   generatePattern(strength: number, clear: boolean): { code: string } {
@@ -84,7 +86,9 @@ export class Simulator {
           ? `Parse error: ${e.message}`
           : e instanceof CompileError
           ? `Compile error: ${e.message}`
-          : `Unknown error: ${e.message}`;
+          : e instanceof Error
+          ? `Unknown error: ${e.message}`
+          : '${e}';
       return { success: false, message };
     }
   }

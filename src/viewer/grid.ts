@@ -7,12 +7,22 @@ export class Grid extends THREE.Points {
     super(Grid.geometry(), Grid.material());
   }
 
+  get opacity(): number {
+    return (this.material as THREE.PointsMaterial).opacity;
+  }
+
+  set opacity(value: number) {
+    (this.material as THREE.PointsMaterial).opacity = value;
+  }
+
   static geometry(): THREE.BufferGeometry {
     const vertices: number[] = [];
 
-    for (let x = -32; x <= 32; x++) {
-      for (let z = -32; z <= 32; z++) {
-        vertices.push(x * 8, 0, z * 8);
+    for (let y = -2; y <= 2; y++) {
+      for (let x = -48; x <= 48; x++) {
+        for (let z = -48; z <= 48; z++) {
+          vertices.push(x * 8, y * 100, z * 8);
+        }
       }
     }
 
@@ -23,7 +33,7 @@ export class Grid extends THREE.Points {
 
   static material(): THREE.PointsMaterial {
     return new THREE.PointsMaterial({
-      color: 0x666666,
+      color: 0xaaaaaa,
       size: 1,
       transparent: true,
       blending: THREE.AdditiveBlending,
