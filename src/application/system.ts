@@ -240,6 +240,7 @@ function useSystemUpdater(): (deltaTime: number) => void {
         if (simulator.closed) {
           if (floorTransition) {
             floorOffset.current -= 100;
+            viewer.camera.targetPosition.x += Math.random() * 240 - 120;
             viewer.camera.targetPosition.o = floorOffset.current;
             viewer.scene.setYOffset(floorOffset.current);
           }
